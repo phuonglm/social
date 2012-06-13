@@ -10,11 +10,13 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.social.common.lifecycle.SocialChromatticLifeCycle;
 import org.exoplatform.social.core.chromattic.entity.IdentityEntity;
+import org.exoplatform.social.core.chromattic.entity.SpaceEntity;
 import org.exoplatform.social.core.manager.ActivityManager;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.manager.RelationshipManager;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.social.core.storage.api.IdentityStorage;
+import org.exoplatform.social.core.storage.impl.AbstractStorage;
 import org.exoplatform.social.core.storage.query.WhereExpression;
 import org.exoplatform.social.extras.injection.utils.LoremIpsum4J;
 import org.exoplatform.social.extras.injection.utils.NameGenerator;
@@ -89,15 +91,18 @@ public abstract class AbstractSocialInjector extends DataInjector {
   /** . */
   protected LoremIpsum4J lorem;
 
+  /** . */
+  protected PortalContainer container;
+
   public AbstractSocialInjector() {
 
-    PortalContainer c = PortalContainer.getInstance();
-    this.identityManager = (IdentityManager) c.getComponentInstanceOfType(IdentityManager.class);
-    this.identityStorage = (IdentityStorage) c.getComponentInstanceOfType(IdentityStorage.class);
-    this.relationshipManager = (RelationshipManager) c.getComponentInstanceOfType(RelationshipManager.class);
-    this.activityManager = (ActivityManager) c.getComponentInstanceOfType(ActivityManager.class);
-    this.spaceService = (SpaceService) c.getComponentInstanceOfType(SpaceService.class);
-    this.organizationService = (OrganizationService) c.getComponentInstanceOfType(OrganizationService.class);
+    this.container = PortalContainer.getInstance();
+    this.identityManager = (IdentityManager) container.getComponentInstanceOfType(IdentityManager.class);
+    this.identityStorage = (IdentityStorage) container.getComponentInstanceOfType(IdentityStorage.class);
+    this.relationshipManager = (RelationshipManager) container.getComponentInstanceOfType(RelationshipManager.class);
+    this.activityManager = (ActivityManager) container.getComponentInstanceOfType(ActivityManager.class);
+    this.spaceService = (SpaceService) container.getComponentInstanceOfType(SpaceService.class);
+    this.organizationService = (OrganizationService) container.getComponentInstanceOfType(OrganizationService.class);
 
     //
     this.userHandler = organizationService.getUserHandler();
@@ -118,6 +123,8 @@ public abstract class AbstractSocialInjector extends DataInjector {
     userNumber = 0;
     spaceNumber = 0;
 
+    boolean started = AbstractStorage.startSynchronization();
+
     try {
       userNumber = userNumber(userBase);
       spaceNumber = userNumber(spacePrettyBase);
@@ -125,6 +132,8 @@ public abstract class AbstractSocialInjector extends DataInjector {
     catch (UndeclaredThrowableException e) {
       // If no user is existing, set keep 0 as value.
     }
+
+    AbstractStorage.stopSynchronization(started);
 
 
     //
@@ -149,7 +158,6 @@ public abstract class AbstractSocialInjector extends DataInjector {
 
   private int userNumber(String base) {
 
-
     PortalContainer container = PortalContainer.getInstance();
     ChromatticManager manager = (ChromatticManager) container.getComponentInstanceOfType(ChromatticManager.class);
     SocialChromatticLifeCycle lifeCycle = (SocialChromatticLifeCycle) manager.getLifeCycle(SocialChromatticLifeCycle.SOCIAL_LIFECYCLE_NAME);
@@ -157,6 +165,19 @@ public abstract class AbstractSocialInjector extends DataInjector {
     QueryBuilder<IdentityEntity> builder = lifeCycle.getSession().createQueryBuilder(IdentityEntity.class);
     WhereExpression where = new WhereExpression();
     where.like(IdentityEntity.remoteId, base + "%");
+    return builder.where(where.toString()).get().objects().size();
+
+  }
+
+  private int spaceNumber(String base) {
+
+    PortalContainer container = PortalContainer.getInstance();
+    ChromatticManager manager = (ChromatticManager) container.getComponentInstanceOfType(ChromatticManager.class);
+    SocialChromatticLifeCycle lifeCycle = (SocialChromatticLifeCycle) manager.getLifeCycle(SocialChromatticLifeCycle.SOCIAL_LIFECYCLE_NAME);
+
+    QueryBuilder<SpaceEntity> builder = lifeCycle.getSession().createQueryBuilder(SpaceEntity.class);
+    WhereExpression where = new WhereExpression();
+    where.like(SpaceEntity.displayName, base + "%");
     return builder.where(where.toString()).get().objects().size();
 
   }
