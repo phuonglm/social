@@ -49,30 +49,30 @@ eXo.social = eXo.social || {};
     return (obj.constructor.toString().indexOf("Array") !== -1);
   }
  }
- 
- /**
+/*
+ *//**
   * gets element by id
-  * @static 
-  */
+  * @static
+  *//*
  eXo.social.Util.getElementById = function(id) {
  	var el = document.getElementById(id);
  	if (!el) return null;
  	return el;
  }
- 
- /**
+
+ *//**
   * gets element by tagName
   * @param	tagName
   * @param	parent element
   * @static
-  */
+  *//*
  eXo.social.Util.getElementsByTagName = function(tagName, parent) {
  	var parent = parent || document;
  	var els = parent.getElementsByTagName(tagName);
  	if (!els) return null;
  	return els;
  }
- 
+ */
  /**
  * Returns true if element has the css clazz
  * Uses a regular expression to search more quickly
@@ -121,37 +121,7 @@ eXo.social.Util.hasClass = function(element, clazz) {
 			
 		return returnElements; 
 	} 
-			
- 
-/**
- * adds element with specified parentId, tagName, elementId and html content
- * @param	parentId
- * @param	tagName
- * @param	elementId
- * @param	html
- * @return	newElement 
- * @static
- */
-eXo.social.Util.addElement = function(parentId, tagName, elementId, html) {
-    if (parentId === null || tagName === null || html === null) {
-    	if (console) {
-    		console.warn("Do not provide all params");
-    	}
-    	return;
-    }
-    if (document.getElementById(elementId)) {
-    	return; //do not create repeated element
-    }
-    var parent = document.getElementById(parentId);
-    if (parent === null) return;
-    var newElement = document.createElement(tagName);
-    if (elementId) {
-    	newElement.setAttribute('id', elementId);
-    }
-    newElement.innerHTML = html;
-    parent.appendChild(newElement);
-    return newElement;
-}
+
 
 /**
  * removes element from DOM by its id
@@ -175,14 +145,14 @@ eXo.social.Util.hideElement = function(elementId) {
 	var element = document.getElementById(elementId);
 	if (element === null) {
 		return;
-	} 
+	}
 	element.style.display='none';
 }
 
 /**
  * shows element by id
  * @param	elementI
- * @display	can be "inline" or "block" with default = "block" 
+ * @display	can be "inline" or "block" with default = "block"
  * @static
  */
 eXo.social.Util.showElement = function(elementId, display) {
@@ -192,7 +162,7 @@ eXo.social.Util.showElement = function(elementId, display) {
 	var element = document.getElementById(elementId);
 	if (element == null) {
 		return;
-	} 
+	}
 	element.style.display = display;
 }
 
@@ -217,17 +187,7 @@ eXo.social.Util.insertAfter = function(newNode, refNode) {
  * @static
  */
 eXo.social.Util.isEnterKey = function(e) {
-	var keyNum;
-	var ENTER_KEY_NUM = 13;
-	if(window.event) {// IE
-  		keyNum = e.keyCode;
-  	} else if (e.which) { // Netscape/Firefox/Opera
-  		keyNum = e.which;
-  	}
-  	if (ENTER_KEY_NUM == keyNum) {
-		return true;
-  	}
-  	return false;
+  return (13 == (e.which ? e.which : e.keyCode));
 }
 
 /**
@@ -247,6 +207,10 @@ eXo.social.Util.getAttributeValue = function(element, attrName) {
 	return null;
 }
 
+eXo.social.Util.addEventListener = function(obj, evts, fnc, useCapture) {
+  gj(obj).on(evts, fnc);
+}
+
 /**
  * Cross browser add event listener method. For 'evt' pass a string value with the leading "on" omitted
  * e.g. Util.addEventListener(window,'load',myFunctionNameWithoutParenthesis,false);
@@ -257,7 +221,7 @@ eXo.social.Util.getAttributeValue = function(element, attrName) {
  * @static
  * @see		http://phrogz.net/JS/AttachEvent_js.txt
  */
-eXo.social.Util.addEventListener = function(obj, evts, fnc, useCapture) {
+eXo.social.Util.addEventListener_Suppressed = function(obj, evts, fnc, useCapture) {
 	if (obj === null || evt === null || fnc ===  null || useCapture === null) {
 		alert('all params are required from Util.addEventListener!');
 		return;
@@ -275,20 +239,29 @@ eXo.social.Util.addEventListener = function(obj, evts, fnc, useCapture) {
         fnc.call(obj, evt);
       });
     } else{
-      myAttachEvent(obj, evt, fnc);
-      obj['on'+evt] = function() { myFireEvent(obj,evt) };
+      //myAttachEvent(obj, evt, fnc);
+      if (!obj.myEvents) obj.myEvents={};
+      if (!obj.myEvents[evt]) obj.myEvents[evt]=[];
+      var evts = obj.myEvents[evt];
+      evts[evts.length] = fnc;
+      obj['on'+evt] = function() { 
+      //myFireEvent(obj,evt) 
+	      if (!obj || !obj.myEvents || !obj.myEvents[evt]) return;
+	      var evts = obj.myEvents[evt];
+	      for (var i=0,len=evts.length;i<len;i++) evts[i]();
+      };
     }
 
     //The following are for browsers like NS4 or IE5Mac which don't support either
     //attachEvent or addEventListener
-    var myAttachEvent = function(obj, evt, fnc) {
+    function myAttachEvent(obj, evt, fnc) {
       if (!obj.myEvents) obj.myEvents={};
       if (!obj.myEvents[evt]) obj.myEvents[evt]=[];
       var evts = obj.myEvents[evt];
       evts[evts.length] = fnc;
     }
 
-    var myFireEvent = function(obj, evt) {
+    function myFireEvent(obj, evt) {
       if (!obj || !obj.myEvents || !obj.myEvents[evt]) return;
       var evts = obj.myEvents[evt];
       for (var i=0,len=evts.length;i<len;i++) evts[i]();
@@ -321,7 +294,7 @@ eXo.social.Util.removeEventListener = function(obj, evt, func, useCapture) {
  * @static
  */
 eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHtmlString) {
-  if (!allowedTags) {
+  if (!allowedTags || !escapedHtmlString) {
     return escapedHtmlString;
   }
   escapedHtmlString = escapedHtmlString.replace(/&#60;/g, '<').replace(/&#62;/g, '>').replace(/&#34;/g, '"');
@@ -368,3 +341,58 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
   HTMLParser(escapedHtmlString, handler);
   return result.join('');
 }
+
+/*
+*Social jQuery plugin
+*/ 
+// Placeholder plugin for HTML 5
+;(function($) {
+    
+	function Placeholder(input) {
+    this.input = input;
+
+    // In case of submitting, ignore placeholder value
+    $(input[0].form).submit(function() {
+        if (input.hasClass('placeholder') && input.val() == input.attr('placeholder')) {
+            input.val('');
+        }
+    });
+	}
+	
+	Placeholder.prototype = {
+    show : function(loading) {
+        if (this.input.val() === '' || (loading && this.isDefaultPlaceholderValue())) {
+            this.input.addClass('placeholder');
+            this.input.val(this.input.attr('placeholder'));
+        }
+    },
+    hide : function() {
+        if (this.isDefaultPlaceholderValue() && this.input.hasClass('placeholder')) {
+            this.input.removeClass('placeholder');
+            this.input.val('');
+        }
+    },
+    isDefaultPlaceholderValue : function() {
+        return this.input.val() == this.input.attr('placeholder');
+    }
+	};
+	
+	var HAS_SUPPORTED = !!('placeholder' in document.createElement('input'));
+	
+	$.fn.placeholder = function() {
+    return HAS_SUPPORTED ? this : this.each(function() {
+        var input = $(this);
+        var placeholder = new Placeholder(input);
+        
+        placeholder.show(true);
+        
+        input.focus(function() {
+            placeholder.hide();
+        });
+        
+        input.blur(function() {
+            placeholder.show(false);
+        });
+    });
+	}
+})(gj);

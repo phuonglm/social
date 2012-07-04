@@ -35,20 +35,20 @@
   function handleShareButtonState(uiComposer) {
 	  if (uiComposer.minCharactersRequired !== 0) {
       //TODO hoatle handle backspace problem
-      if (uiComposer.composer.value.length >= uiComposer.minCharactersRequired) {
+      if (uiComposer.composer.val().length >= uiComposer.minCharactersRequired) {
         uiComposer.shareButton.className = 'ShareButtonDisable';
         if(document.getElementById("ComposerContainer") == null){
-          uiComposer.shareButton.disabled = false;
-          uiComposer.shareButton.className = 'ShareButton';
+          uiComposer.shareButton.attr('disabled', false);
+          uiComposer.shareButton.attr('class','ShareButton');
         }
       } else {
-        uiComposer.shareButton.style.background = '';
-        uiComposer.shareButton.className = 'ShareButton';
+        uiComposer.shareButton.css('background','');
+        uiComposer.shareButton.attr('class','ShareButton');
       }
     } else {
       if(document.getElementById("ComposerContainer") == null){
-        uiComposer.shareButton.disabled = false;
-        uiComposer.shareButton.className = 'ShareButton';
+        uiComposer.shareButton.attr('disabled',false);
+        uiComposer.shareButton.attr('class','ShareButton');
       }
     }
     
@@ -81,60 +81,62 @@
 
 
   UIComposer.prototype.init = function() {
-    this.composer = Util.getElementById(this.composerId);
-    this.shareButton = Util.getElementById('ShareButton');
+    this.composer = gj('#' + this.composerId);
+    this.shareButton = gj('#ShareButton');
     if (!(this.composer && this.shareButton)) {
       alert('error: can not find composer or shareButton!');
     }
 
-    this.composer.value = this.defaultInput;
-    this.composer.style.height = this.minHeight;
-    this.composer.style.color = this.blurColor;
-    this.composer.style.padding = this.padding;
-    this.shareButton.className = 'ShareButtonDisable';
-    this.shareButton.disabled = true;
-    this.currentValue = this.composer.value;
+    this.composer.val(this.defaultInput);
+    this.composer.css({'height' : this.minHeight,
+                       'color'  : this.blurColor,
+                       'padding': this.padding
+                      });
+    this.shareButton.attr('class','ShareButtonDisable');
+    this.shareButton.attr('disabled',true);
+    this.currentValue = this.composer.val();
     var uiComposer = this;
     var isReadyEl = document.getElementById("isReadyId");
     var composerContainerEl = document.getElementById("ComposerContainer");
    	var isReadyVal;
-    Util.addEventListener(this.composer, 'focus', function() {
+    this.composer.on('focus', function() {
     	handleShareButtonState(uiComposer);
-      if (uiComposer.composer.value === uiComposer.defaultInput) {
-        uiComposer.composer.value = '';
+      if (uiComposer.composer.val() === uiComposer.defaultInput) {
+        uiComposer.composer.val('');
       }
       if (uiComposer.focusCallback) {
         uiComposer.focusCallback();
       }
-      uiComposer.composer.style.height = uiComposer.maxHeight;
-      uiComposer.composer.style.padding = null;
-      uiComposer.composer.style.color = uiComposer.focusColor;     
-    }, false);
+      uiComposer.composer.css({'height' : uiComposer.maxHeight,
+                               'padding': 0,
+                               'color'  : uiComposer.focusColor});
+    });
 
-    Util.addEventListener(this.composer, 'blur', function() {
+    this.composer.on('blur', function() {
       if (uiComposer.composer.value === '') {
-        uiComposer.composer.value = uiComposer.defaultInput;
-        uiComposer.composer.style.height = uiComposer.minHeight;
-        uiComposer.composer.style.padding = uiComposer.padding;
-        uiComposer.composer.style.color = uiComposer.blurColor;
+        uiComposer.composer.val(uiComposer.defaultInput);
+        uiComposer.composer.css({'height' : uiComposer.minHeight,
+                                 'padding': uiComposer.padding,
+                                 'color'  : uiComposer.blurColor
+                                });
 
         //if current composer is default composer then disable share button
         if(document.getElementById("ComposerContainer") == null){
-          uiComposer.shareButton.disabled = true;
-          uiComposer.shareButton.className = 'ShareButtonDisable';
+          uiComposer.shareButton.attr('disabled',true);
+          uiComposer.shareButton.attr('class', 'ShareButtonDisable');
         }
 
       } else {
         	uiComposer.currentValue = uiComposer.composer.value;
-        	uiComposer.composer.style.padding = uiComposer.padding;
+        	uiComposer.composer.css('padding', uiComposer.padding);
       }
       
       if (uiComposer.blurCallback) {
         uiComposer.blurCallback();
       }
-    }, false);
+    });
 
-    Util.addEventListener(this.composer, 'keypress', handleShareButtonState(uiComposer), false);
+    this.composer.on('keypress', handleShareButtonState(uiComposer));
   }
 
   UIComposer.prototype.getValue = function() {
@@ -145,8 +147,8 @@
   }
 
   UIComposer.prototype.setCurrentValue = function() {
-  	var uiInputText = Util.getElementById(this.composerId);
-	  this.currentValue = uiInputText.value;
+  	var uiInputText = gj("#" + this.composerId);
+	  this.currentValue = uiInputText.val();
   }
   
   //expose

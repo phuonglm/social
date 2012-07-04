@@ -16,163 +16,211 @@
  */
 
 (function() {
-    var window_ = this;
-    var DOMUtil = eXo.core.DOMUtil;
-    var Util = eXo.social.Util;    
-    var FOCUS_COLOR = "#000000",
-        BLUR_COLOR = "#C7C7C7";
-    
-    function UIProfileUserSearch(params) {
-        this.init(params);
-    };
-    
-    UIProfileUserSearch.prototype.init = function(params) {
-	    this.defaultUserContact = params.defaultUserContact || null;
-	    this.defaultPos = params.defaultPos || null;
-	    this.defaultSkills = params.defaultSkills || null;
-	    
-	    var profileSearch = document.getElementById(params.uicomponentId);
-	    this.nameTextObj = DOMUtil.findDescendantById(profileSearch, 'Search');
-	    this.searchButton = DOMUtil.findDescendantById(profileSearch, 'SearchButton');
-	    this.posTextObj = DOMUtil.findDescendantById(profileSearch, 'position');
-	    this.skillTextObj = DOMUtil.findDescendantById(profileSearch, 'skills');
-	    this.onLoad();
-   }
-    
-    /**
-	 * When form load at the first time, init controls.
-	 * TODO : remove. autosuggest must be implemenented by an ajax call! not by pushing all names in the client!!
-	 */
-   UIProfileUserSearch.prototype.onLoad = function(uicomponentId) {
-        var searchEl = this.nameTextObj;
-        var posEl = this.posTextObj;
-        var skillEl = this.skillTextObj;
-        
-        if( searchEl.value === this.defaultUserContact){
-        	searchEl.style.color = BLUR_COLOR;
-        }
-        if( posEl.value === this.defaultPos){
-        	posEl.style.color = BLUR_COLOR;
-        }
-        if( skillEl.value === this.defaultSkills){
-        	skillEl.style.color = BLUR_COLOR;
-        }
-        
-        this.initTextBox();
-    }
-   
-	/**
-	 * Set init value and event for control.
-	 * @scope private.
-	 */
-	UIProfileUserSearch.prototype.initTextBox = function() {
-        var nameEl = this.nameTextObj;
-        var posEl = this.posTextObj;
-        var skillEl = this.skillTextObj;
-        var defaultUserContact = this.defaultUserContact;
-		var defaultPos = this.defaultPos;
-		var defaultSkills = this.defaultSkills;
-		var uiProfileUserSearchObj = eXo.social.webui.UIProfileUserSearch;
-		var suggestControlObj = eXo.social.webui.UIAutoSuggestControl;
-        
-        var searchBtn = this.searchButton;
-        var uiProfileUserSearch = this;
-        
-	    // Turn off auto-complete attribute of text-box control
-	    nameEl.setAttribute('autocomplete','off');
-	    posEl.setAttribute('autocomplete','off');
-	    skillEl.setAttribute('autocomplete','off');
-    
-        Util.addEventListener(this.nameTextObj, 'focus', function() {
-          if (this.value == defaultUserContact) {
-            this.value = '';              
-          }
-          this.style.color=FOCUS_COLOR;
-        }, false);
+		var window_ = this;
 
-		Util.addEventListener(this.nameTextObj, 'blur', function() {
-		  if (this.value && this.value != '') {
-		    this.style.color=FOCUS_COLOR;                               
-		  } else {
-		    this.style.color=BLUR_COLOR;
-		    this.value = defaultUserContact;
-		  }
-		}, false);
-	
-		Util.addEventListener(this.nameTextObj, 'keydown', function(event) {
-	      uiProfileUserSearch.keyDownAction(event);
-	    }, false);
-		 
-		Util.addEventListener(this.posTextObj, 'focus', function() {
-		  if (this.value == defaultPos) {
-		    this.value = '';              
-		  }
-		  this.style.color=FOCUS_COLOR;
-		}, false);
-		 
-		Util.addEventListener(this.skillTextObj, 'focus', function() {
-		  if (this.value == defaultSkills) {
-		    this.value = '';              
-		  }
-		  this.style.color=FOCUS_COLOR;
-		}, false);
-			        
-	    Util.addEventListener(this.posTextObj, 'blur', function() {
-		  if (this.value && this.value != '') {
-		    this.style.color=FOCUS_COLOR;                               
-		  } else {
-		    this.style.color=BLUR_COLOR;
-		    this.value = defaultPos;
-		  }
-		}, false);
-		
-    	Util.addEventListener(this.skillTextObj, 'blur', function() {
-		  if (this.value && this.value != '') {
-		    this.style.color=FOCUS_COLOR;                               
-		  } else {
-		    this.style.color=BLUR_COLOR;
-		    this.value = defaultSkills;
-		  }
-		}, false);
-		
-		Util.addEventListener(this.posTextObj, 'keydown', function(event) {
-	      uiProfileUserSearch.keyDownAction(event);
-	    }, false);
-		
-		Util.addEventListener(this.skillTextObj, 'keydown', function(event) {
-	      uiProfileUserSearch.keyDownAction(event);
-	    }, false);
-			        
-		suggestControlObj.load(nameEl, uiProfileUserSearchObj);
-	 
-	 }
-	        
-	 UIProfileUserSearch.prototype.keyDownAction = function(event) {
+		var COLOR = {
+		  FOCUS : "#000000",
+		  BLUR : "#C7C7C7"
+		};
+
+		var INPUT_ID = {
+		  NAME : '#Search',
+		  POSITION : '#position',
+		  SKILLS : '#skills',
+		  SEARCH : '#SearchButton'
+		};
+
+		var KEY = {
+		  ENTER : 13
+		};
+
+		var DEFAULT_REST_INFO = {
+      CONTEXT_NAME : 'rest-socialdemo',
+      PATH : '/social/people/suggest.json'
+    };
+
+		function UIProfileUserSearch(params) {
+		  this.defaultUserContact = params.defaultUserContact || null;
+      this.defaultPos = params.defaultPos || null;
+      this.defaultSkills = params.defaultSkills || null;
+    
+      var profileSearch = gj("#" + params.uicomponentId);
+      this.nameTextObj = gj(INPUT_ID.NAME, profileSearch);
+      this.posTextObj = gj(INPUT_ID.POSITION, profileSearch);
+      this.skillTextObj = gj(INPUT_ID.SKILLS, profileSearch);
+      this.searchButton = gj(INPUT_ID.SEARCH, profileSearch);
+
+      this.initTextBox();
+		};
+    
+   
+		/**
+		 * Set init value and event for control.
+		 * @scope private.
+		 */
+		UIProfileUserSearch.prototype.initTextBox = function() {
 	    var nameEl = this.nameTextObj;
-        var posEl = this.posTextObj;
-        var skillEl = this.skillTextObj;
-        var defaultUserContact = this.defaultUserContact;
-		var defaultPos = this.defaultPos;
-		var defaultSkills = this.defaultSkills;
-		var uiProfileUserSearchObj = eXo.social.webui.UIProfileUserSearch;
-		var suggestControlObj = eXo.social.webui.UIAutoSuggestControl;
-        
-        var searchBtn = this.searchButton;
-	    var e = event || window.event;
-        var textBox = e.srcElement || e.target;
-        var keynum = e.keyCode || e.which;  
-        if(keynum == 13) {
-          suggestControlObj.hideSuggestions();
-          searchBtn.onclick();
-	    } else if (textBox.id == this.nameTextObj.id) {
-	      // Other keys (up and down key)
-	      suggestControlObj.handleKeyDown(e);
-	    } else {
-		}
-	 }
-	 
-	 window_.eXo = window_.eXo || {};
-	 window_.eXo.social = window_.eXo.social || {};
-	 window_.eXo.social.webui = window_.eXo.social.webui || {};
-	 window_.eXo.social.webui.UIProfileUserSearch = UIProfileUserSearch;
+	    var posEl = this.posTextObj;
+	    var skillEl = this.skillTextObj;
+	    var defaultUserContact = this.defaultUserContact;
+			var defaultPos = this.defaultPos;
+			var defaultSkills = this.defaultSkills;
+			var uiProfileUserSearchObj = eXo.social.webui.UIProfileUserSearch;
+			var suggestControlObj = eXo.social.webui.UIAutoSuggestControl;
+
+	    var searchBtn = this.searchButton;
+	    var uiProfileUserSearch = this;
+
+	    // Turn off auto-complete attribute of text-box control
+	    gj(nameEl).attr('autocomplete','off');
+	    gj(posEl).attr('autocomplete','off');
+	    gj(skillEl).attr('autocomplete','off');
+	
+	    if(nameEl.val().trim() === this.defaultUserContact){
+	      nameEl.css('color', COLOR.BLUR);
+	    }
+
+	    if(posEl.val().trim() === this.defaultPos){
+	      posEl.css('color', COLOR.BLUR);
+	    }
+
+	    if(skillEl.val().trim() === this.defaultSkills){
+	      skillEl.css('color', COLOR.BLUR);
+	    }
+
+	    nameEl.focus(function() {
+	      if (gj(this).val().trim() == defaultUserContact) {
+	        gj(this).val('');
+	      }
+	      gj(this).css('color', COLOR.FOCUS);
+	    });
+
+			nameEl.blur(function() {
+			  if (gj(this).val() && gj(this).val() != '') {
+			    gj(this).css('color', COLOR.FOCUS);
+			  } else {
+			    gj(this).css('color', COLOR.BLUR);
+			    gj(this).val(defaultUserContact);
+			  }
+			});
+		
+			nameEl.keydown(function(event) {
+		    keyDownAction(event);
+		  });
+
+			posEl.focus(function() {
+			  if (gj(this).val().trim() == defaultPos) {
+			    gj(this).val('');
+			  }
+			  gj(this).css('color', COLOR.FOCUS);
+			});
+
+			skillEl.focus(function() {
+			  if (gj(this).val() == defaultSkills) {
+			    gj(this).val('');
+			  }
+			  gj(this).css('color', COLOR.FOCUS);
+			});
+
+		  posEl.blur(function() {
+			  if (gj(this).val() && gj(this).val() != '') {
+			    gj(this).css('color', COLOR.FOCUS);
+			  } else {
+			    gj(this).css('color', COLOR.BLUR);
+			    gj(this).val(defaultPos);
+			  }
+			});
+
+	    skillEl.blur(function() {
+			  if (gj(this).val() && gj(this).val() != '') {
+			    gj(this).css('color', COLOR.FOCUS);
+			  } else {
+			    gj(this).css('color', COLOR.BLUR);
+			    gj(this).val(defaultSkills);
+			  }
+			});
+
+			posEl.keydown(function(event) {
+		    keyDownAction(event);
+		  });
+
+			skillEl.keydown(function(event) {
+		    keyDownAction(event);
+		  });
+
+      $(INPUT_ID.NAME).autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: buildURL(),
+                    dataType: "jsonp",
+                    data: {
+                        featureClass: "P",
+                        style: "full",
+                        maxRows: 12
+                        //name_startsWith: request.term
+                    },
+                    success: function(data) {
+                        response( $.map(data.names, function(item) {
+                            return {
+                                label: item.name,
+                                value: item.name
+                            }
+                        }));
+                    }
+                });
+            },
+            minLength: 1,
+            select: function( event, ui ) {
+                // search
+            },
+            open: function() {
+                $(this).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+            },
+            close: function() {
+                $(this).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+            }
+        });
+			//suggestControlObj.load(nameEl[0], uiProfileUserSearchObj);
+
+			function buildURL() {
+        var restContext = eXo.social.webui.restContextName;
+        var currentUser = eXo.social.webui.currentUserName;
+        var typeOfRelation = eXo.social.webui.typeOfRelation;
+			  restContext = (restContext) ? restContext : DEFAULT_REST_INFO.CONTEXT_NAME;
+			  var restURL = "/" + restContext + DEFAULT_REST_INFO.PATH;
+
+			  restURL = restURL + '?nameToSearch=' + nameEl.val().trim();
+
+				if (currentUser) {
+				  restURL += "&currentUser=" + currentUser;
+				}
+
+			  if (typeOfRelation) {
+          restURL += "&typeOfRelation=" + typeOfRelation;
+        }
+
+        return restURL;
+      };
+
+
+			function keyDownAction(event) {
+				  //var searchBtn = this.searchButton;
+	        var e = event || window.event;
+	        var textBox = e.srcElement || e.target;
+	        var keynum = e.keyCode || e.which;
+	        if(keynum == KEY.ENTER) {
+	          suggestControlObj.hideSuggestions();
+	          searchBtn.click();
+	        } else if (textBox.id == INPUT_ID.NAME) {
+	          // Other keys (up and down key)
+	          suggestControlObj.handleKeyDown(e);
+	        } else {
+	        }
+        }
+		 }
+
+		 window_.eXo = window_.eXo || {};
+		 window_.eXo.social = window_.eXo.social || {};
+		 window_.eXo.social.webui = window_.eXo.social.webui || {};
+		 window_.eXo.social.webui.UIProfileUserSearch = UIProfileUserSearch;
 })();

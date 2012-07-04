@@ -1,6 +1,5 @@
 (function () {
 	var window_ = this;
-	var Util = eXo.social.Util;
 	
 	function UIContactSection() {
 	}
@@ -14,35 +13,35 @@
 		var idList = elementIds.split(',');
 		
 		for (var i = 0; i<idList.length; i++) {
-			this.urlChildInput = document.getElementById(idList[i]);
-			if (this.urlChildInput == null) {
+			var urlChildInput = gj("#"+ idList[i]);
+			if (urlChildInput.length == 0) {
 		    continue;	
 		  }
 		  
 			(function(idx) {
-				 this.input = document.getElementById(idList[idx]);
-		     var inputValue = this.input.value;
+				 var input = gj("#" + idList[idx]);
+		     var inputValue = gj(input).val().trim();
 		     if (inputValue != defaultValue) {
-		       this.input.style.color = "#000000";
+		       gj(input).css('color','#000000');
 		     } else {
-		       this.input.style.color = "#545454";			                             
+		       gj(input).css('color','#545454');
 		     }
 		     
 		     var uiContactSection = this;
 		     
-		     Util.addEventListener(this.input, 'focus', function() {
-			       if (this.value == defaultValue) {
-			         this.value = "";
-			         this.style.color = "#000000";
+		     gj(input).focus(function() {
+			       if (gj(this).val().trim() == defaultValue) {
+			         gj(this).val('');
+			         gj(this).css('color','#000000');
 			       }
-		     }, false);
+		     });
 		     
-		     Util.addEventListener(this.input, 'blur', function() {
-		       if (this.value == "") {
-		         this.value = defaultValue;
-		         this.style.color = "#545454";
+		     gj(input).blur(function() {
+		       if (gj(this).val().trim() == "") {
+		         gj(this).val(defaultValue);
+		         gj(this).css('color','#545454');
 		       }
-		     }, false);
+		     });
 		     
 		  })(i);
 		}

@@ -26,6 +26,7 @@
   function UIForm() {
     
   }
+
   /**
    * submits form
    * @param  formId
@@ -34,11 +35,11 @@
    * @param  async
    */
   UIForm.submitForm = function(formId, action, callback, async) {
-	var form = eXo.webui.UIForm.getFormElemt(formId);
-	form.elements['formOp'].value = action;
-	var queryString = eXo.webui.UIForm.serializeForm(form);
-	var url = form.action + "&ajaxRequest=true";
-	eXo.social.PortalHttpRequest.ajaxPostRequest(url, queryString, async, callback);
+		var form = eXo.webui.UIForm.getFormElemt(formId);
+		form.elements['formOp'].value = action;
+		var queryString = eXo.webui.UIForm.serializeForm(form);
+		var url = form.action + "&ajaxRequest=true";
+		eXo.social.PortalHttpRequest.ajaxPostRequest(url, queryString, async, callback);
   }
   
   

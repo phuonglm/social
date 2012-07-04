@@ -2,21 +2,13 @@ function UICustomizeControl() {
 }
 
 UICustomizeControl.prototype.onLoad = function(uicomponentId) {
-	var DOMUtil = eXo.core.DOMUtil;
 	var UIForm = eXo.webui.UIForm;
-	var element = document.getElementById(uicomponentId);
-	
-	var radioEls = element.getElementsByTagName('input');
-	var numberOfEls = radioEls.length;
-  for (var k = 0; k < numberOfEls; k++) {
-  	var el = radioEls[k];
-  	el.onclick = function(event) {
-  		var e = event || window.event;
-		  var radio = e.srcElement || e.target;
-		  var form = DOMUtil.findAncestorByClass(radio, 'UIForm');
-			if (form != null ) UIForm.submitForm(form.id, 'ChangeOption', true);
-  	}
-  }
+	gj('#' + uicomponentId).click(function() {
+	  gj('input').each(function() {
+      var form = gj(this).closest('.UIForm');
+      if (form != null ) UIForm.submitForm(form.attr("id"), 'ChangeOption', true);
+    });
+  });
 }
 
 /*===================================================================*/

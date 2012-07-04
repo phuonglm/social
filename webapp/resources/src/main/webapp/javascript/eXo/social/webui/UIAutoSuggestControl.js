@@ -70,41 +70,45 @@ UIAutoSuggestControl.prototype.createDropDown = function () {
     var typeOfSuggest = eXo.social.webui.typeOfSuggest;
     var oThis = this;
 
-    //create the layer and assign styles
-    this.layer = document.createElement("div");
-    this.layer.id = "UIAutoSuggestControl";
+    var className = '';
     if (typeOfSuggest == 'people') {
-      this.layer.className = "peoplesuggestions";
-	  } else if (typeOfSuggest == 'space') {
-		  this.layer.className = "spacesuggestions";
-	  }
-    
-    this.layer.style.visibility = "hidden";
-    this.layer.style.width = this.textbox.offsetWidth;
+      className = "peoplesuggestions";
+    } else if (typeOfSuggest == 'space') {
+      className = "spacesuggestions";
+    }
+
+    //create the layer and assign styles
+    this.layer = gj('<div></div>')
+                 .attr('id','UIAutoSuggestControl')
+                 .addClass(className)
+    //this.layer.id = "UIAutoSuggestControl";
+                 .css('visibility','hidden')
+                 .css('width', this.textbox.offsetWidth)
+    //this.layer.style.visibility = "hidden";
+    //this.layer.style.width = this.textbox.offsetWidth;
     
     //when the user clicks on the a suggestion, get the text (innerHTML)
     //and place it into a textbox
-    this.layer.onkeydown =
-    this.layer.onmousedown =
-    this.layer.onkeyup =
-    this.layer.onmouseup =
-    this.layer.onfocus =
-    this.layer.onmouseover = function (oEvent) {
+    var layer = gj(this.layer);
+
+    layer.on('keydown mousedown keyup mouseup focus mouseover', (function(oEvent) {
         oEvent = oEvent || window.event;
         oTarget = oEvent.target || oEvent.srcElement;
 
         if (oEvent.type == "mousedown" || oEvent.type == "keydown") {
-            oThis.textbox.value = oTarget.firstChild.nodeValue;
+            gjoThis.textbox.value = oTarget.firstChild.nodeValue;
             oThis.hideSuggestions();
-            oThis.provider.submitSearchForm(oThis.textbox);
+            
+            gj('#SearchButton').click();
         } else if (oEvent.type == "mouseover" || oEvent.type == "focus") {
             oThis.highlightSuggestion(oTarget);
         } else {
             oThis.textbox.focus();
         }
-    };
+    }));
     
-    document.body.appendChild(this.layer);
+    //document.body.appendChild(this.layer);
+    gj('body').append(this.layer);
 };
 
 /**
@@ -253,38 +257,28 @@ UIAutoSuggestControl.prototype.requestDataForAutoSuggest = function() {
 		restURL += "/" + portalName + CONFIG.SPACE_REST_PATH + inputString;
 	}
 
-	if (!isNull(currentUser)) {
+	if (currentUser) {
 		restURL += "&currentUser=" + currentUser;
 	}
 	
-	if (!isNull(typeOfRelation)) {
+	if (typeOfRelation) {
 		restURL += "&typeOfRelation=" + typeOfRelation;
 	}
 	
-	if ((!isNull(spaceURL)) && (typeOfSuggest == 'people')) {
-		restURL += "&spaceURL=" + spaceURL;
+	if (spaceURL) {
+	  if(typeOfSuggest == 'people') {
+		  restURL += "&spaceURL=" + spaceURL;
+		}
 	}
 	
 	this.makeRequest(restURL, true, this.resetList);
-	
-	function isNull(str) {
-		var obj = null;
-		try {
-			obj = new Function( "return " + str )();
-			return (obj == null);
-		} catch(e) {
-			return false;
-		}
-    return false;
-	}
 }
 
 /**
  * Gets return data and resets the name list to suggest control.
  */
 UIAutoSuggestControl.prototype.resetList = function(resp) {
-	var JSON = eXo.core.JSON;
-  var names = JSON.parse(resp.responseText).names;
+  var names = gj.parseJSON(resp.responseText).names;
   var namesLen = (names ? names.length : 0);
   var oThis = eXo.social.webui.UIAutoSuggestControl;
   if (namesLen == 0) {
@@ -298,18 +292,17 @@ UIAutoSuggestControl.prototype.resetList = function(resp) {
  * Posts rest request to server.
  */
 UIAutoSuggestControl.prototype.makeRequest = function(url, async, callback) {
-  if (async !== false) async = true;
-  var request = eXo.core.Browser.createHttpRequest();
-  request.open('GET', url, async);
-  request.setRequestHeader("Cache-Control", "max-age=86400") ;
-  request.onreadystatechange = function() {
-    if((request.readyState === 4) && (request.status === 200)) {
+  gj.ajax({
+    type: "get",
+    url: url,
+    async: async,
+    cache: false,
+    success: function(data, status, jqXHR) {
       if (callback) {
-        callback(request);
+        callback(jqXHR);
       }
     }
-  }
-  request.send(null);
+  });
 }
 
 ////////////////////////////End of request data for autosuggest/////////////////////////////
@@ -369,7 +362,7 @@ UIAutoSuggestControl.prototype.init = function () {
     var uiAutosuggestion = document.getElementById("UIAutoSuggestControl");
     if (uiAutosuggestion) {
     	if (this.timeout) clearTimeout(this.timeout);
-    	this.layer = uiAutosuggestion;
+	this.layer = uiAutosuggestion;oThis.highlightSuggestion(oTarget);
     	uiAutosuggestion.style.visibility = "hidden";
     } else {
 	    //create the suggestions dropdown

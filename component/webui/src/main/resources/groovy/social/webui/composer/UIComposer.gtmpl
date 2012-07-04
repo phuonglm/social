@@ -46,8 +46,7 @@
     blastInput = "BlastInputPeople";
   }
 
-  jsManager.importJavascript("eXo.social.Util", LinkProvider.JAVASCRIPT_RESOURCE_URL);
-  jsManager.importJavascript("eXo.social.webui.UIComposer", LinkProvider.JAVASCRIPT_RESOURCE_URL);
+  jsManager.loadScriptResource("social-ui-activity-composer");
   def params = """
     {
       composerId: '${uicomponent.getChild(UIFormTextAreaInput.class).getId()}',
@@ -80,18 +79,18 @@
     	uicomposer.init();
 
     	//re-assign value for appropriate objects
-    	uicomposer.composer.value = value;
-    	document.getElementById("composerInput").value = value;
-      uicomposer.composer.style.color = uicomposer.focusColor;
+    	uicomposer.composer.val(value);
+    	gj("composerInput").val(value);
+      uicomposer.composer.css('color', uicomposer.focusColor);
 
     	//this if clause used for enable Share button when there was text on composer input and the composer returns back to DefaultComposer
     	if(value != "" && value != uicomposer.defaultInput){
           if(document.getElementById("ComposerContainer") == null){
             //must this timeout 'cause it will override the value set by server side
-            window.setTimeout( function(){uicomposer.shareButton.disabled = false;}, 200);
+            window.setTimeout( function(){uicomposer.shareButton.attr('disabled',false);}, 200);
           }
     	} else {
-    	  uicomposer.composer.style.color = uicomposer.blurColor;
+    	  uicomposer.composer.css('color',uicomposer.blurColor);
     	}
     } else {
 	    uicomposer = new eXo.social.webui.UIComposer($params);
@@ -154,22 +153,22 @@
           
           shareButton.disabled = state;
           if (state) shareButton.className = 'ShareButtonDisable';
-          else shareButton.className = 'ShareButton'; 
+          else shareButton.className = 'ShareButton';
         }
 
         function handleShareButton(){
-          var shareButton = document.getElementById("ShareButton");
+          var shareButton = gj("#ShareButton");
           <%
             if(currentActivityComposer.isReadyForPostingActivity()){
             
           %>
-              shareButton.disabled = false;
-              shareButton.className = 'ShareButton'; 
+              shareButton.attr('disabled',false);
+              shareButton.attr('class', 'ShareButton');
           <%
             } else {
           %>
-            shareButton.disabled = true;
-            shareButton.className = 'ShareButtonDisable'; 
+            shareButton.attr('disabled',true);
+            shareButton.attr('class', 'ShareButtonDisable');
           <%
             }
           %>

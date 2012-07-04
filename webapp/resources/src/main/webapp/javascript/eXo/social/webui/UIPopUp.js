@@ -58,7 +58,7 @@
 		         Util.addEventListener(this.targetEl, ['mouseout', 'blur'], function() {
   			       var popUp = document.getElementById('UIPopup');
 		         	 if (uiPopup.timeOutId) clearTimeout(uiPopup.timeOutId);
-		           Util.hideElement(popUp.id);
+		           gj('#'+popUp.id).hide();
 		         }, false);
 			    })(i);
 			  }
@@ -87,9 +87,9 @@
 			},
 			reRenderPopUp: function(resp) {
 				var UIPopUp = window.eXo.social.webui.UIPopUp;
-				var avatarURL = (JSON.parse(resp.responseText)).avatarURL;
-				var activityTitle = (JSON.parse(resp.responseText)).activityTitle;
-				var relationStatus = (JSON.parse(resp.responseText)).relationshipType;
+				var avatarURL = (gj.parseJSON(resp.responseText)).avatarURL;
+				var activityTitle = (gj.parseJSON(resp.responseText)).activityTitle;
+				var relationStatus = (gj.parseJSON(resp.responseText)).relationshipType;
 				var connectionAvatar = document.getElementById("UserAvatar");
 				var imgTag = connectionAvatar.getElementsByTagName("img")[0];
 				var connectionTitle = document.getElementById("UserTitle");
@@ -170,11 +170,11 @@
 				
 				Util.addEventListener(this.boundPopup, ['mouseover', 'focus'], function() {
        	  if (uiPopup.timeOutId) clearTimeout(uiPopup.timeOutId);
-  				Util.showElement(this.id);
+  				gj('#' + this.id).show;
         }, false);
 		         
 				Util.addEventListener(this.boundPopup, ['mouseout', 'blur'], function() {
-					Util.hideElement(this.id);
+					gj('#' + this.id).hide();
         }, false);
 		         
 				/********************************************************
@@ -221,11 +221,11 @@
 			},
 			showPopup: function() {
 				var popup_element = document.getElementById('UIPopup');
-				Util.showElement(popup_element.id);
+        gj('#' + popup_element.id).show();
 			},
 			hidePopup: function() {
 				var popup_element = document.getElementById('UIPopup');
-				Util.hideElement(popup_element.id);
+        gj('#' + popup_element.id).hide();
 			}
 		
 	};
