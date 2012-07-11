@@ -226,8 +226,8 @@
     } else {
 
       if (shareButton) {
-        shareButton.disabled = true;
-        shareButton.className = 'ShareButtonDisable';
+        shareButton.attr('disabled','disabled');
+        shareButton.attr('class','ShareButtonDisable');
       }
       this.inputLink = gj('#' + this.inputLinkId);
       this.attachButton = gj('#' + this.attachButtonId);
@@ -252,7 +252,7 @@
       Util.addEventListener(this.inputLink, 'keypress', function(evt) {
         //if enter submit link
       });
-      this.attachButton.attr('disabled',false);
+      this.attachButton.removeAttr('disabled');
       this.attachButton.on('click', function(evt) {
         if (inputLink.val() === '' || inputLink.val() === HTTP) {
           return;

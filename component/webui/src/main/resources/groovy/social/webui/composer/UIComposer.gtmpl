@@ -87,7 +87,7 @@
     	if(value != "" && value != uicomposer.defaultInput){
           if(document.getElementById("ComposerContainer") == null){
             //must this timeout 'cause it will override the value set by server side
-            window.setTimeout( function(){uicomposer.shareButton.attr('disabled',false);}, 200);
+            window.setTimeout( function(){uicomposer.shareButton.removeAttr('disabled') ;}, 200);
           }
     	} else {
     	  uicomposer.composer.css('color',uicomposer.blurColor);
@@ -149,11 +149,14 @@
     %>
       <script type="text/javascript">
         function setShareButtonDisable(state){
-          var shareButton = document.getElementById("ShareButton");
-          
-          shareButton.disabled = state;
-          if (state) shareButton.className = 'ShareButtonDisable';
-          else shareButton.className = 'ShareButton';
+          var shareButton = gj("ShareButton");
+          if (state){
+            shareButton.attr('class','ShareButtonDisable');
+            shareButton.attr('disable',state);
+          } else{
+           shareButton.attr('class','ShareButton');
+           shareButton.removeAttr('disabled');
+          }
         }
 
         function handleShareButton(){
@@ -162,12 +165,12 @@
             if(currentActivityComposer.isReadyForPostingActivity()){
             
           %>
-              shareButton.attr('disabled',false);
+              shareButton.removeAttr('disabled') ;
               shareButton.attr('class', 'ShareButton');
           <%
             } else {
           %>
-            shareButton.attr('disabled',true);
+            shareButton.attr('disabled','disabled');
             shareButton.attr('class', 'ShareButtonDisable');
           <%
             }
