@@ -34,7 +34,9 @@
     
     request = new AjaxRequest('POST', url, queryString);
 	  handler = new HttpResponseHandler();
-	  request.isAsynchronize = async;
+	  request.isAsynchronize = function (){
+      return async;
+    };
 	  request.onSuccess = handler.ajaxResponse;
 	  request.onLoading = handler.ajaxLoading;
 	  request.onTimeout = handler.ajaxTimeout;

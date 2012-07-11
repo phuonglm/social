@@ -49,30 +49,30 @@ eXo.social = eXo.social || {};
     return (obj.constructor.toString().indexOf("Array") !== -1);
   }
  }
- 
- /**
+/*
+ *//**
   * gets element by id
-  * @static 
-  */
+  * @static
+  *//*
  eXo.social.Util.getElementById = function(id) {
  	var el = document.getElementById(id);
  	if (!el) return null;
  	return el;
  }
- 
- /**
+
+ *//**
   * gets element by tagName
   * @param	tagName
   * @param	parent element
   * @static
-  */
+  *//*
  eXo.social.Util.getElementsByTagName = function(tagName, parent) {
  	var parent = parent || document;
  	var els = parent.getElementsByTagName(tagName);
  	if (!els) return null;
  	return els;
  }
- 
+ */
  /**
  * Returns true if element has the css clazz
  * Uses a regular expression to search more quickly
@@ -121,37 +121,7 @@ eXo.social.Util.hasClass = function(element, clazz) {
 			
 		return returnElements; 
 	} 
-			
- 
-/**
- * adds element with specified parentId, tagName, elementId and html content
- * @param	parentId
- * @param	tagName
- * @param	elementId
- * @param	html
- * @return	newElement 
- * @static
- */
-eXo.social.Util.addElement = function(parentId, tagName, elementId, html) {
-    if (parentId === null || tagName === null || html === null) {
-    	if (console) {
-    		console.warn("Do not provide all params");
-    	}
-    	return;
-    }
-    if (document.getElementById(elementId)) {
-    	return; //do not create repeated element
-    }
-    var parent = document.getElementById(parentId);
-    if (parent === null) return;
-    var newElement = document.createElement(tagName);
-    if (elementId) {
-    	newElement.setAttribute('id', elementId);
-    }
-    newElement.innerHTML = html;
-    parent.appendChild(newElement);
-    return newElement;
-}
+
 
 /**
  * removes element from DOM by its id
@@ -175,14 +145,14 @@ eXo.social.Util.hideElement = function(elementId) {
 	var element = document.getElementById(elementId);
 	if (element === null) {
 		return;
-	} 
+	}
 	element.style.display='none';
 }
 
 /**
  * shows element by id
  * @param	elementI
- * @display	can be "inline" or "block" with default = "block" 
+ * @display	can be "inline" or "block" with default = "block"
  * @static
  */
 eXo.social.Util.showElement = function(elementId, display) {
@@ -192,7 +162,7 @@ eXo.social.Util.showElement = function(elementId, display) {
 	var element = document.getElementById(elementId);
 	if (element == null) {
 		return;
-	} 
+	}
 	element.style.display = display;
 }
 
@@ -217,17 +187,7 @@ eXo.social.Util.insertAfter = function(newNode, refNode) {
  * @static
  */
 eXo.social.Util.isEnterKey = function(e) {
-	var keyNum;
-	var ENTER_KEY_NUM = 13;
-	if(window.event) {// IE
-  		keyNum = e.keyCode;
-  	} else if (e.which) { // Netscape/Firefox/Opera
-  		keyNum = e.which;
-  	}
-  	if (ENTER_KEY_NUM == keyNum) {
-		return true;
-  	}
-  	return false;
+  return (13 == (e.which ? e.which : e.keyCode));
 }
 
 /**

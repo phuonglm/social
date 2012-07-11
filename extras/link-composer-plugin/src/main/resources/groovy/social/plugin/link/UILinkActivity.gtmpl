@@ -249,7 +249,7 @@
       </div>
     <%}%>
     
-  <div id="CommentBlockBound${activity.id}">
+    <div id="CommentBlockBound${activity.id}">
       <% if (uicomponent.commentListToggleable()) {
       def showAllCommentsAction = uicomponent.event("SetCommentListStatus", "all");
       def hideAllCommentsAction = uicomponent.event("SetCommentListStatus", "none");

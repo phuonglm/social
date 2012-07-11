@@ -12,24 +12,22 @@
     this.init();
   }
   
-  var keys = {
-    ENTER_KEY : 13
+  var KEYS = {
+    ENTER : 13
   }
   
   UIProfile.prototype.init = function() {
-    var Util = eXo.social.Util;
-    var positionEl = Util.getElementById(this.positionId);
-    var saveButtonEl = Util.getElementById(this.saveButtonId);
+    var positionEl = gj("#" + this.positionId);
+    var saveButtonEl = gj("#" + this.saveButtonId);
     
-    if (positionEl && saveButtonEl) {
-      Util.addEventListener(positionEl, ['keydown'], function(event) {
-        var keynum = event.keyCode || event.which;
-        if (keynum == keys.ENTER_KEY) {
-          (saveButtonEl.onclick || saveButtonEl.click)();
+    if (positionEl.length > 0 && saveButtonEl.length > 0) {
+      positionEl.keydown(function(event) {
+        if ((event.keyCode || event.which) == KEYS.ENTER) {
+          saveButtonEl.click();
           eXo.core.EventManager.cancelEvent(event);
           return;
         }
-      }, false);
+      });
     }
   }
   

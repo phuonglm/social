@@ -58,7 +58,7 @@
 		         Util.addEventListener(this.targetEl, ['mouseout', 'blur'], function() {
   			       var popUp = document.getElementById('UIPopup');
 		         	 if (uiPopup.timeOutId) clearTimeout(uiPopup.timeOutId);
-		           Util.hideElement(popUp.id);
+		           gj('#'+popUp.id).hide();
 		         }, false);
 			    })(i);
 			  }
@@ -170,11 +170,11 @@
 				
 				Util.addEventListener(this.boundPopup, ['mouseover', 'focus'], function() {
        	  if (uiPopup.timeOutId) clearTimeout(uiPopup.timeOutId);
-  				Util.showElement(this.id);
+  				gj('#' + this.id).show;
         }, false);
 		         
 				Util.addEventListener(this.boundPopup, ['mouseout', 'blur'], function() {
-					Util.hideElement(this.id);
+					gj('#' + this.id).hide();
         }, false);
 		         
 				/********************************************************
@@ -221,11 +221,11 @@
 			},
 			showPopup: function() {
 				var popup_element = document.getElementById('UIPopup');
-				Util.showElement(popup_element.id);
+        gj('#' + popup_element.id).show();
 			},
 			hidePopup: function() {
 				var popup_element = document.getElementById('UIPopup');
-				Util.hideElement(popup_element.id);
+        gj('#' + popup_element.id).hide();
 			}
 		
 	};

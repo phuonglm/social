@@ -88,6 +88,9 @@
     <depends>
        <module>social-webui</module>
     </depends>
+    <depends>
+       <module>social-ui-customize-jq</module>
+    </depends>
   </module>
   
   <module>
@@ -186,4 +189,14 @@
     </depends>
   </module>
 
+  <module>
+    <name>social-ui-customize-jq</name>
+    <script>
+      <name>SocialJQuery</name>
+      <path>/javascript/jquery-ui-1.8.21.min.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+    </depends>
+  </module>
 </gatein-resources>

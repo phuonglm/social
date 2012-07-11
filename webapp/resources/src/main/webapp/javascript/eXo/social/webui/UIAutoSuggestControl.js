@@ -70,31 +70,33 @@ UIAutoSuggestControl.prototype.createDropDown = function () {
     var typeOfSuggest = eXo.social.webui.typeOfSuggest;
     var oThis = this;
 
-    //create the layer and assign styles
-    this.layer = document.createElement("div");
-    this.layer.id = "UIAutoSuggestControl";
+    var className = '';
     if (typeOfSuggest == 'people') {
-      this.layer.className = "peoplesuggestions";
-	  } else if (typeOfSuggest == 'space') {
-		  this.layer.className = "spacesuggestions";
-	  }
-    
-    this.layer.style.visibility = "hidden";
-    this.layer.style.width = this.textbox.offsetWidth;
+      className = "peoplesuggestions";
+    } else if (typeOfSuggest == 'space') {
+      className = "spacesuggestions";
+    }
+
+    //create the layer and assign styles
+    this.layer = gj('<div></div>')
+                 .attr('id','UIAutoSuggestControl')
+                 .addClass(className)
+    //this.layer.id = "UIAutoSuggestControl";
+                 .css('visibility','hidden')
+                 .css('width', this.textbox.offsetWidth)
+    //this.layer.style.visibility = "hidden";
+    //this.layer.style.width = this.textbox.offsetWidth;
     
     //when the user clicks on the a suggestion, get the text (innerHTML)
     //and place it into a textbox
-    this.layer.onkeydown =
-    this.layer.onmousedown =
-    this.layer.onkeyup =
-    this.layer.onmouseup =
-    this.layer.onfocus =
-    this.layer.onmouseover = function (oEvent) {
+    var layer = gj(this.layer);
+
+    layer.on('keydown mousedown keyup mouseup focus mouseover', (function(oEvent) {
         oEvent = oEvent || window.event;
         oTarget = oEvent.target || oEvent.srcElement;
 
         if (oEvent.type == "mousedown" || oEvent.type == "keydown") {
-            oThis.textbox.value = oTarget.firstChild.nodeValue;
+            gjoThis.textbox.value = oTarget.firstChild.nodeValue;
             oThis.hideSuggestions();
             
             gj('#SearchButton').click();
@@ -103,9 +105,10 @@ UIAutoSuggestControl.prototype.createDropDown = function () {
         } else {
             oThis.textbox.focus();
         }
-    };
+    }));
     
-    document.body.appendChild(this.layer);
+    //document.body.appendChild(this.layer);
+    gj('body').append(this.layer);
 };
 
 /**
@@ -359,7 +362,7 @@ UIAutoSuggestControl.prototype.init = function () {
     var uiAutosuggestion = document.getElementById("UIAutoSuggestControl");
     if (uiAutosuggestion) {
     	if (this.timeout) clearTimeout(this.timeout);
-    	this.layer = uiAutosuggestion;
+	this.layer = uiAutosuggestion;oThis.highlightSuggestion(oTarget);
     	uiAutosuggestion.style.visibility = "hidden";
     } else {
 	    //create the suggestions dropdown
