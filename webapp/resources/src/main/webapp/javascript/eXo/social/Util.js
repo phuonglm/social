@@ -396,3 +396,194 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
     });
 	}
 })(gj);
+
+// Autosuggestion plugin.
+;(function($) {
+
+    $.fn.autosuggest = function(url, options) {
+      var KEYS = {
+        ENTER : 13,
+        DOWN : 40,
+        UP : 38
+      }
+
+	    var COLOR = {
+	      FOCUS : "#000000",
+	      BLUR : "#C7C7C7"
+	    };
+
+      var defaults = {
+        defaultVal: undefined,
+        onSelect: undefined,
+        maxHeight: 150,
+        width: undefined
+      };
+
+      options = $.extend(defaults, options);
+
+     return this.each(function() {
+
+	      var input = $(this),
+	          results = $('<div />'),
+	          currentSelectedItem, posX, posY;
+
+        $(results).addClass('suggestions')
+                    .css({
+                      'top': (input.position().top + input.height() + 2) + 'px',
+                      'left': input.position().left + 'px',
+                      'width': options.width || (input.width() + 'px')
+                    })
+                    .hide();
+
+        // append to target input
+	      input.after(results)
+	           .keyup(keysActionListener)
+	           .blur(function(e) {
+	                var resPos = $(results).offset();
+
+	                resPos.bottom = resPos.top + $(results).height();
+	                resPos.right = resPos.left + $(results).width();
+
+	                if (posY < resPos.top || posY > resPos.bottom || posX < resPos.left || posX > resPos.right) {
+	                    $(results).hide();
+	                }
+
+	                if ($(this).val().trim().length == 0) {
+	                  $(input).val(options.defaultVal);
+	                  $(input).css('color', COLOR.BLUR);
+	                }
+	           })
+	           .focus(function(e) {
+	                $(results).css({
+	                    'top': (input.position().top + input.height() + 2) + 'px',
+	                    'left': input.position().left + 'px'
+	                });
+
+	                if ($('div', results).length > 0) {
+	                    $(results).show();
+	                }
+	           })
+	           .attr('autocomplete', 'off');
+
+	        function buildResults(searchedResults) {
+	            var i, iFound = 0;
+
+	            $(results).html('').hide();
+
+              if (searchedResults == null) return;
+
+	            // build list of item over searched result
+	            for (i = 0; i < searchedResults.length; i += 1) {
+	                var item = $('<div />'),
+	                    text = searchedResults[i];
+
+	                $(item).append('<p class="text">' + text + '</p>');
+
+	                if (typeof searchedResults[i].extra === 'string') {
+	                    $(item).append('<p class="extra">' + searchedResults[i].extra + '</p>');
+	                }
+
+	                $(item).addClass('resultItem')
+	                    .click(function(n) { return function() {
+	                      selectResultItem(searchedResults[n]);
+	                    };}(i))
+	                    .mouseover(function(el) { return function() {
+	                      changeHover(el);
+	                    };}(item));
+
+	                $(results).append(item);
+
+	                iFound += 1;
+	                if (typeof options.maxResults === 'number' && iFound >= options.maxResults) {
+	                    break;
+	                }
+	            }
+
+	            if ($('div', results).length > 0) { // if have any element then display the list
+	                currentSelectedItem = undefined;
+	                $(results).show().css('height', 'auto');
+	                if ($(results).height() > options.maxHeight) {
+	                    $(results).css({'overflow': 'auto', 'height': options.maxHeight + 'px'});
+	                }
+	            }
+	        };
+
+	        function reloadData() {
+	          var restUrl = url.replace('input_value', input.val().trim());
+	          $.ajax({
+	                  type: "GET",
+	                  url: restUrl,
+	                  complete: function(jqXHR) {
+					            if(jqXHR.readyState === 4) {
+					              buildResults($.parseJSON(jqXHR.responseText).names);
+					            }
+	                  }
+	          })
+	        };
+
+	        function selectResultItem(item) {
+	          input.val(item);
+	          $(results).html('').hide();
+	          if (typeof options.onSelect === 'function') {
+	            options.onSelect(item);
+	          }
+	        };
+
+	        function changeHover(element) {
+            $('div.resultItem', results).removeClass('hover');
+            $(element).addClass('hover');
+            currentSelectedItem = element;
+          };
+
+	        function keysActionListener(event) {
+	          var keyCode = event.keyCode || event.which;
+
+	          switch (keyCode) {
+	            case KEYS.ENTER:
+	                if (currentSelectedItem) {
+                    $(currentSelectedItem).trigger('click');
+	                } else {
+	                  options.onSelect();
+	                }
+
+	                return false;
+	            case KEYS.DOWN:
+	                if (typeof currentSelectedItem === 'undefined') {
+	                    currentSelectedItem = $('div.resultItem:first', results).get(0);
+	                }
+	                else {
+	                    currentSelectedItem = $(currentSelectedItem).next().get(0);
+	                }
+
+	                changeHover(currentSelectedItem);
+	                if (currentSelectedItem) {
+	                    $(results).scrollTop(currentSelectedItem.offsetTop);
+	                }
+
+	                return false;
+	            case KEYS.UP:
+	                if (typeof currentSelectedItem === 'undefined') {
+	                    currentSelectedItem = $('div.resultItem:last', results).get(0);
+	                }
+	                else {
+	                    currentSelectedItem = $(currentSelectedItem).prev().get(0);
+	                }
+
+	                changeHover(currentSelectedItem);
+	                if (currentSelectedItem) {
+	                    $(results).scrollTop(currentSelectedItem.offsetTop);
+	                }
+
+	                return false;
+	            default:
+	                reloadData.apply(this, [event]);
+	          }
+	        };
+
+	        $().mousemove(function(e) {
+            posX = e.pageX;
+            posY = e.pageY;
+          });
+	    });
+    }
+})(gj);
