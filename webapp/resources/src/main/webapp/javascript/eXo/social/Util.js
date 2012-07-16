@@ -23,9 +23,6 @@
  * @copyright	eXo Platform SEA
  */
  
-//namespace
-eXo.social = eXo.social || {};
-
 /**
  * class definition
  */
@@ -405,7 +402,9 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
         ENTER : 13,
         DOWN : 40,
         UP : 38
-      }
+      },
+      DELIMITER = ',',
+      DELIMITER_AND_SPACE = ', ';
 
 	    var COLOR = {
 	      FOCUS : "#000000",
@@ -416,6 +415,7 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
         defaultVal: undefined,
         onSelect: undefined,
         maxHeight: 150,
+        multisuggestion : false,
         width: undefined
       };
 
@@ -429,7 +429,7 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
 
         $(results).addClass('suggestions')
                     .css({
-                      'top': (input.position().top + input.height() + 2) + 'px',
+                      'top': (input.position().top + input.height() + 5) + 'px',
                       'left': input.position().left + 'px',
                       'width': options.width || (input.width() + 'px')
                     })
@@ -440,12 +440,12 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
 	           .keyup(keysActionListener)
 	           .blur(function(e) {
 	                var resPos = $(results).offset();
-
-	                resPos.bottom = resPos.top + $(results).height();
-	                resPos.right = resPos.left + $(results).width();
-
-	                if (posY < resPos.top || posY > resPos.bottom || posX < resPos.left || posX > resPos.right) {
-	                    $(results).hide();
+	                
+	                resPosBottom = resPos.top + $(results).height();
+	                resPosRight = resPos.left + $(results).width();
+	                
+	                if (posY < resPos.top || posY > resPosBottom || posX < resPos.left || posX > resPosRight) {
+                    $(results).hide();
 	                }
 
 	                if ($(this).val().trim().length == 0) {
@@ -455,13 +455,19 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
 	           })
 	           .focus(function(e) {
 	                $(results).css({
-	                    'top': (input.position().top + input.height() + 2) + 'px',
-	                    'left': input.position().left + 'px'
+	                  'top': (input.position().top + input.height() + 5) + 'px',
+	                  'left': input.position().left + 'px'
 	                });
 
 	                if ($('div', results).length > 0) {
-	                    $(results).show();
+	                  $(results).show();
 	                }
+	                
+	                if (options.defaultVal && $(this).val() == options.defaultVal) {
+	                  $(this).val('');
+	                  $(this).css('color', COLOR.FOCUS);
+	                } 
+	                
 	           })
 	           .attr('autocomplete', 'off');
 
@@ -474,42 +480,53 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
 
 	            // build list of item over searched result
 	            for (i = 0; i < searchedResults.length; i += 1) {
-	                var item = $('<div />'),
-	                    text = searchedResults[i];
+                var item = $('<div />'),
+                    text = searchedResults[i];
 
-	                $(item).append('<p class="text">' + text + '</p>');
+                $(item).append('<p class="text">' + text + '</p>');
 
-	                if (typeof searchedResults[i].extra === 'string') {
-	                    $(item).append('<p class="extra">' + searchedResults[i].extra + '</p>');
-	                }
+                if (typeof searchedResults[i].extra === 'string') {
+                  $(item).append('<p class="extra">' + searchedResults[i].extra + '</p>');
+                }
 
-	                $(item).addClass('resultItem')
-	                    .click(function(n) { return function() {
-	                      selectResultItem(searchedResults[n]);
-	                    };}(i))
-	                    .mouseover(function(el) { return function() {
-	                      changeHover(el);
-	                    };}(item));
+                $(item).addClass('resultItem')
+                    .click(function(n) { return function() {
+                      selectResultItem(searchedResults[n]);
+                    };}(i))
+                    .mouseover(function(el) { return function() {
+                      changeHover(el);
+                    };}(item));
 
-	                $(results).append(item);
+                $(results).append(item);
 
-	                iFound += 1;
-	                if (typeof options.maxResults === 'number' && iFound >= options.maxResults) {
-	                    break;
-	                }
+                iFound += 1;
+                if (typeof options.maxResults === 'number' && iFound >= options.maxResults) {
+                  break;
+                }
 	            }
 
 	            if ($('div', results).length > 0) { // if have any element then display the list
-	                currentSelectedItem = undefined;
-	                $(results).show().css('height', 'auto');
-	                if ($(results).height() > options.maxHeight) {
-	                    $(results).css({'overflow': 'auto', 'height': options.maxHeight + 'px'});
-	                }
+                currentSelectedItem = undefined;
+                $(results).show().css('height', 'auto');
+                if ($(results).height() > options.maxHeight) {
+                    $(results).css({'overflow': 'auto', 'height': options.maxHeight + 'px'});
+                }
 	            }
 	        };
 
 	        function reloadData() {
-	          var restUrl = url.replace('input_value', input.val().trim());
+	          var val = input.val();
+	          var search_str;
+	          
+	          if (val.length > 0) val = $.trim(val);
+	          
+	          if (options.multisuggestion) {
+	            search_str = getSearchString(val);
+	          } else {
+	            search_str = val;
+	          }
+	          
+	          var restUrl = url.replace('input_value', search_str);
 	          $.ajax({
 	                  type: "GET",
 	                  url: restUrl,
@@ -522,12 +539,19 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
 	        };
 
 	        function selectResultItem(item) {
-	          input.val(item);
+
+	          setValues(item);
+	          
 	          $(results).html('').hide();
 	          if (typeof options.onSelect === 'function') {
 	            options.onSelect(item);
 	          }
 	        };
+
+          function getSearchString(val) {
+			      var arr = val.split(DELIMITER);
+			      return $.trim(arr[arr.length - 1]);
+			    };
 
 	        function changeHover(element) {
             $('div.resultItem', results).removeClass('hover');
@@ -535,11 +559,32 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
             currentSelectedItem = element;
           };
 
+          function setValues(item) {
+            var currentVals = $.trim(input.val());
+            var selectedVals;
+            
+            if (options.multisuggestion) {
+	            if(currentVals.indexOf(DELIMITER) >= 0) {
+	              selectedVals = currentVals.substr(0, currentVals.lastIndexOf(DELIMITER)) + DELIMITER_AND_SPACE + item;
+	              input.val(selectedVals);
+	            } else {
+	              input.val(item);
+	            }
+	          } else {
+	            input.val(item);
+	          }
+          };
+          
 	        function keysActionListener(event) {
 	          var keyCode = event.keyCode || event.which;
 
 	          switch (keyCode) {
 	            case KEYS.ENTER:
+	                if (options.multisuggestion) {
+	                   $(currentSelectedItem).trigger('click');
+                     return false;
+	                }
+	                
 	                if (currentSelectedItem) {
                     $(currentSelectedItem).trigger('click');
 	                } else {
@@ -549,29 +594,27 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
 	                return false;
 	            case KEYS.DOWN:
 	                if (typeof currentSelectedItem === 'undefined') {
-	                    currentSelectedItem = $('div.resultItem:first', results).get(0);
-	                }
-	                else {
-	                    currentSelectedItem = $(currentSelectedItem).next().get(0);
+	                  currentSelectedItem = $('div.resultItem:first', results).get(0);
+	                } else {
+	                  currentSelectedItem = $(currentSelectedItem).next().get(0);
 	                }
 
 	                changeHover(currentSelectedItem);
 	                if (currentSelectedItem) {
-	                    $(results).scrollTop(currentSelectedItem.offsetTop);
+	                  $(results).scrollTop(currentSelectedItem.offsetTop);
 	                }
 
 	                return false;
 	            case KEYS.UP:
 	                if (typeof currentSelectedItem === 'undefined') {
-	                    currentSelectedItem = $('div.resultItem:last', results).get(0);
-	                }
-	                else {
-	                    currentSelectedItem = $(currentSelectedItem).prev().get(0);
+	                  currentSelectedItem = $('div.resultItem:last', results).get(0);
+	                } else {
+	                  currentSelectedItem = $(currentSelectedItem).prev().get(0);
 	                }
 
 	                changeHover(currentSelectedItem);
 	                if (currentSelectedItem) {
-	                    $(results).scrollTop(currentSelectedItem.offsetTop);
+	                  $(results).scrollTop(currentSelectedItem.offsetTop);
 	                }
 
 	                return false;
@@ -580,10 +623,125 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
 	          }
 	        };
 
-	        $().mousemove(function(e) {
+	        $('body').mousemove(function(e) {
             posX = e.pageX;
             posY = e.pageY;
           });
 	    });
     }
+})(gj);
+
+
+// Tooltip plugin
+;(function($) {
+    $.fn.toolTip = function(url, settings) {
+
+        var defaultSettings = {
+	        className   : 'UserName',
+	        color       : 'yellow',
+	        onHover     : undefined,
+	        timeout     : 300
+        };
+        
+        /* Combining the default settings object with the supplied one */
+        settings = $.extend(defaultSettings, settings);
+
+        return this.each(function() {
+
+            var elem = $(this);
+            
+            // Continue with the next element in case of not effected element
+            if(!elem.hasClass(settings.className)) return true;
+            
+            var scheduleEvent = new eventScheduler();
+            var tip = new Tip();
+
+            elem.append(tip.generate()).addClass('UIToolTipContainer');
+
+            elem.addClass(settings.color);
+            
+            elem.hover(function() {
+              reLoadPopup();
+	            tip.show();
+	            scheduleEvent.clear();
+            },function(){
+	            scheduleEvent.set(function(){
+	              tip.hide();
+	            }, settings.timeout);
+            });
+            
+            function reLoadPopup() {
+              var hrefValue = elem.attr('href');
+              var personId = hrefValue.substr(hrefValue.lastIndexOf("/") + 1);
+              
+              var restUrl = url.replace('person_Id', personId);
+              
+              $.ajax({
+                      type: "GET",
+                      url: restUrl,
+                      complete: function(jqXHR) {
+                                if(jqXHR.readyState === 4) {
+                                  var avatarURL = ($.parseJSON(jqXHR.responseText)).avatarURL;
+										              var activityTitle = ($.parseJSON(jqXHR.responseText)).activityTitle;
+										              var relationStatus = ($.parseJSON(jqXHR.responseText)).relationshipType;
+										              
+										              var html = [];
+						                      html.push('<div style="float: right; cursor:pointer;">');
+						                      html.push('  <div id="ClosePopup" class="ClosePopup" title="Close">[x]</div>');
+						                      html.push('</div>');
+						                      html.push('<div id="UserAvatar" class="UserAvatar">');
+						                      html.push('  <img title="Avatar" alt="Avatar" src="' + avatarURL + '"></img>'); 
+						                      html.push('</div>');
+						                      html.push('<div id="UserTitle" class="UserTitle">');
+						                      html.push('  <span>');
+						                      html.push(     activityTitle);
+						                      html.push('  </span>');
+						                      html.push('</div>');
+						                      html.push('<div id="UserAction" class="UserAction">');
+						                      html.push('<span>');
+										              html.push('</span>');
+						                      html.push('</div>');
+						                      $('.UIToolTip').html(html.join(''));
+                                }
+                      }
+              })
+            };
+            
+            function buildContent(resp) {
+              
+            }
+        });
+    };
+
+
+    function eventScheduler(){};
+    
+    eventScheduler.prototype = {
+      set : function (func,timeout){
+        this.timer = setTimeout(func,timeout);
+      },
+      clear: function(){
+        clearTimeout(this.timer);
+      }
+    };
+
+    function Tip(){
+	    this.shown = false;
+    };
+    
+    Tip.prototype = {
+	    generate: function(){
+	        return this.tip || (this.tip = $('<span class="UIToolTip"><span class="pointyTipShadow"></span><span class="pointyTip"></span></span>'));
+	    },
+	    show: function(){
+	        if(this.shown) return;
+	        
+	        this.tip.css('margin-left',-this.tip.outerWidth()/2).fadeIn('fast');
+	        this.shown = true;
+	    },
+	    hide: function(){
+	        this.tip.fadeOut();
+	        this.shown = false;
+	    }
+    };
 })(gj);

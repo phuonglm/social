@@ -99,7 +99,7 @@
          </a>
 
           <div class="CommunityMane">
-                <a class="CommunityName InviteTitle" href="${profileURL}">${fullName}</a>
+                <a class="UserName CommunityName InviteTitle" href="${profileURL}">${fullName}</a>
                 <%if (statusIconSrc != null) { %>
                   <img title="$statusIconDesc" src="$statusIconSrc" alt="$statusIconDesc" width='14px' height='14px' class="StatusIcon"/>
                 <%}%>

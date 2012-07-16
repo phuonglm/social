@@ -87,22 +87,6 @@
 	      skillEl.css('color', COLOR.BLUR);
 	    }
 	    
-//	    nameEl.focus(function() {
-//	      if (gj(this).val().trim() == defaultUserContact) {
-//	        gj(this).val('');              
-//	      }
-//	      gj(this).css('color', COLOR.FOCUS);
-//	    });
-//	
-//			nameEl.blur(function() {
-//			  if (gj(this).val() && gj(this).val() != '') {
-//			    gj(this).css('color', COLOR.FOCUS);                               
-//			  } else {
-//			    gj(this).css('color', COLOR.BLUR);        
-//			    gj(this).val(defaultUserContact);
-//			  }
-//			});
-		
 			posEl.focus(function() {
 			  if (gj(this).val().trim() == defaultPos) {
 			    gj(this).val('');              
@@ -181,8 +165,5 @@
         }
 		 };
 		        
-		 window_.eXo = window_.eXo || {};
-		 window_.eXo.social = window_.eXo.social || {};
-		 window_.eXo.social.webui = window_.eXo.social.webui || {};
 		 window_.eXo.social.webui.UIProfileUserSearch = UIProfileUserSearch;
 })();

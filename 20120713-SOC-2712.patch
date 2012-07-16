@@ -1,0 +1,1680 @@
+diff --git a/component/webui/src/main/java/org/exoplatform/social/webui/profile/UIContactSection.java b/component/webui/src/main/java/org/exoplatform/social/webui/profile/UIContactSection.java
+index 78e6dd5..3e77b3a 100644
+--- a/component/webui/src/main/java/org/exoplatform/social/webui/profile/UIContactSection.java
++++ b/component/webui/src/main/java/org/exoplatform/social/webui/profile/UIContactSection.java
+@@ -119,6 +119,9 @@ public class UIContactSection extends UIProfileSection {
+   /** Html attribute title. */
+   private static final String HTML_ATTRIBUTE_TITLE   = "title";
+ 
++  /** Html attribute placeholder. */
++  private static final String HTML_ATTRIBUTE_PLACEHOLDER   = "placeholder";
++  
+   /** Number of phone. */
+   private int phoneCount = 0;
+ 
+@@ -555,8 +558,9 @@ public class UIContactSection extends UIProfileSection {
+       websiteTitle.setHTMLAttribute(HTML_ATTRIBUTE_TITLE, resourceBundle.getString("UIContactSection.label.websiteTitle"));
+       addUIFormInput(websiteTitle);
+       UIFormStringInput sampleUrlForm = new UIFormStringInput(URL + StringUtils.leftPad(String.valueOf(urlIdx++), 3, '0'),
+-                                                              null, getSampleURL());
++                                                              null, null);
+       sampleUrlForm.setHTMLAttribute(HTML_ATTRIBUTE_TITLE, resourceBundle.getString("UIContactSection.label.urls"));
++      sampleUrlForm.setHTMLAttribute(HTML_ATTRIBUTE_PLACEHOLDER, getSampleURL());
+       addUIFormInput(sampleUrlForm.addValidator(ExpressionValidator.class, URL_REGEX_EXPRESSION, INVALID_URL));
+       urlCount += 2;
+     }
+diff --git a/component/webui/src/main/java/org/exoplatform/social/webui/space/UISpaceMember.java b/component/webui/src/main/java/org/exoplatform/social/webui/space/UISpaceMember.java
+index 3de8288..8a76750 100644
+--- a/component/webui/src/main/java/org/exoplatform/social/webui/space/UISpaceMember.java
++++ b/component/webui/src/main/java/org/exoplatform/social/webui/space/UISpaceMember.java
+@@ -152,6 +152,7 @@ public class UISpaceMember extends UIForm {
+     addChild(iteratorExistingUsers);
+     setTypeOfRelation(USER_TO_INVITE);
+     invitedUserNames = null;
++    setSubmitAction("return false;");
+   }
+ 
+   /**
+diff --git a/component/webui/src/main/resources/groovy/social/webui/profile/UIContactSection.gtmpl b/component/webui/src/main/resources/groovy/social/webui/profile/UIContactSection.gtmpl
+index 9dcc9c1..a09d242 100644
+--- a/component/webui/src/main/resources/groovy/social/webui/profile/UIContactSection.gtmpl
++++ b/component/webui/src/main/resources/groovy/social/webui/profile/UIContactSection.gtmpl
+@@ -41,10 +41,6 @@
+   def isEdit = uicomponent.isEditMode();
+   def isEditable = uicomponent.isEditable();
+ 
+-  def rcontext = _ctx.getRequestContext();
+-  def jsManager = rcontext.getJavascriptManager();
+-  jsManager.loadScriptResource("social-ui-contact-section");
+-
+   def gender = profile.getProperty(Profile.GENDER);
+   def phones = profile.getProperty(Profile.CONTACT_PHONES);
+   def ims = profile.getProperty(Profile.CONTACT_IMS);
+@@ -103,7 +99,6 @@
+ 	 
+   }
+   
+-  jsManager.addOnLoadJavascript("initUIContactSection");
+ %>
+ <div class="UIContactSection">
+   <script type="text/javascript">
+diff --git a/component/webui/src/main/resources/groovy/social/webui/profile/UIHeaderSection.gtmpl b/component/webui/src/main/resources/groovy/social/webui/profile/UIHeaderSection.gtmpl
+index f5ab8ce..49a1261 100644
+--- a/component/webui/src/main/resources/groovy/social/webui/profile/UIHeaderSection.gtmpl
++++ b/component/webui/src/main/resources/groovy/social/webui/profile/UIHeaderSection.gtmpl
+@@ -34,6 +34,9 @@
+     positionId: 'position',
+     saveButtonId: 'savePosition'
+   } """
++  
++  jsmanager.loadScriptResource("social-ui-profile");
++  
+   jsmanager.addOnLoadJavascript("initUIProfile");
+   
+   def ownerIdentity = Utils.getOwnerIdentity(true);
+diff --git a/webapp/resources/src/main/webapp/WEB-INF/gatein-resources.xml b/webapp/resources/src/main/webapp/WEB-INF/gatein-resources.xml
+index 45abf7e..72cf76d 100644
+--- a/webapp/resources/src/main/webapp/WEB-INF/gatein-resources.xml
++++ b/webapp/resources/src/main/webapp/WEB-INF/gatein-resources.xml
+@@ -76,11 +76,18 @@
+   </module>
+ 
+   <module>
+-    <name>social-ui-user-search</name>
++    <name>social-ui-profile</name>
+     <script>
+-       <name>eXo.social.webui.UIAutoSuggestControl</name>
+-       <path>/javascript/eXo/social/webui/UIAutoSuggestControl.js</path>
++       <name>eXo.social.webui.UIProfile</name>
++       <path>/javascript/eXo/social/webui/UIProfile.js</path>
+     </script>
++    <depends>
++       <module>social-webui</module>
++    </depends>
++  </module>
++  
++  <module>
++    <name>social-ui-user-search</name>
+     <script>
+        <name>eXo.social.webui.UIProfileUserSearch</name>
+        <path>/javascript/eXo/social/webui/UIProfileUserSearch.js</path>
+@@ -88,18 +95,11 @@
+     <depends>
+        <module>social-webui</module>
+     </depends>
+-    <depends>
+-       <module>social-ui-customize-jq</module>
+-    </depends>
+   </module>
+   
+   <module>
+     <name>social-ui-space-search</name>
+     <script>
+-       <name>eXo.social.webui.UIAutoSuggestControl</name>
+-       <path>/javascript/eXo/social/webui/UIAutoSuggestControl.js</path>
+-    </script>
+-    <script>
+        <name>eXo.social.webui.UISpaceSearch</name>
+        <path>/javascript/eXo/social/webui/UISpaceSearch.js</path>
+     </script>
+@@ -111,16 +111,15 @@
+   <module>
+     <name>social-ui-space-member-suggestion</name>
+     <script>
+-       <name>eXo.social.webui.UIAutoSuggestControl</name>
+-       <path>/javascript/eXo/social/webui/UIAutoSuggestMultiValueControl.js</path>
+-    </script>
+-    <script>
+        <name>eXo.social.webui.UISpaceMemberSuggestion</name>
+        <path>/javascript/eXo/social/webui/UISpaceMemberSuggestion.js</path>
+     </script>
+     <depends>
+       <module>base</module>
+     </depends>
++    <depends>
++       <module>social-webui</module>
++    </depends>
+   </module>
+   
+   <module>
+@@ -134,17 +133,6 @@
+     </depends>
+   </module>
+ 
+-   <module>
+-     <name>social-ui-contact-section</name>
+-     <script>
+-      <name>eXo.social.webui.UIContactSection</name>
+-      <path>/javascript/eXo/social/webui/UIContactSection.js</path>
+-     </script>
+-     <depends>
+-      <module>social-core</module>
+-     </depends>
+-   </module>
+-
+   <module>
+     <name>social-ui-activity-composer</name>
+     <script>
+@@ -188,15 +176,4 @@
+       <module>base</module>
+     </depends>
+   </module>
+-
+-  <module>
+-    <name>social-ui-customize-jq</name>
+-    <script>
+-      <name>SocialJQuery</name>
+-      <path>/javascript/jquery-ui-1.8.21.min.js</path>
+-    </script>
+-    <depends>
+-      <module>jquery</module>
+-    </depends>
+-  </module>
+ </gatein-resources>
+\ No newline at end of file
+diff --git a/webapp/resources/src/main/webapp/javascript/eXo/social.js b/webapp/resources/src/main/webapp/javascript/eXo/social.js
+index dc99656..984e238 100644
+--- a/webapp/resources/src/main/webapp/javascript/eXo/social.js
++++ b/webapp/resources/src/main/webapp/javascript/eXo/social.js
+@@ -1,9 +1,7 @@
+ /**
+- * eXo.social name space
++ * eXo Social name space
+  */
+ 
+ var eXo = eXo || {};
+-
+-eXo.social = {
+-
+-}
++eXo.social = eXo.social || {};
++eXo.social.webui = eXo.social.webui || {};
+diff --git a/webapp/resources/src/main/webapp/javascript/eXo/social/Util.js b/webapp/resources/src/main/webapp/javascript/eXo/social/Util.js
+index 9106288..de7d3f8 100644
+--- a/webapp/resources/src/main/webapp/javascript/eXo/social/Util.js
++++ b/webapp/resources/src/main/webapp/javascript/eXo/social/Util.js
+@@ -23,9 +23,6 @@
+  * @copyright	eXo Platform SEA
+  */
+  
+-//namespace
+-eXo.social = eXo.social || {};
+-
+ /**
+  * class definition
+  */
+@@ -405,7 +402,9 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
+         ENTER : 13,
+         DOWN : 40,
+         UP : 38
+-      }
++      },
++      DELIMITER = ',',
++      DELIMITER_AND_SPACE = ', ';
+ 
+ 	    var COLOR = {
+ 	      FOCUS : "#000000",
+@@ -416,6 +415,7 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
+         defaultVal: undefined,
+         onSelect: undefined,
+         maxHeight: 150,
++        multisuggestion : false,
+         width: undefined
+       };
+ 
+@@ -429,7 +429,7 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
+ 
+         $(results).addClass('suggestions')
+                     .css({
+-                      'top': (input.position().top + input.height() + 2) + 'px',
++                      'top': (input.position().top + input.height() + 5) + 'px',
+                       'left': input.position().left + 'px',
+                       'width': options.width || (input.width() + 'px')
+                     })
+@@ -440,12 +440,12 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
+ 	           .keyup(keysActionListener)
+ 	           .blur(function(e) {
+ 	                var resPos = $(results).offset();
+-
+-	                resPos.bottom = resPos.top + $(results).height();
+-	                resPos.right = resPos.left + $(results).width();
+-
+-	                if (posY < resPos.top || posY > resPos.bottom || posX < resPos.left || posX > resPos.right) {
+-	                    $(results).hide();
++	                
++	                resPosBottom = resPos.top + $(results).height();
++	                resPosRight = resPos.left + $(results).width();
++	                
++	                if (posY < resPos.top || posY > resPosBottom || posX < resPos.left || posX > resPosRight) {
++                    $(results).hide();
+ 	                }
+ 
+ 	                if ($(this).val().trim().length == 0) {
+@@ -455,13 +455,19 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
+ 	           })
+ 	           .focus(function(e) {
+ 	                $(results).css({
+-	                    'top': (input.position().top + input.height() + 2) + 'px',
+-	                    'left': input.position().left + 'px'
++	                  'top': (input.position().top + input.height() + 5) + 'px',
++	                  'left': input.position().left + 'px'
+ 	                });
+ 
+ 	                if ($('div', results).length > 0) {
+-	                    $(results).show();
++	                  $(results).show();
+ 	                }
++	                
++	                if (options.defaultVal && $(this).val() == options.defaultVal) {
++	                  $(this).val('');
++	                  $(this).css('color', COLOR.FOCUS);
++	                } 
++	                
+ 	           })
+ 	           .attr('autocomplete', 'off');
+ 
+@@ -474,42 +480,53 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
+ 
+ 	            // build list of item over searched result
+ 	            for (i = 0; i < searchedResults.length; i += 1) {
+-	                var item = $('<div />'),
+-	                    text = searchedResults[i];
++                var item = $('<div />'),
++                    text = searchedResults[i];
+ 
+-	                $(item).append('<p class="text">' + text + '</p>');
++                $(item).append('<p class="text">' + text + '</p>');
+ 
+-	                if (typeof searchedResults[i].extra === 'string') {
+-	                    $(item).append('<p class="extra">' + searchedResults[i].extra + '</p>');
+-	                }
++                if (typeof searchedResults[i].extra === 'string') {
++                  $(item).append('<p class="extra">' + searchedResults[i].extra + '</p>');
++                }
+ 
+-	                $(item).addClass('resultItem')
+-	                    .click(function(n) { return function() {
+-	                      selectResultItem(searchedResults[n]);
+-	                    };}(i))
+-	                    .mouseover(function(el) { return function() {
+-	                      changeHover(el);
+-	                    };}(item));
++                $(item).addClass('resultItem')
++                    .click(function(n) { return function() {
++                      selectResultItem(searchedResults[n]);
++                    };}(i))
++                    .mouseover(function(el) { return function() {
++                      changeHover(el);
++                    };}(item));
+ 
+-	                $(results).append(item);
++                $(results).append(item);
+ 
+-	                iFound += 1;
+-	                if (typeof options.maxResults === 'number' && iFound >= options.maxResults) {
+-	                    break;
+-	                }
++                iFound += 1;
++                if (typeof options.maxResults === 'number' && iFound >= options.maxResults) {
++                  break;
++                }
+ 	            }
+ 
+ 	            if ($('div', results).length > 0) { // if have any element then display the list
+-	                currentSelectedItem = undefined;
+-	                $(results).show().css('height', 'auto');
+-	                if ($(results).height() > options.maxHeight) {
+-	                    $(results).css({'overflow': 'auto', 'height': options.maxHeight + 'px'});
+-	                }
++                currentSelectedItem = undefined;
++                $(results).show().css('height', 'auto');
++                if ($(results).height() > options.maxHeight) {
++                    $(results).css({'overflow': 'auto', 'height': options.maxHeight + 'px'});
++                }
+ 	            }
+ 	        };
+ 
+ 	        function reloadData() {
+-	          var restUrl = url.replace('input_value', input.val().trim());
++	          var val = input.val();
++	          var search_str;
++	          
++	          if (val.length > 0) val = $.trim(val);
++	          
++	          if (options.multisuggestion) {
++	            search_str = getSearchString(val);
++	          } else {
++	            search_str = val;
++	          }
++	          
++	          var restUrl = url.replace('input_value', search_str);
+ 	          $.ajax({
+ 	                  type: "GET",
+ 	                  url: restUrl,
+@@ -522,24 +539,52 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
+ 	        };
+ 
+ 	        function selectResultItem(item) {
+-	          input.val(item);
++
++	          setValues(item);
++	          
+ 	          $(results).html('').hide();
+ 	          if (typeof options.onSelect === 'function') {
+ 	            options.onSelect(item);
+ 	          }
+ 	        };
+ 
++          function getSearchString(val) {
++			      var arr = val.split(DELIMITER);
++			      return $.trim(arr[arr.length - 1]);
++			    };
++
+ 	        function changeHover(element) {
+             $('div.resultItem', results).removeClass('hover');
+             $(element).addClass('hover');
+             currentSelectedItem = element;
+           };
+ 
++          function setValues(item) {
++            var currentVals = $.trim(input.val());
++            var selectedVals;
++            
++            if (options.multisuggestion) {
++	            if(currentVals.indexOf(DELIMITER) >= 0) {
++	              selectedVals = currentVals.substr(0, currentVals.lastIndexOf(DELIMITER)) + DELIMITER_AND_SPACE + item;
++	              input.val(selectedVals);
++	            } else {
++	              input.val(item);
++	            }
++	          } else {
++	            input.val(item);
++	          }
++          };
++          
+ 	        function keysActionListener(event) {
+ 	          var keyCode = event.keyCode || event.which;
+ 
+ 	          switch (keyCode) {
+ 	            case KEYS.ENTER:
++	                if (options.multisuggestion) {
++	                   $(currentSelectedItem).trigger('click');
++                     return false;
++	                }
++	                
+ 	                if (currentSelectedItem) {
+                     $(currentSelectedItem).trigger('click');
+ 	                } else {
+@@ -549,29 +594,27 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
+ 	                return false;
+ 	            case KEYS.DOWN:
+ 	                if (typeof currentSelectedItem === 'undefined') {
+-	                    currentSelectedItem = $('div.resultItem:first', results).get(0);
+-	                }
+-	                else {
+-	                    currentSelectedItem = $(currentSelectedItem).next().get(0);
++	                  currentSelectedItem = $('div.resultItem:first', results).get(0);
++	                } else {
++	                  currentSelectedItem = $(currentSelectedItem).next().get(0);
+ 	                }
+ 
+ 	                changeHover(currentSelectedItem);
+ 	                if (currentSelectedItem) {
+-	                    $(results).scrollTop(currentSelectedItem.offsetTop);
++	                  $(results).scrollTop(currentSelectedItem.offsetTop);
+ 	                }
+ 
+ 	                return false;
+ 	            case KEYS.UP:
+ 	                if (typeof currentSelectedItem === 'undefined') {
+-	                    currentSelectedItem = $('div.resultItem:last', results).get(0);
+-	                }
+-	                else {
+-	                    currentSelectedItem = $(currentSelectedItem).prev().get(0);
++	                  currentSelectedItem = $('div.resultItem:last', results).get(0);
++	                } else {
++	                  currentSelectedItem = $(currentSelectedItem).prev().get(0);
+ 	                }
+ 
+ 	                changeHover(currentSelectedItem);
+ 	                if (currentSelectedItem) {
+-	                    $(results).scrollTop(currentSelectedItem.offsetTop);
++	                  $(results).scrollTop(currentSelectedItem.offsetTop);
+ 	                }
+ 
+ 	                return false;
+@@ -580,7 +623,7 @@ eXo.social.Util.stripHtml = function(/*Array*/ allowedTags, /*String*/ escapedHt
+ 	          }
+ 	        };
+ 
+-	        $().mousemove(function(e) {
++	        $('body').mousemove(function(e) {
+             posX = e.pageX;
+             posY = e.pageY;
+           });
+diff --git a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIAutoSuggestControl.js b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIAutoSuggestControl.js
+deleted file mode 100644
+index 11541c4..0000000
+--- a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIAutoSuggestControl.js
++++ /dev/null
+@@ -1,451 +0,0 @@
+-if(!eXo.social) eXo.social = {};
+-if(!eXo.social.webui) eXo.social.webui = {};
+-
+-/**
+- * An autosuggest textbox control.
+- * @class
+- * @scope public
+- */
+-function UIAutoSuggestControl() {
+-};
+-
+-/**
+- * Constant values.
+- */
+-UIAutoSuggestControl.config = {
+-  DEFAULT_REST_CONTEXT_NAME : 'rest-socialdemo',
+-	PEOPLE_REST_PATH : '/social/people/suggest.json?nameToSearch=',
+-	SPACE_REST_PATH : '/social/spaces/suggest.json?conditionToSearch='
+-}
+-
+-/**
+- * Load the initialization for textbox control.
+- * @scope private
+- */
+-UIAutoSuggestControl.prototype.load = function(oTextbox /*:HTMLInputElement*/, 
+-                                             oProvider /*:SuggestionProvider*/) {
+-    
+-    /**
+-     * The currently selected suggestions.
+-     * @scope private
+-     */   
+-    this.cur /*:int*/ = -1;
+-
+-    /**
+-     * The dropdown list layer.
+-     * @scope private
+-     */
+-    this.layer = null;
+-    
+-    /**
+-     * Suggestion provider for the autosuggest feature.
+-     * @scope private.
+-     */
+-    this.provider /*:SuggestionProvider*/ = oProvider;
+-    
+-    /**
+-     * The textbox to capture.
+-     * @scope private
+-     */
+-    this.textbox /*:HTMLInputElement*/ = oTextbox;
+-    
+-    /**
+-     * Store the time out return value form setTimeout function.
+-     * @scope private
+-     */
+-    this.timeout = null;
+-    
+-    this.storeText = null;
+-    
+-    //initialize the control
+-    this.init();
+-    
+-}
+-
+-/**
+- * Creates the dropdown layer to display multiple suggestions.
+- * @scope private
+- */
+-UIAutoSuggestControl.prototype.createDropDown = function () {
+-    var typeOfSuggest = eXo.social.webui.typeOfSuggest;
+-    var oThis = this;
+-
+-    var className = '';
+-    if (typeOfSuggest == 'people') {
+-      className = "peoplesuggestions";
+-    } else if (typeOfSuggest == 'space') {
+-      className = "spacesuggestions";
+-    }
+-
+-    //create the layer and assign styles
+-    this.layer = gj('<div></div>')
+-                 .attr('id','UIAutoSuggestControl')
+-                 .addClass(className)
+-    //this.layer.id = "UIAutoSuggestControl";
+-                 .css('visibility','hidden')
+-                 .css('width', this.textbox.offsetWidth)
+-    //this.layer.style.visibility = "hidden";
+-    //this.layer.style.width = this.textbox.offsetWidth;
+-    
+-    //when the user clicks on the a suggestion, get the text (innerHTML)
+-    //and place it into a textbox
+-    var layer = gj(this.layer);
+-
+-    layer.on('keydown mousedown keyup mouseup focus mouseover', (function(oEvent) {
+-        oEvent = oEvent || window.event;
+-        oTarget = oEvent.target || oEvent.srcElement;
+-
+-        if (oEvent.type == "mousedown" || oEvent.type == "keydown") {
+-            gjoThis.textbox.value = oTarget.firstChild.nodeValue;
+-            oThis.hideSuggestions();
+-            
+-            gj('#SearchButton').click();
+-        } else if (oEvent.type == "mouseover" || oEvent.type == "focus") {
+-            oThis.highlightSuggestion(oTarget);
+-        } else {
+-            oThis.textbox.focus();
+-        }
+-    }));
+-    
+-    //document.body.appendChild(this.layer);
+-    gj('body').append(this.layer);
+-};
+-
+-/**
+- * Gets the left coordinate of the textbox.
+- * @scope private
+- * @return The left coordinate of the textbox in pixels.
+- */
+-UIAutoSuggestControl.prototype.getLeft = function () /*:int*/ {
+-
+-    var oNode = this.textbox;
+-    var iLeft = 0;
+-    var obj = null;
+-    while(oNode.tagName != "BODY") {
+-        iLeft += oNode.offsetLeft;
+-        if (!(oNode = oNode.offsetParent)) return iLeft;
+-    }
+-    
+-    return iLeft;
+-};
+-
+-/**
+- * Gets the top coordinate of the textbox.
+- * @scope private
+- * @return The top coordinate of the textbox in pixels.
+- */
+-UIAutoSuggestControl.prototype.getTop = function () /*:int*/ {
+-    var oNode = this.textbox;
+-    var iTop = 0;
+-    var obj1 = null;
+-    while(oNode.tagName != "BODY") {
+-        iTop += oNode.offsetTop;
+-        if (!(oNode = oNode.offsetParent)) return iTop;
+-    }
+-    
+-    return iTop;
+-};
+-
+-/**
+- * Handles three keydown events.
+- * @scope private
+- * @param oEvent The event object for the keydown event.
+- */
+-UIAutoSuggestControl.prototype.handleKeyDown = function (oEvent /*:Event*/) {
+-	if (this.layer.style.visibility == "visible") { //Applied on suggestion drop-down only.
+-
+-	    switch(oEvent.keyCode || oEvent.which) {
+-	        case 38: //up arrow
+-	            this.previousSuggestion();
+-	            break;
+-	        case 40: //down arrow
+-	            this.nextSuggestion();
+-	            break;
+-	        case 27: //Esc 
+-	        	this.hideSuggestions();
+-	        	break;
+-	    }
+-	}
+-};
+-
+-/**
+- * Handles keyup events.
+- * @scope private
+- * @param oEvent The event object for the keyup event.
+- */
+-UIAutoSuggestControl.prototype.handleKeyUp = function (oEvent /*:Event*/) {
+-    var iKeyCode = oEvent.keyCode || oEvent.which;
+-    var el = oEvent.target || oEvent.srcElement;
+-	  var isInputTag = (el.tagName.toLowerCase() == 'input');
+-	  var oThis = eXo.social.webui.UIAutoSuggestControl;
+-	  var value = el.value.trim();
+-	  
+-	  if (value == '') {
+-	  	oThis.hideSuggestions();
+-	  	return;
+-	  }
+-    //for backspace (8) and delete (46), shows suggestions without typeahead
+-    if (iKeyCode == 8 || iKeyCode == 46) {
+-    	if (isInputTag) {
+-    		this.storeText = value;
+-    	}
+-    	oThis.resetAutoSuggestList();
+-    	
+-    //make sure not to interfere with non-character keys
+-    } else if (iKeyCode == 13) {
+-    	oThis.hideSuggestions();
+-	  	return;
+-    } else if (iKeyCode < 32 || (iKeyCode >= 33 && iKeyCode < 46) || (iKeyCode >= 112 && iKeyCode <= 123)) {
+-        //ignore
+-    } else {
+-    	if (isInputTag) {
+-    		this.storeText = value;
+-    	}
+-    	oThis.resetAutoSuggestList();
+-    }
+-};
+-
+-///////////////// Request for new data each time input by ajax ///////////////////
+-
+-/**
+- * Resets the autosuggest list.
+- */
+-UIAutoSuggestControl.prototype.resetAutoSuggestList = function() {
+-	  var oThis = eXo.social.webui.UIAutoSuggestControl;
+-  	if (oThis.timeout) clearTimeout(oThis.timeout);
+-  	oThis.timeout = setTimeout(function(){
+-  	  oThis.requestDataForAutoSuggest();
+-  	  clearTimeout(oThis.timeout);
+-  	}, 100);
+-}
+-
+-/**
+- * Sends request to get data from server to add to auto suggest control.
+- */
+-UIAutoSuggestControl.prototype.requestDataForAutoSuggest = function() {
+-	var CONFIG = UIAutoSuggestControl.config;
+-	var inputString = this.textbox.value.trim();
+-	var restContext = eXo.social.webui.restContextName;
+-	var currentUser = eXo.social.webui.currentUserName;
+-	var typeOfRelation = eXo.social.webui.typeOfRelation;
+-	var spaceURL = eXo.social.webui.spaceURL;
+-	var typeOfSuggest = eXo.social.webui.typeOfSuggest;
+-	var portalName = eXo.social.webui.portalName;
+-  var inputStringLen = (inputString ? inputString.length : 0);
+-  
+-	if ((inputStringLen == 0) || (inputString == ' ')) {
+-  	this.hideSuggestions();
+-  	return;
+-	}
+-	
+-  // TODO Need more check
+-  for (var idx = 0; idx < inputStringLen; idx++) {
+-  	var currentCharKeyCode = inputString.charCodeAt(idx);
+-  	if (currentCharKeyCode < 32 || (currentCharKeyCode >= 33 && currentCharKeyCode <= 47) || 
+-  	   (currentCharKeyCode >= 58 && currentCharKeyCode <= 63) || (currentCharKeyCode >= 123)) {
+-  		this.hideSuggestions();
+-  		return;
+-  	}
+-  }
+-  
+-	restContext = (restContext) ? restContext : CONFIG.DEFAULT_REST_CONTEXT_NAME;
+-	
+-	var restURL = "/" + restContext;
+-	if (typeOfSuggest == 'people') {
+-		restURL += CONFIG.PEOPLE_REST_PATH + inputString ;
+-	} else if (typeOfSuggest == 'space') {
+-		restURL += "/" + portalName + CONFIG.SPACE_REST_PATH + inputString;
+-	}
+-
+-	if (currentUser) {
+-		restURL += "&currentUser=" + currentUser;
+-	}
+-	
+-	if (typeOfRelation) {
+-		restURL += "&typeOfRelation=" + typeOfRelation;
+-	}
+-	
+-	if (spaceURL) {
+-	  if(typeOfSuggest == 'people') {
+-		  restURL += "&spaceURL=" + spaceURL;
+-		}
+-	}
+-	
+-	this.makeRequest(restURL, true, this.resetList);
+-}
+-
+-/**
+- * Gets return data and resets the name list to suggest control.
+- */
+-UIAutoSuggestControl.prototype.resetList = function(resp) {
+-  var names = gj.parseJSON(resp.responseText).names;
+-  var namesLen = (names ? names.length : 0);
+-  var oThis = eXo.social.webui.UIAutoSuggestControl;
+-  if (namesLen == 0) {
+-  	oThis.hideSuggestions();
+-  	return;
+-  }
+-  oThis.showSuggestions(names);
+-}
+-
+-/**
+- * Posts rest request to server.
+- */
+-UIAutoSuggestControl.prototype.makeRequest = function(url, async, callback) {
+-  gj.ajax({
+-    type: "get",
+-    url: url,
+-    async: async,
+-    cache: false,
+-    success: function(data, status, jqXHR) {
+-      if (callback) {
+-        callback(jqXHR);
+-      }
+-    }
+-  });
+-}
+-
+-////////////////////////////End of request data for autosuggest/////////////////////////////
+-
+-/**
+- * Hides the suggestion dropdown.
+- * @scope private
+- */
+-UIAutoSuggestControl.prototype.hideSuggestions = function () {
+-	  var uiAutosuggestion = document.getElementById("UIAutoSuggestControl");
+-	  if (uiAutosuggestion != null) {
+-	  	uiAutosuggestion.style.visibility = "hidden";
+-	    return;
+-	  }
+-};
+-
+-/**
+- * Highlights the given node in the suggestions dropdown.
+- * @scope private
+- * @param oSuggestionNode The node representing a suggestion in the dropdown.
+- */
+-UIAutoSuggestControl.prototype.highlightSuggestion = function (oSuggestionNode) {
+-    var childNodes = this.layer.childNodes;
+-    var childNodesLen = (childNodes ? childNodes.length : 0);
+-    for (var i=0; i < childNodesLen; i++) {
+-        var oNode = this.layer.childNodes[i];
+-        if (oNode == oSuggestionNode) {
+-            oNode.className = "current"
+-        } else if (oNode.className == "current") {
+-            oNode.className = "";
+-        }
+-    }
+-};
+-
+-/**
+- * Initializes the textbox with event handlers for
+- * auto suggest functionality.
+- * @scope private
+- */
+-UIAutoSuggestControl.prototype.init = function () {
+-
+-    //save a reference to this object
+-    var oThis = this;
+-    
+-    //assign the onkeyup event handler
+-    this.textbox.onkeyup = function (oEvent) {
+-    
+-        //check for the proper location of the event object
+-        if (!oEvent) {
+-            oEvent = window.event;
+-        }    
+-        
+-        //call the handleKeyUp() method with the event object
+-        oThis.handleKeyUp(oEvent);
+-    };
+-    
+-    var uiAutosuggestion = document.getElementById("UIAutoSuggestControl");
+-    if (uiAutosuggestion) {
+-    	if (this.timeout) clearTimeout(this.timeout);
+-	this.layer = uiAutosuggestion;oThis.highlightSuggestion(oTarget);
+-    	uiAutosuggestion.style.visibility = "hidden";
+-    } else {
+-	    //create the suggestions dropdown
+-	    this.createDropDown();
+-    }
+-};
+-
+-/**
+- * Highlights the next suggestion in the dropdown and
+- * places the suggestion into the textbox. (down arrow)
+- * @scope private
+- */
+-UIAutoSuggestControl.prototype.nextSuggestion = function () {
+-    var cSuggestionNodes = this.layer.childNodes;
+-    var cSuggestionNodesLen = (cSuggestionNodes ? cSuggestionNodes.length : 0);
+-    if (this.cur == cSuggestionNodesLen) this.cur = -1;
+-    ++this.cur;
+-    if (cSuggestionNodes.length > 0 && this.cur < cSuggestionNodesLen) {
+-        var oNode = cSuggestionNodes[this.cur];
+-        this.highlightSuggestion(oNode);
+-        this.textbox.value = oNode.firstChild.nodeValue; 
+-    } 
+-    
+-    // If press next at the last element then return the start input value
+-    if (this.cur > cSuggestionNodesLen - 1) {
+-    	(cSuggestionNodes[cSuggestionNodesLen - 1]).className = "";
+-    	this.textbox.value = this.storeText;
+-    	this.textbox.focus();
+-    	this.cur = -1;
+-    }
+-    
+-};
+-
+-/**
+- * Highlights the previous suggestion in the dropdown and
+- * places the suggestion into the textbox. (up arrow)
+- * @scope private
+- */
+-UIAutoSuggestControl.prototype.previousSuggestion = function () {
+-    var cSuggestionNodes = this.layer.childNodes;
+-    var cSuggestionNodesLen = (cSuggestionNodes ? cSuggestionNodes.length : 0);
+-    if (this.cur < 0) this.cur = cSuggestionNodesLen;
+-    --this.cur;
+-    if (cSuggestionNodesLen > 0 && this.cur >= 0) {
+-        var oNode = cSuggestionNodes[this.cur];
+-        this.highlightSuggestion(oNode);
+-        this.textbox.value = oNode.firstChild.nodeValue;   
+-    }
+-    
+-    if (this.cur < 0) {
+-    	(cSuggestionNodes[0]).className = "";
+-    	this.textbox.value = this.storeText;
+-    	this.textbox.focus();
+-    	this.cur = cSuggestionNodesLen;
+-    }
+-};
+-
+-/** 
+- * Builds the suggestion layer contents, moves it into position,
+- * and displays the layer.
+- * @scope private
+- * @param aSuggestions An array of suggestions for the control.
+- */
+-UIAutoSuggestControl.prototype.showSuggestions = function (aSuggestions /*:Array*/) {
+-    var oDiv = null;
+-    this.layer.innerHTML = "";  //clear contents of the layer
+-    var aSuggestionsLen = (aSuggestions ? aSuggestions.length : 0);
+-    // Display 10 top suggestion only
+-    var numberSuggestShowed = (aSuggestionsLen >= 10) ? 10 : (aSuggestionsLen);
+-    for (var i=0; i < numberSuggestShowed; i++) {
+-        oDiv = document.createElement("div");
+-        oDiv.appendChild(document.createTextNode(aSuggestions[i]));
+-        this.layer.appendChild(oDiv);
+-    }
+-    
+-    this.layer.style.left = this.getLeft() - 1 + "px";
+-    this.layer.style.top = (this.getTop()+this.textbox.offsetHeight) + "px";
+-    var thisLayer = this.layer;
+-    
+-    if (this.timeout) clearTimeout(this.timeout);
+-    // haven't support delay, maybe later
+-    this.timeout = setTimeout(function(){thisLayer.style.visibility = "visible";}, 0);
+-};
+-
+-/*===================================================================*/
+-eXo.social.webui.UIAutoSuggestControl = new UIAutoSuggestControl();
+diff --git a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIAutoSuggestMultiValueControl.js b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIAutoSuggestMultiValueControl.js
+deleted file mode 100644
+index 1d40f33..0000000
+--- a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIAutoSuggestMultiValueControl.js
++++ /dev/null
+@@ -1,482 +0,0 @@
+-if(!eXo.social) eXo.social = {};
+-if(!eXo.social.webui) eXo.social.webui = {};
+-
+-/**
+- * An autosuggest textbox control.
+- * @class
+- * @scope public
+- */
+-function UIAutoSuggestMultiValueControl() {
+-};
+-
+-/**
+- * Constant values.
+- */
+-UIAutoSuggestMultiValueControl.config = {
+-  DEFAULT_REST_CONTEXT_NAME : 'rest-socialdemo',
+-	PEOPLE_REST_PATH : "/social/people/suggest.json?nameToSearch="
+-}
+-
+-/**
+- * Load the initialization for textbox control.
+- * @scope private
+- */
+-UIAutoSuggestMultiValueControl.prototype.load = function(oTextbox /*:HTMLInputElement*/, 
+-                                             oProvider /*:SuggestionProvider*/) {
+-    
+-    /**
+-     * The currently selected suggestions.
+-     * @scope private
+-     */   
+-    this.cur /*:int*/ = -1;
+-
+-    /**
+-     * The dropdown list layer.
+-     * @scope private
+-     */
+-    this.layer = null;
+-    
+-    /**
+-     * Suggestion provider for the autosuggest feature.
+-     * @scope private.
+-     */
+-    this.provider /*:SuggestionProvider*/ = oProvider;
+-    
+-    /**
+-     * The textbox to capture.
+-     * @scope private
+-     */
+-    this.textbox /*:HTMLInputElement*/ = oTextbox;
+-    
+-    /**
+-     * Store the time out return value form setTimeout function.
+-     * @scope private
+-     */
+-    this.timeout = null;
+-    
+-    this.storeText = null;
+-    
+-    this.storeInputText = null;
+-    
+-    //initialize the control
+-    this.init();
+-    
+-}
+-
+-/**
+- * Creates the dropdown layer to display multiple suggestions.
+- * @scope private
+- */
+-UIAutoSuggestMultiValueControl.prototype.createDropDown = function () {
+-
+-    var oThis = this;
+-
+-    //create the layer and assign styles
+-    this.layer = document.createElement("div");
+-    this.layer.id = "UIAutoSuggestMultiValueControl";
+-    this.layer.className = "suggestions";
+-    this.layer.style.visibility = "hidden";
+-    this.layer.style.width = this.textbox.offsetWidth;
+-    
+-    //when the user clicks on the a suggestion, get the text (innerHTML)
+-    //and place it into a textbox
+-    this.layer.onkeydown =
+-    this.layer.onmousedown =
+-    this.layer.onkeyup =
+-    this.layer.onmouseup =
+-    this.layer.onfocus =
+-    this.layer.onmouseover = function (oEvent) {
+-        oEvent = oEvent || window.event;
+-        oTarget = oEvent.target || oEvent.srcElement;
+-        var currentVal = oThis.textbox.value;
+-        var inputUserName = currentVal.substr(0, currentVal.lastIndexOf(","));
+-        if (oEvent.type == "mousedown" || oEvent.type == "keydown") {
+-        	  if (currentVal.lastIndexOf(",") > 0) {
+-              oThis.textbox.value = inputUserName + ", " + oTarget.firstChild.nodeValue;
+-        	  } else {
+-        	  	oThis.textbox.value = oTarget.firstChild.nodeValue;
+-        	  }
+-            oThis.hideSuggestions();
+-//            oThis.provider.submitSearchForm(oThis.textbox);
+-        } else if (oEvent.type == "mouseover" || oEvent.type == "focus") {
+-            oThis.highlightSuggestion(oTarget);
+-        } else {
+-            oThis.textbox.focus();
+-        }
+-    };
+-    
+-    document.body.appendChild(this.layer);
+-};
+-
+-/**
+- * Gets the left coordinate of the textbox.
+- * @scope private
+- * @return The left coordinate of the textbox in pixels.
+- */
+-UIAutoSuggestMultiValueControl.prototype.getLeft = function () /*:int*/ {
+-
+-    var oNode = this.textbox;
+-    var iLeft = 0;
+-    var obj = null;
+-    while(oNode.tagName != "BODY") {
+-        iLeft += oNode.offsetLeft;
+-        if (!(oNode = oNode.offsetParent)) return iLeft;
+-    }
+-    
+-    return iLeft;
+-};
+-
+-/**
+- * Gets the top coordinate of the textbox.
+- * @scope private
+- * @return The top coordinate of the textbox in pixels.
+- */
+-UIAutoSuggestMultiValueControl.prototype.getTop = function () /*:int*/ {
+-    var oNode = this.textbox;
+-    var iTop = 0;
+-    var obj1 = null;
+-    while(oNode.tagName != "BODY") {
+-        iTop += oNode.offsetTop;
+-        if (!(oNode = oNode.offsetParent)) return iTop;
+-    }
+-    
+-    return iTop;
+-};
+-
+-/**
+- * Handles three keydown events.
+- * @scope private
+- * @param oEvent The event object for the keydown event.
+- */
+-UIAutoSuggestMultiValueControl.prototype.handleKeyDown = function (oEvent /*:Event*/) {
+-	if (this.layer.style.visibility == "visible") { //Applied on suggestion drop-down only.
+-	    switch(oEvent.keyCode || oEvent.which) {
+-	        case 38: //up arrow
+-	            this.previousSuggestion();
+-	            break;
+-	        case 40: //down arrow
+-	            this.nextSuggestion();
+-	            break;
+-	        case 13: //Enter
+-	            var currentValue = this.textbox.value;
+-	            this.textbox.value = currentValue + ", ";
+-	            this.textbox.onfocus();
+-	            return;
+-	        case 27: //Esc 
+-	        	  this.hideSuggestions();
+-	        	  break;
+-	    }
+-	}
+-};
+-
+-/**
+- * Handles keyup events.
+- * @scope private
+- * @param oEvent The event object for the keyup event.
+- */
+-UIAutoSuggestMultiValueControl.prototype.handleKeyUp = function (oEvent /*:Event*/) {
+-    var iKeyCode = oEvent.keyCode || oEvent.which;
+-    var el = oEvent.target || oEvent.srcElement;
+-	  var isInputTag = (el.tagName.toLowerCase() == 'input');
+-	  var currentVal = el.value.trim();
+-	  var oThis = eXo.social.webui.UIAutoSuggestMultiValueControl;
+-	  
+-	  if (currentVal == '') {
+-	  	oThis.hideSuggestions();
+-	  	return;
+-	  }
+-	  
+-	  var currentValLength = (currentVal ? currentVal.length : 0);
+-	  
+-    //for backspace (8) and delete (46), shows suggestions without typeahead
+-    if (iKeyCode == 8 || iKeyCode == 46) {
+-    	if (isInputTag) {
+-    		this.storeInputText = currentVal;
+-    		this.storeText = currentVal.substr(currentVal.lastIndexOf(",") + 1, currentValLength - 1).trim();
+-    	}
+-
+-      oThis.resetAutoSuggestList();
+-        
+-    } else if (iKeyCode == 32 || iKeyCode == 44) {
+-    	this.storeText = "";
+-    	this.storeInputText = currentVal;
+-    //make sure not to interfere with non-character keys
+-    } else if (iKeyCode < 32 || (iKeyCode >= 33 && iKeyCode < 46) || (iKeyCode >= 112 && iKeyCode <= 123)) {
+-        //ignore
+-    } else {
+-    	if (isInputTag) {
+-    		this.storeText = currentVal.substr(currentVal.lastIndexOf(",") + 1, currentValLength).trim();
+-	    	this.storeInputText = currentVal;
+-    	}
+-    	
+-    	oThis.resetAutoSuggestList();
+-    }
+-};
+-
+-
+-///////////////// Request for new data each time input by ajax ///////////////////
+-
+-/**
+- * Resets the autosuggest list.
+- */
+-UIAutoSuggestMultiValueControl.prototype.resetAutoSuggestList = function() {
+-	  var oThis = eXo.social.webui.UIAutoSuggestMultiValueControl;
+-  	if (oThis.timeout) clearTimeout(oThis.timeout);
+-  	oThis.timeout = setTimeout(function(){
+-  	  oThis.requestDataForAutoSuggest();
+-  	  clearTimeout(oThis.timeout);
+-  	}, 100);
+-}
+-
+-/**
+- * Sends request to get data from server to add to auto suggest control.
+- */
+-UIAutoSuggestMultiValueControl.prototype.requestDataForAutoSuggest = function() {
+-	var CONFIG = UIAutoSuggestMultiValueControl.config;
+-	var inputString = this.textbox.value.trim();
+-	var restContext = eXo.social.webui.restContextName;
+-	var currentUser = eXo.social.webui.currentUserName;
+-	var typeOfRelation = eXo.social.webui.typeOfRelation;
+-	var spaceURL = eXo.social.webui.spaceURL;
+-	var typeOfSuggest = eXo.social.webui.typeOfSuggest;
+-	var portalName = eXo.social.webui.portalName;
+-  var inputStringLen = (inputString ? inputString.length : 0);
+-  
+-  // TODO Need more check
+-  for (var idx = 0; idx < inputStringLen; idx++) {
+-  	var currentCharKeyCode = inputString.charCodeAt(idx);
+-  	if (currentCharKeyCode == 44) {
+-  		// ignore comma for putting as saperating of multi suggestion
+-  	} else if (currentCharKeyCode < 32 || (currentCharKeyCode >= 33 && currentCharKeyCode < 46) || 
+-  	          (currentCharKeyCode >= 123)) {
+-  		this.hideSuggestions();
+-  		return;
+-  	}
+-  }
+-  
+-  if ((typeOfSuggest == 'user_to_invite') && (inputString.indexOf(',') != -1)) {
+-    inputString = inputString.substr(inputString.lastIndexOf(',') + 1, inputStringLen).trim();
+-  }
+-  
+-	restContext = (restContext) ? restContext : CONFIG.DEFAULT_REST_CONTEXT_NAME;
+-	
+-	var restURL = "/" + restContext + CONFIG.PEOPLE_REST_PATH + inputString ;
+-	
+-	if (!isNull(currentUser)) {
+-		restURL += "&currentUser=" + currentUser;
+-	}
+-	
+-	if (!isNull(typeOfRelation)) {
+-		restURL += "&typeOfRelation=" + typeOfRelation;
+-	}
+-	
+-	if (!isNull(spaceURL)) {
+-		restURL += "&spaceURL=" + spaceURL;
+-	}
+-	
+-	if ((inputStringLen == 0) || (inputString == ' ')) {
+-  	this.hideSuggestions();
+-  	return;
+-	}
+-	
+-	this.makeRequest(restURL, true, this.resetList);
+-	
+-	function isNull(str) {
+-		var obj = null;
+-		try {
+-			obj = new Function( "return " + str )();
+-			return (obj == null);
+-		} catch(e) {
+-			return false;
+-		}
+-    return false;
+-	}
+-}
+-
+-/**
+- * Gets return data and resets the name list to suggest control.
+- */
+-UIAutoSuggestMultiValueControl.prototype.resetList = function(resp) {
+-  var names = gj.parseJSON(resp.responseText).names;
+-  
+-  var namesLen = (names ? names.length : 0);
+-  var oThis = eXo.social.webui.UIAutoSuggestMultiValueControl;
+-  if (namesLen == 0) {
+-	  oThis.hideSuggestions();
+-	  return;
+-  }
+-  oThis.showSuggestions(names);
+-}
+-
+-/**
+- * Posts rest request to server.
+- */
+-UIAutoSuggestMultiValueControl.prototype.makeRequest = function(url, async, callback) {
+-  gj.ajax({
+-    type: "get",
+-    url: url,
+-    async: async,
+-    cache: false,
+-    success: function(data, status, jqXHR) {
+-      if (callback) {
+-        callback(jqXHR);
+-      }
+-    }
+-  });
+-}
+-
+-////////////////////////////End of request data for autosuggest/////////////////////////////
+-
+-
+-/**
+- * Hides the suggestion dropdown.
+- * @scope private
+- */
+-UIAutoSuggestMultiValueControl.prototype.hideSuggestions = function () {
+-  	var uiAutosuggestion = document.getElementById("UIAutoSuggestMultiValueControl");
+-  	if (uiAutosuggestion != null) {
+-      uiAutosuggestion.style.visibility = "hidden";
+-      return;
+-  	}
+-};
+-
+-/**
+- * Highlights the given node in the suggestions dropdown.
+- * @scope private
+- * @param oSuggestionNode The node representing a suggestion in the dropdown.
+- */
+-UIAutoSuggestMultiValueControl.prototype.highlightSuggestion = function (oSuggestionNode) {
+-	  var childNodes = this.layer.childNodes;
+-    var childNodesLen = (childNodes ? childNodes.length : 0);
+-    for (var i=0; i < childNodesLen; i++) {
+-        var oNode = childNodes[i];
+-        if (oNode == oSuggestionNode) {
+-            oNode.className = "current"
+-        } else if (oNode.className == "current") {
+-            oNode.className = "";
+-        }
+-    }
+-};
+-
+-/**
+- * Initializes the textbox with event handlers for
+- * auto suggest functionality.
+- * @scope private
+- */
+-UIAutoSuggestMultiValueControl.prototype.init = function () {
+-
+-    //save a reference to this object
+-    var oThis = this;
+-    
+-    //assign the onkeyup event handler
+-    this.textbox.onkeyup = function (oEvent) {
+-    
+-        //check for the proper location of the event object
+-        if (!oEvent) {
+-            oEvent = window.event;
+-        }    
+-        
+-        //call the handleKeyUp() method with the event object
+-        oThis.handleKeyUp(oEvent);
+-    };
+-    
+-    var uiAutosuggestion = document.getElementById("UIAutoSuggestMultiValueControl");
+-    if (uiAutosuggestion) {
+-    	if (this.timeout) clearTimeout(this.timeout);
+-    	this.layer = uiAutosuggestion;
+-    	uiAutosuggestion.style.visibility = "hidden";
+-    } else {
+-	    //create the suggestions dropdown
+-	    this.createDropDown();
+-    }
+-};
+-
+-/**
+- * Highlights the next suggestion in the dropdown and
+- * places the suggestion into the textbox. (down arrow)
+- * @scope private
+- */
+-UIAutoSuggestMultiValueControl.prototype.nextSuggestion = function () {
+-    var cSuggestionNodes = this.layer.childNodes;
+-    var cSuggestionNodesLen = (cSuggestionNodes ? cSuggestionNodes.length : 0);
+-    if (this.cur == cSuggestionNodesLen) this.cur = -1;
+-    ++this.cur;
+-    var currentVal = this.textbox.value;
+-    if (cSuggestionNodesLen > 0 && this.cur < cSuggestionNodesLen) {
+-        var oNode = cSuggestionNodes[this.cur];
+-        this.highlightSuggestion(oNode);
+-        if (currentVal.lastIndexOf(",") > 0) {
+-          this.textbox.value = currentVal.substr(0, currentVal.lastIndexOf(",")) + ", " + oNode.firstChild.nodeValue; 
+-        } else {
+-        	this.textbox.value = oNode.firstChild.nodeValue; 
+-        }
+-    } 
+-    
+-    // If press next at the last element then return the start input value
+-    if (this.cur > cSuggestionNodesLen - 1) {
+-    	(cSuggestionNodes[cSuggestionNodesLen - 1]).className = "";
+-    	this.textbox.value = this.storeInputText;
+-    	this.textbox.focus();
+-    	this.cur = -1;
+-    }
+-    
+-};
+-
+-/**
+- * Highlights the previous suggestion in the dropdown and
+- * places the suggestion into the textbox. (up arrow)
+- * @scope private
+- */
+-UIAutoSuggestMultiValueControl.prototype.previousSuggestion = function () {
+-    var cSuggestionNodes = this.layer.childNodes;
+-    var cSuggestionNodesLen = (cSuggestionNodes ? cSuggestionNodes.length : 0);
+-    if (this.cur < 0) this.cur = cSuggestionNodesLen;
+-    --this.cur;
+-    var currentVal = this.textbox.value;
+-    if (cSuggestionNodesLen > 0 && this.cur >= 0) {
+-        var oNode = cSuggestionNodes[this.cur];
+-        this.highlightSuggestion(oNode);
+-        if (currentVal.lastIndexOf(",") > 0) {     
+-          this.textbox.value = currentVal.substr(0, currentVal.lastIndexOf(",")) + ", " + oNode.firstChild.nodeValue;   
+-        } else {
+-        	this.textbox.value = oNode.firstChild.nodeValue;   
+-        }
+-    }
+-    
+-    if (this.cur < 0) {
+-    	(cSuggestionNodes[0]).className = "";
+-    	this.textbox.value = this.storeInputText;
+-    	this.textbox.focus();
+-    	this.cur = cSuggestionNodesLen;
+-    }
+-};
+-
+-/** 
+- * Builds the suggestion layer contents, moves it into position,
+- * and displays the layer.
+- * @scope private
+- * @param aSuggestions An array of suggestions for the control.
+- */
+-UIAutoSuggestMultiValueControl.prototype.showSuggestions = function (aSuggestions /*:Array*/) {
+-    
+-    var oDiv = null;
+-    this.layer.innerHTML = "";  //clear contents of the layer
+-    var aSuggestionsLen = (aSuggestions ? aSuggestions.length : 0);
+-    // Display 10 top suggestion only
+-    var numberSuggestShowed = (aSuggestionsLen >= 10) ? 10 : (aSuggestionsLen);
+-    for (var i=0; i < numberSuggestShowed; i++) {
+-        oDiv = document.createElement("div");
+-        oDiv.appendChild(document.createTextNode(aSuggestions[i]));
+-        this.layer.appendChild(oDiv);
+-    }
+-    
+-    this.layer.style.left = this.getLeft() + "px";
+-    this.layer.style.top = (this.getTop()+this.textbox.offsetHeight) + "px";
+-    var thisLayer = this.layer;
+-    if (this.timeout) clearTimeout(this.timeout);
+-    // haven't support delay, maybe later
+-    this.timeout = setTimeout(function(){thisLayer.style.visibility = "visible";}, 0);
+-};
+-
+-/*===================================================================*/
+-eXo.social.webui.UIAutoSuggestMultiValueControl = new UIAutoSuggestMultiValueControl();
+diff --git a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIContactSection.js b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIContactSection.js
+index 3bc8305..68e75d4 100644
+--- a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIContactSection.js
++++ b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIContactSection.js
+@@ -47,8 +47,5 @@
+ 		}
+ 	}
+ 	  //expose
+-  window_.eXo = window_.eXo || {};
+-  window_.eXo.social = window_.eXo.social || {};
+-  window_.eXo.social.webui = window_.eXo.social.webui || {};
+   window_.eXo.social.webui.UIContactSection = UIContactSection;
+ })();
+\ No newline at end of file
+diff --git a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UICustomizeControl.js b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UICustomizeControl.js
+index 160050c..efb6bcc 100644
+--- a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UICustomizeControl.js
++++ b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UICustomizeControl.js
+@@ -2,16 +2,13 @@ function UICustomizeControl() {
+ }
+ 
+ UICustomizeControl.prototype.onLoad = function(uicomponentId) {
+-	var UIForm = eXo.webui.UIForm;
+ 	gj('#' + uicomponentId).click(function() {
+ 	  gj('input').each(function() {
+       var form = gj(this).closest('.UIForm');
+-      if (form != null ) UIForm.submitForm(form.attr("id"), 'ChangeOption', true);
++      if (form != null ) eXo.webui.UIForm.submitForm(form.attr("id"), 'ChangeOption', true);
+     });
+   });
+ }
+ 
+ /*===================================================================*/
+-if(!eXo.social) eXo.social = {};
+-if(!eXo.social.webui) eXo.social.webui = {};
+ eXo.social.webui.UICustomizeControl = new UICustomizeControl();
+\ No newline at end of file
+diff --git a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIPopUp.js b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIPopUp.js
+index 0175e8a..3f54996 100644
+--- a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIPopUp.js
++++ b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIPopUp.js
+@@ -230,8 +230,5 @@
+ 		
+ 	};
+ 	
+-	window.eXo = window.eXo || {}; 
+-	window.eXo.social = window.eXo.social || {}; 
+-	window.eXo.social.webui = window.eXo.social.webui || {}; 
+ 	window.eXo.social.webui.UIPopUp = UIPopUp; 
+ })(); 
+diff --git a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIProfile.js b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIProfile.js
+index fa31e27..ae12cd7 100644
+--- a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIProfile.js
++++ b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIProfile.js
+@@ -30,10 +30,7 @@
+       });
+     }
+   }
+-  
+-  //namespace and exposion
+-  eXo = eXo || {};
+-  eXo.social = eXo.social || {};
+-  eXo.social.webui = eXo.social.webui || {};
++
++  //exposion
+   eXo.social.webui.UIProfile = UIProfile;
+ })();
+diff --git a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIProfileUserSearch.js b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIProfileUserSearch.js
+index 5c14951..a5ca828 100644
+--- a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIProfileUserSearch.js
++++ b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UIProfileUserSearch.js
+@@ -87,22 +87,6 @@
+ 	      skillEl.css('color', COLOR.BLUR);
+ 	    }
+ 	    
+-//	    nameEl.focus(function() {
+-//	      if (gj(this).val().trim() == defaultUserContact) {
+-//	        gj(this).val('');              
+-//	      }
+-//	      gj(this).css('color', COLOR.FOCUS);
+-//	    });
+-//	
+-//			nameEl.blur(function() {
+-//			  if (gj(this).val() && gj(this).val() != '') {
+-//			    gj(this).css('color', COLOR.FOCUS);                               
+-//			  } else {
+-//			    gj(this).css('color', COLOR.BLUR);        
+-//			    gj(this).val(defaultUserContact);
+-//			  }
+-//			});
+-		
+ 			posEl.focus(function() {
+ 			  if (gj(this).val().trim() == defaultPos) {
+ 			    gj(this).val('');              
+@@ -181,8 +165,5 @@
+         }
+ 		 };
+ 		        
+-		 window_.eXo = window_.eXo || {};
+-		 window_.eXo.social = window_.eXo.social || {};
+-		 window_.eXo.social.webui = window_.eXo.social.webui || {};
+ 		 window_.eXo.social.webui.UIProfileUserSearch = UIProfileUserSearch;
+ })();
+diff --git a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UISpaceAppNameEdition.js b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UISpaceAppNameEdition.js
+index 7a240c6..67b1e3d 100644
+--- a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UISpaceAppNameEdition.js
++++ b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UISpaceAppNameEdition.js
+@@ -17,9 +17,6 @@
+  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  */
+ 
+-if(!eXo.social) eXo.social = {};
+-if(!eXo.social.webui) eXo.social.webui = {};
+-
+ eXo.social.webui.UISpaceAppNameEdition = {
+ 
+   renameAppLabel : function(input) {
+diff --git a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UISpaceMemberSuggestion.js b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UISpaceMemberSuggestion.js
+index 8bca8b7..ea98482 100644
+--- a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UISpaceMemberSuggestion.js
++++ b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UISpaceMemberSuggestion.js
+@@ -14,89 +14,51 @@
+  * You should have received a copy of the GNU General Public License
+  * along with this program; if not, see<http://www.gnu.org/licenses/>.
+  */
+-
+-/**
+- * Space member suggestion.
+- * @class
+- * @scope public
+- */
+-function UISpaceMemberSuggest() {
+-   /**
+-    * User name search text box object.
+-    * @scope private.
+-    */
+-   this.userNameTextObj = null;
+-};
+-
+-/**
+- * When form load at the first time, init controls.
+- */
+-UISpaceMemberSuggest.prototype.onLoad = function() {
+-	var suggestEl = document.getElementById('user');
+-
+-	this.userNameTextObj = suggestEl;
+-	
+-	this.initTextBox();
+-};
+-
+-/**
+- * Set init value and event for control.
+- * @scope private.
+- */
+-UISpaceMemberSuggest.prototype.initTextBox = function() {
+-	var nameEl = this.userNameTextObj;
+-	var UIForm = eXo.webui.UIForm;
+-	var suggestElId = 'user';
+-	var UISpaceMemberSuggestObj = eXo.social.webui.UISpaceMemberSuggest;
+-	var suggestControlObj = eXo.social.webui.UIAutoSuggestMultiValueControl;
+-	
+-	// Turn off auto-complete attribute of text-box control
+-	nameEl.setAttribute('autocomplete','off');
++(function() {
++  var window_ = this;
++	var DEFAULT_REST_INFO = {
++	      CONTEXT_NAME : 'rest-socialdemo',
++	      PATH : '/social/people/suggest.json'
++	};
++	    
++	/**
++	 * Space member suggestion.
++	 * @class
++	 * @scope public
++	 */
++	function UISpaceMemberSuggest() {};
+ 	
+-	// Add keydown event for control
+-	nameEl.onkeydown = function(event) {
+-		var e = event || window.event;
+-		var textBox = e.srcElement || e.target;
+-		var keynum = e.keyCode || e.which;  
++	/**
++	 * When form load at the first time, init controls.
++	 */
++	UISpaceMemberSuggest.prototype.onLoad = function() {
++		var suggestEl = gj('#user');
+ 		
+-		if(keynum == 13) {
+-			suggestControlObj.hideSuggestions();
+-			return;
+-//			UISpaceMemberSuggestObj.submitSearchForm(textBox);
+-		} else if (textBox.id == suggestElId) {
+-			// Other keys (up and down key)
+-			suggestControlObj.handleKeyDown(e);
+-		} else {
+-			// ignore
+-		}
+-	}
++		gj(suggestEl).autosuggest(buildURL(), {multisuggestion:true, defaultVal:""});
++		
++	  function buildURL() {
++	    var restContext = eXo.social.webui.restContextName;
++	    var currentUser = eXo.social.webui.currentUserName;
++	    var typeOfRelation = eXo.social.webui.typeOfRelation;
++	          
++	    restContext = (restContext) ? restContext : DEFAULT_REST_INFO.CONTEXT_NAME;
++	    
++	    var restURL = "/" + restContext + DEFAULT_REST_INFO.PATH;
++	          
++	    restURL = restURL + '?nameToSearch=input_value';
++	
++      if (currentUser) {
++        restURL += "&currentUser=" + currentUser;
++      }
++      
++      if (typeOfRelation) {
++	      restURL += "&typeOfRelation=" + typeOfRelation;
++	    }
+ 	
+-	nameEl.onblur = function(event) {
+-		suggestControlObj.hideSuggestions();
++	    return restURL;
++	  };
+ 	}
+ 	
+-	// Add suggestion capability for user contact name search text-box.
+-	suggestControlObj.load(nameEl, UISpaceMemberSuggestObj);
+-}
+-
+-/**
+- * Submit the search form.
+- * @scope private.
+- */
+-UISpaceMemberSuggest.prototype.setValueIntoTextBox = function(suggestEl /*input text box*/) {
+-		
+-}
+-
+-/**
+- * Submit the search form.
+- * @scope private.
+- */
+-UISpaceMemberSuggest.prototype.submitSearchForm = function(suggestEl /*input text box*/) {
+-	var UIForm = eXo.webui.UIForm;
+-	var searchForm = gj(suggestEl).closest('.UIForm'); 
+-	if (searchForm != null ) UIForm.submitForm(searchForm.id, 'Search', true);
+-}
+-/*===================================================================*/
+-if(!eXo.social) eXo.social = {};
+-if(!eXo.social.webui) eXo.social.webui = {};
+-eXo.social.webui.UISpaceMemberSuggest = new UISpaceMemberSuggest();
++	/*===================================================================*/
++	window_.eXo.social.webui.UISpaceMemberSuggest = new UISpaceMemberSuggest();
++})();
+\ No newline at end of file
+diff --git a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UISpaceSearch.js b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UISpaceSearch.js
+index f58a3a4..2cb1b94 100644
+--- a/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UISpaceSearch.js
++++ b/webapp/resources/src/main/webapp/javascript/eXo/social/webui/UISpaceSearch.js
+@@ -101,8 +101,5 @@
+ 
+ 	 }
+ 
+-	 window_.eXo = window_.eXo || {};
+-	 window_.eXo.social = window_.eXo.social || {};
+-	 window_.eXo.social.webui = window_.eXo.social.webui || {};
+ 	 window_.eXo.social.webui.UISpaceSearch = UISpaceSearch;
+ })();
+\ No newline at end of file
+diff --git a/webapp/resources/src/main/webapp/skin/social/webui/UIManageSpaces/DefaultSkin.css b/webapp/resources/src/main/webapp/skin/social/webui/UIManageSpaces/DefaultSkin.css
+index 78668f0..6545cbc 100644
+--- a/webapp/resources/src/main/webapp/skin/social/webui/UIManageSpaces/DefaultSkin.css
++++ b/webapp/resources/src/main/webapp/skin/social/webui/UIManageSpaces/DefaultSkin.css
+@@ -137,7 +137,6 @@
+ 	background: none repeat 0% 0% white; 
+ 	height: 19px; 
+ 	margin: 8px; 
+-	width: 175px;
+ 	border-radius: 2px;
+ }
+ 

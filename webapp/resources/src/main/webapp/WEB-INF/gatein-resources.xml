@@ -67,6 +67,10 @@
       <name>eXo.social.webui.UIForm</name><!-- function not available from Portal UIForm -->
       <path>/javascript/eXo/social/webui/UIForm.js</path>
     </script>
+    <script>
+      <name>eXo.social.webui.UIPopUp</name>
+      <path>/javascript/eXo/social/webui/UIPopUp.js</path>
+    </script>
     <depends>
       <module>webui</module>
     </depends>
@@ -76,11 +80,18 @@
   </module>
 
   <module>
-    <name>social-ui-user-search</name>
+    <name>social-ui-profile</name>
     <script>
-       <name>eXo.social.webui.UIAutoSuggestControl</name>
-       <path>/javascript/eXo/social/webui/UIAutoSuggestControl.js</path>
+       <name>eXo.social.webui.UIProfile</name>
+       <path>/javascript/eXo/social/webui/UIProfile.js</path>
     </script>
+    <depends>
+       <module>social-webui</module>
+    </depends>
+  </module>
+  
+  <module>
+    <name>social-ui-user-search</name>
     <script>
        <name>eXo.social.webui.UIProfileUserSearch</name>
        <path>/javascript/eXo/social/webui/UIProfileUserSearch.js</path>
@@ -88,17 +99,10 @@
     <depends>
        <module>social-webui</module>
     </depends>
-    <depends>
-       <module>social-ui-customize-jq</module>
-    </depends>
   </module>
   
   <module>
     <name>social-ui-space-search</name>
-    <script>
-       <name>eXo.social.webui.UIAutoSuggestControl</name>
-       <path>/javascript/eXo/social/webui/UIAutoSuggestControl.js</path>
-    </script>
     <script>
        <name>eXo.social.webui.UISpaceSearch</name>
        <path>/javascript/eXo/social/webui/UISpaceSearch.js</path>
@@ -111,15 +115,14 @@
   <module>
     <name>social-ui-space-member-suggestion</name>
     <script>
-       <name>eXo.social.webui.UIAutoSuggestControl</name>
-       <path>/javascript/eXo/social/webui/UIAutoSuggestMultiValueControl.js</path>
-    </script>
-    <script>
        <name>eXo.social.webui.UISpaceMemberSuggestion</name>
        <path>/javascript/eXo/social/webui/UISpaceMemberSuggestion.js</path>
     </script>
     <depends>
       <module>base</module>
+    </depends>
+    <depends>
+       <module>social-webui</module>
     </depends>
   </module>
   
@@ -133,17 +136,6 @@
        <module>base</module>
     </depends>
   </module>
-
-   <module>
-     <name>social-ui-contact-section</name>
-     <script>
-      <name>eXo.social.webui.UIContactSection</name>
-      <path>/javascript/eXo/social/webui/UIContactSection.js</path>
-     </script>
-     <depends>
-      <module>social-core</module>
-     </depends>
-   </module>
 
   <module>
     <name>social-ui-activity-composer</name>
@@ -186,17 +178,6 @@
     </script>
     <depends>
       <module>base</module>
-    </depends>
-  </module>
-
-  <module>
-    <name>social-ui-customize-jq</name>
-    <script>
-      <name>SocialJQuery</name>
-      <path>/javascript/jquery-ui-1.8.21.min.js</path>
-    </script>
-    <depends>
-      <module>jquery</module>
     </depends>
   </module>
 </gatein-resources>

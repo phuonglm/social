@@ -34,6 +34,9 @@
     positionId: 'position',
     saveButtonId: 'savePosition'
   } """
+  
+  jsmanager.loadScriptResource("social-ui-profile");
+  
   jsmanager.addOnLoadJavascript("initUIProfile");
   
   def ownerIdentity = Utils.getOwnerIdentity(true);
