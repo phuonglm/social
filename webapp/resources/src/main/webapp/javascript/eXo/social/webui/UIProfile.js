@@ -30,10 +30,7 @@
       });
     }
   }
-  
-  //namespace and exposion
-  eXo = eXo || {};
-  eXo.social = eXo.social || {};
-  eXo.social.webui = eXo.social.webui || {};
+
+  //exposion
   eXo.social.webui.UIProfile = UIProfile;
 })();

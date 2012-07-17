@@ -22,23 +22,23 @@
 		  FOCUS : "#000000",
 		  BLUR : "#C7C7C7"
 		};
-
+		
 		var INPUT_ID = {
 		  NAME : '#Search',
 		  POSITION : '#position',
 		  SKILLS : '#skills',
 		  SEARCH : '#SearchButton'
 		};
-
+		
 		var KEY = {
 		  ENTER : 13
 		};
-
+		
 		var DEFAULT_REST_INFO = {
       CONTEXT_NAME : 'rest-socialdemo',
       PATH : '/social/people/suggest.json'
     };
-
+		
 		function UIProfileUserSearch(params) {
 		  this.defaultUserContact = params.defaultUserContact || null;
       this.defaultPos = params.defaultPos || null;
@@ -65,12 +65,10 @@
 	    var defaultUserContact = this.defaultUserContact;
 			var defaultPos = this.defaultPos;
 			var defaultSkills = this.defaultSkills;
-			var uiProfileUserSearchObj = eXo.social.webui.UIProfileUserSearch;
-			var suggestControlObj = eXo.social.webui.UIAutoSuggestControl;
 
 	    var searchBtn = this.searchButton;
 	    var uiProfileUserSearch = this;
-
+	    
 	    // Turn off auto-complete attribute of text-box control
 	    gj(nameEl).attr('autocomplete','off');
 	    gj(posEl).attr('autocomplete','off');
@@ -79,108 +77,60 @@
 	    if(nameEl.val().trim() === this.defaultUserContact){
 	      nameEl.css('color', COLOR.BLUR);
 	    }
-
+	    
 	    if(posEl.val().trim() === this.defaultPos){
 	      posEl.css('color', COLOR.BLUR);
 	    }
-
+	    
 	    if(skillEl.val().trim() === this.defaultSkills){
 	      skillEl.css('color', COLOR.BLUR);
 	    }
-
-	    nameEl.focus(function() {
-	      if (gj(this).val().trim() == defaultUserContact) {
-	        gj(this).val('');
-	      }
-	      gj(this).css('color', COLOR.FOCUS);
-	    });
-
-			nameEl.blur(function() {
-			  if (gj(this).val() && gj(this).val() != '') {
-			    gj(this).css('color', COLOR.FOCUS);
-			  } else {
-			    gj(this).css('color', COLOR.BLUR);
-			    gj(this).val(defaultUserContact);
-			  }
-			});
-		
-			nameEl.keydown(function(event) {
-		    keyDownAction(event);
-		  });
-
+	    
 			posEl.focus(function() {
 			  if (gj(this).val().trim() == defaultPos) {
-			    gj(this).val('');
+			    gj(this).val('');              
 			  }
 			  gj(this).css('color', COLOR.FOCUS);
 			});
-
+			 
 			skillEl.focus(function() {
 			  if (gj(this).val() == defaultSkills) {
-			    gj(this).val('');
+			    gj(this).val('');              
 			  }
 			  gj(this).css('color', COLOR.FOCUS);
 			});
-
+				        
 		  posEl.blur(function() {
 			  if (gj(this).val() && gj(this).val() != '') {
-			    gj(this).css('color', COLOR.FOCUS);
+			    gj(this).css('color', COLOR.FOCUS);                               
 			  } else {
-			    gj(this).css('color', COLOR.BLUR);
+			    gj(this).css('color', COLOR.BLUR);  
 			    gj(this).val(defaultPos);
 			  }
 			});
-
+			
 	    skillEl.blur(function() {
 			  if (gj(this).val() && gj(this).val() != '') {
-			    gj(this).css('color', COLOR.FOCUS);
+			    gj(this).css('color', COLOR.FOCUS);                               
 			  } else {
-			    gj(this).css('color', COLOR.BLUR);
+			    gj(this).css('color', COLOR.BLUR);  
 			    gj(this).val(defaultSkills);
 			  }
 			});
-
+			
 			posEl.keydown(function(event) {
 		    keyDownAction(event);
 		  });
-
+			
 			skillEl.keydown(function(event) {
 		    keyDownAction(event);
 		  });
 
-      $(INPUT_ID.NAME).autocomplete({
-            source: function(request, response) {
-                $.ajax({
-                    url: buildURL(),
-                    dataType: "jsonp",
-                    data: {
-                        featureClass: "P",
-                        style: "full",
-                        maxRows: 12
-                        //name_startsWith: request.term
-                    },
-                    success: function(data) {
-                        response( $.map(data.names, function(item) {
-                            return {
-                                label: item.name,
-                                value: item.name
-                            }
-                        }));
-                    }
-                });
-            },
-            minLength: 1,
-            select: function( event, ui ) {
-                // search
-            },
-            open: function() {
-                $(this).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
-            },
-            close: function() {
-                $(this).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
-            }
-        });
-			//suggestControlObj.load(nameEl[0], uiProfileUserSearchObj);
+			gj(nameEl).autosuggest(buildURL(), {onSelect:callback, defaultVal:defaultUserContact});
+			
+			function callback() {
+			  searchBtn.click();
+			};
 
 			function buildURL() {
         var restContext = eXo.social.webui.restContextName;
@@ -188,13 +138,13 @@
         var typeOfRelation = eXo.social.webui.typeOfRelation;
 			  restContext = (restContext) ? restContext : DEFAULT_REST_INFO.CONTEXT_NAME;
 			  var restURL = "/" + restContext + DEFAULT_REST_INFO.PATH;
-
-			  restURL = restURL + '?nameToSearch=' + nameEl.val().trim();
+			  
+			  restURL = restURL + '?nameToSearch=input_value';
 
 				if (currentUser) {
 				  restURL += "&currentUser=" + currentUser;
 				}
-
+			  
 			  if (typeOfRelation) {
           restURL += "&typeOfRelation=" + typeOfRelation;
         }
@@ -202,25 +152,17 @@
         return restURL;
       };
 
-
 			function keyDownAction(event) {
 				  //var searchBtn = this.searchButton;
 	        var e = event || window.event;
 	        var textBox = e.srcElement || e.target;
-	        var keynum = e.keyCode || e.which;
+	        var keynum = e.keyCode || e.which;  
 	        if(keynum == KEY.ENTER) {
-	          suggestControlObj.hideSuggestions();
 	          searchBtn.click();
-	        } else if (textBox.id == INPUT_ID.NAME) {
-	          // Other keys (up and down key)
-	          suggestControlObj.handleKeyDown(e);
 	        } else {
 	        }
         }
-		 }
-
-		 window_.eXo = window_.eXo || {};
-		 window_.eXo.social = window_.eXo.social || {};
-		 window_.eXo.social.webui = window_.eXo.social.webui || {};
+		 };
+		        
 		 window_.eXo.social.webui.UIProfileUserSearch = UIProfileUserSearch;
 })();

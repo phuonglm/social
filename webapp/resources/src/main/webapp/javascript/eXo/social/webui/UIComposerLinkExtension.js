@@ -263,10 +263,6 @@
       
     }
   }
-  
-  //expose
-  window_.eXo = window_.eXo || {};
-  window_.eXo.social = window_.eXo.social || {};
-  window_.eXo.social.webui = window_.eXo.social.webui || {};
+
   window_.eXo.social.webui.UIComposerLinkExtension = UIComposerLinkExtension;
  })();

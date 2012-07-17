@@ -93,14 +93,14 @@
     <% } else {%>
        <div class="ContentSpace ClearFix">
     <% }%>
-         <a class="AvatarUser">
+         <a class="UserName AvatarUser">
            <img title="${fullName}" src="$imageSource" alt="${fullName}" />
            <span class="BorderTop"></span>
            <span class="BorderBottom"></span>
          </a>
 
           <div class="CommunityMane">
-                <a class="CommunityName InviteTitle" href="${profileURL}">${fullName}</a>
+                <a class="UserName CommunityName InviteTitle" href="${profileURL}">${fullName}</a>
                 <%if ((position.length() + email.length()) == 0 ) {%>
                   <span class="NonePositionAndEmail"></span>
                 <% } else {%>
