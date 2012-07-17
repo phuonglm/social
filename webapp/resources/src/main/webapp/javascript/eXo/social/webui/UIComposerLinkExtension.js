@@ -226,7 +226,7 @@
     } else {
 
       if (shareButton) {
-        shareButton.attr('disabled',true);
+        shareButton.attr('disabled',"disabled");
         shareButton.attr('class','ShareButtonDisable');
       }
       this.inputLink = gj('#' + this.inputLinkId);

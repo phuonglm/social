@@ -110,7 +110,7 @@
     if (this.commentLinkEl) {
       //event handlers
       this.commentLinkEl.on( 'click', function(evt) {
-        if (uiActivity.commentFormBlockEl.css('display') === 'block') {
+        if (uiActivity.commentFormBlockEl.css('display') != 'block') {
           if (uiActivity.allCommentSize == 0) {
             uiActivity.commentBlockBoundEl.attr('class',COMMENT_BLOCK_BOUND_CLASS_NAME);
           }
@@ -125,21 +125,21 @@
       });
 
       this.commentTextareaEl.on('focus', function(evt) {
-        this.commentTextareaEl.css('height', FOCUS_COMMENT_TEXT_AREA_HEIGHT);
-        this.commentTextareaEl.css('color',FOCUS_COMMENT_TEXT_AREA_COLOR);
-        if (this.val() === uiActivity.inputWriteAComment) {
-          this.val('');
+        gj(this).css('height', FOCUS_COMMENT_TEXT_AREA_HEIGHT);
+        gj(this).css('color',FOCUS_COMMENT_TEXT_AREA_COLOR);
+          if (gj(this).val() === uiActivity.inputWriteAComment) {
+          gj(this).val('');
         }
         gj("#" + uiActivity.commentButtonId).show();
       });
 
       this.commentTextareaEl.on('blur', function(evt) {
-        if (this.commentTextareaEl.val() === '') {
+        if (gj(this).val() === '') {
           gj("#" + uiActivity.commentButtonId).hide();
-          this.commentTextareaEl.val(uiActivity.inputWriteAComment);
+          gj(this).val(uiActivity.inputWriteAComment);
 
-          this.commentTextareaEl.css('height', DEFAULT_COMMENT_TEXT_AREA_HEIGHT);
-          this.commentTextareaEl.css('color',DEFAULT_COMMENT_TEXT_AREA_COLOR);
+          gj(this).css('height', DEFAULT_COMMENT_TEXT_AREA_HEIGHT);
+          gj(this).css('color',DEFAULT_COMMENT_TEXT_AREA_COLOR);
         }
       });
 

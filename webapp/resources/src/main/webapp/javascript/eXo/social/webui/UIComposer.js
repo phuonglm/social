@@ -37,18 +37,18 @@
       //TODO hoatle handle backspace problem
       if (uiComposer.composer.val().length >= uiComposer.minCharactersRequired) {
         uiComposer.shareButton.className = 'ShareButtonDisable';
-        if(document.getElementById("ComposerContainer") == null){
-          uiComposer.shareButton.disabled = false;
-          uiComposer.shareButton.className = 'ShareButton';
+        if(gj("#ComposerContainer") == null){
+          uiComposer.shareButton.removeAttr("disabled");
+          uiComposer.shareButton.attr("class",'ShareButton');
         }
       } else {
-        uiComposer.shareButton.style.background = '';
-        uiComposer.shareButton.className = 'ShareButton';
+        uiComposer.shareButton.css(background, '');
+        uiComposer.shareButton.attr('class','ShareButton');
       }
     } else {
       if(document.getElementById("ComposerContainer") == null){
-        uiComposer.shareButton.disabled = false;
-        uiComposer.shareButton.className = 'ShareButton';
+        uiComposer.shareButton.removeAttr("disabled");
+        uiComposer.shareButton.attr("class",'ShareButton');
       }
     }
 
@@ -93,11 +93,11 @@
       'padding':this.padding
     });
     this.shareButton.attr('class','ShareButtonDisable');
-    this.shareButton.attr('disabled',true);
+    this.shareButton.attr('disabled',"disabled");
     this.currentValue = this.composer.val();
     var uiComposer = this;
-    var isReadyEl = document.getElementById("isReadyId");
-    var composerContainerEl = document.getElementById("ComposerContainer");
+    var isReadyEl = gj("#isReadyId");
+    var composerContainerEl = gj("#ComposerContainer");
     var isReadyVal;
     this.composer.on('focus', function() {
       handleShareButtonState(uiComposer);
@@ -121,8 +121,8 @@
                                  'color'  : uiComposer.blurColor});
 
         //if current composer is default composer then disable share button
-        if(document.getElementById("ComposerContainer") == null){
-          uiComposer.shareButton.attr('disabled',true);
+        if(gj("#ComposerContainer") == null){
+          uiComposer.shareButton.attr('disabled',"disabled");
           uiComposer.shareButton.attr('class','ShareButtonDisable');
         }
 
