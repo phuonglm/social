@@ -21,7 +21,6 @@
  
  (function() {
   var window_ = this,
-      Util = eXo.social.Util,
       HTTP = "http://",
       GRAY_COLOR = "gray",
       BLACK_COLOR = "black",
@@ -73,7 +72,7 @@
     dataElement.hide();
     editableEl.focus();
     editableEl.keypress(function(e){
-      if (Util.isEnterKey(e)) {
+      if (13 == (e.which ? e.which : e.keyCode)) {
         updateElement(this);
       }
     });
@@ -96,7 +95,7 @@
         if (oldEl.hasClass('Title')) {
           uiComposerLinkExtension.linkData.title = gj(editableEl).val();
           changeLinkContent.apply(uiComposerLinkExtension);
-        } else if (Util.hasClass(oldEl, 'Content')) {
+        } else if (oldEl.hasClass('Content')) {
           uiComposerLinkExtension.linkData.description = gj(editableEl).val();
           changeLinkContent.apply(uiComposerLinkExtension);
         }
@@ -193,7 +192,7 @@
           if (uiComposerLinkExtension.shownThumbnailIndex > 0) {
             uiComposerLinkExtension.shownThumbnailIndex--;
             showThumbnail.apply(uiComposerLinkExtension);
-            uiComposerLinkExtension.linkData.image = Util.getAttributeValue(uiComposerLinkExtension.images[uiComposerLinkExtension.shownThumbnailIndex], 'src');
+            uiComposerLinkExtension.linkData.image = gj(uiComposerLinkExtension.images[uiComposerLinkExtension.shownThumbnailIndex]).attr('src');
             changeLinkContent.apply(uiComposerLinkExtension);
           }
         });
@@ -202,7 +201,7 @@
           if (uiComposerLinkExtension.shownThumbnailIndex < uiComposerLinkExtension.images.length - 1) {
             uiComposerLinkExtension.shownThumbnailIndex++;
             showThumbnail.apply(uiComposerLinkExtension);
-            uiComposerLinkExtension.linkData.image = Util.getAttributeValue(uiComposerLinkExtension.images[uiComposerLinkExtension.shownThumbnailIndex], 'src');
+            uiComposerLinkExtension.linkData.image = gj(uiComposerLinkExtension.images[uiComposerLinkExtension.shownThumbnailIndex]).attr('src');
             changeLinkContent.apply(uiComposerLinkExtension);
           }
         });

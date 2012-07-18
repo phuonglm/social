@@ -70,19 +70,7 @@
  	return els;
  }
  */
- /**
- * Returns true if element has the css clazz
- * Uses a regular expression to search more quickly
- * @param	element
- * @param	clazz
- * @return	boolean
- * @static
- */
-eXo.social.Util.hasClass = function(element, clazz) {
-	var reg = new RegExp('(^|\\s+)' + clazz + '(\\s+|$)');
-	return reg.test(element['className']);
-} ;
- 
+
  /**
   * gets element by clazz
   * @param	clazz

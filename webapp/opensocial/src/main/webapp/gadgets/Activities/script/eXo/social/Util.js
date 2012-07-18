@@ -80,36 +80,6 @@ eXo.social.Util.getElementsByTagName = function(tagName, parent) {
   return els;
 }
 
-/**
- * Returns true if element has the css clazz
- * Uses a regular expression to search more quickly
- * @param	element
- * @param	clazz
- * @return	boolean
- * @static
- */
-eXo.social.Util.hasClass = function(element, clazz) {
-  var reg = new RegExp('(^|\\s+)' + clazz + '(\\s+|$)');
-  return reg.test(element['className']);
-};
-
-/**
- * gets element by clazz
- * @param	clazz
- * @param	parentElement
- * @return	array
- * @static
- */
-eXo.social.Util.getElementsByClass = function(root, tagName, clazz) {
-  var Util = eXo.social.Util;
-  var list = [];
-  var nodes = root.getElementsByTagName(tagName);
-  for (var i = 0, l = nodes.length; i < l; i++)  {
-    if (Util.hasClass(nodes[i], clazz)) list.push(nodes[i]);
-  }
-    return list;
- }
-
 
 /**
  * adds element with specified parentId, tagName, elementId and html content
