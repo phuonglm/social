@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.exoplatform.social.core.BaseActivityProcessorPlugin.TEMPLATE_PARAM_TO_PROCESS;
 /**
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
  * @version $Revision$
@@ -432,6 +433,13 @@ public class NodeWriter_11x_12x implements NodeWriter {
 
       //
       Map<String, String> paramMap = readParams(params);
+      if(paramMap != null && !paramMap.containsKey(TEMPLATE_PARAM_TO_PROCESS) && (type.equals("ContactUpdate") ||
+         type.equals("AddPost") || type.equals("ks-answer:spaces") || type.equals("cs-calendar:spaces"))){
+        paramMap.put(TEMPLATE_PARAM_TO_PROCESS, "");
+      }
+      if(paramMap != null && !paramMap.containsKey(TEMPLATE_PARAM_TO_PROCESS) && (type.equals("exosocial:spaces"))){
+        paramMap.put(TEMPLATE_PARAM_TO_PROCESS, "USER_NAME_PARAM");
+      }
       if (paramMap != null) {
         activity.setTemplateParams(paramMap);
       }
