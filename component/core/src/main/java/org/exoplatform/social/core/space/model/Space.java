@@ -16,8 +16,8 @@
  */
 package org.exoplatform.social.core.space.model;
 
+import org.exoplatform.social.core.StringUtils;
 import org.exoplatform.social.core.model.AvatarAttachment;
-import org.exoplatform.social.core.space.SpaceUtils;
 
 /**
  * Space Model
@@ -89,8 +89,7 @@ public class Space {
    * The creator of space.
    * 
    * @since 1.2.0-GA
-   * @deprecated Use {@link managers} instead.
-   *             Will be removed by 1.2.8
+   * @deprecated Use managers instead.
    */
   @Deprecated
   private String creator;
@@ -468,7 +467,7 @@ public class Space {
    * @since 1.2.0-GA
    */
   public void setPrettyName(String prettyName) {
-    this.prettyName = SpaceUtils.cleanString(prettyName);
+    this.prettyName = StringUtils.cleanString(prettyName);
   }
 
   /**

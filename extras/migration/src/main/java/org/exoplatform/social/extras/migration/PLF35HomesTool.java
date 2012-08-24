@@ -31,7 +31,6 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.GroupHandler;
 import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.storage.api.SpaceStorage;
 import org.gatein.pc.api.Portlet;
@@ -80,7 +79,8 @@ public class PLF35HomesTool {
 
       for (Group group : groups) {
         Query query = new Query<Page>("group", group.getId(), null, null, Page.class);
-        DataStorage dataStorage = SpaceUtils.getDataStorage();
+        PortalContainer portalContainer = PortalContainer.getInstance();
+        DataStorage dataStorage = (DataStorage) portalContainer.getComponentInstanceOfType(DataStorage.class);
         List<Page> pages = dataStorage.find(query).getAll();
 
         for (Page page : pages) {

@@ -24,14 +24,13 @@ import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.social.common.IdentityType;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
-import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
-import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
-import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.model.AvatarAttachment;
 import org.exoplatform.social.core.space.model.Space;
-import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.social.core.storage.api.IdentityStorage;
+import org.exoplatform.social.core.storage.api.SpaceStorage;
 import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.web.url.navigation.NavigationResource;
 import org.exoplatform.web.url.navigation.NodeURL;
@@ -54,7 +53,7 @@ public class LinkProvider {
   
   public static final String ROUTE_DELIMITER = "/";
   
-  private static IdentityManager identityManager;
+  private static IdentityStorage identityStorage;
   private static Log             LOG = ExoLogger.getLogger(LinkProvider.class);
 
   /**
@@ -79,8 +78,8 @@ public class LinkProvider {
    * @since 1.2.0 GA
    */
   public static String getSpaceUri(final String prettyName) {
-    SpaceService spaceService = getSpaceService();
-    Space space = spaceService.getSpaceByPrettyName(prettyName);
+    SpaceStorage spaceStorage = getSpaceService();
+    Space space = spaceStorage.getSpaceByPrettyName(prettyName);
     RequestContext ctx = RequestContext.getCurrentInstance();
     if (ctx != null) {
       NodeURL nodeURL =  ctx.createURL(NodeURL.TYPE);
@@ -131,7 +130,7 @@ public class LinkProvider {
    * @return tag <a> with a link to profile of userName on portalName
    */
   public static String getProfileLink(final String username, final String portalOwner) {
-    Identity identity = getIdentityManager().getOrCreateIdentity(OrganizationIdentityProvider.NAME, username, true);
+    Identity identity = getIdentityStorage().findIdentity(IdentityType.ORGANIZATION.string(), username);
     Validate.notNull(identity, "Identity must not be null.");
     return "<a href=\"" + buildProfileUri(identity.getRemoteId(), null, portalOwner)
     + "\" target=\"_parent\">" + identity.getProfile().getFullName() + "</a>";
@@ -159,7 +158,7 @@ public class LinkProvider {
    * @return
    */
   public static String getUserActivityUri(final String remoteId) {
-    return getActivityUri(OrganizationIdentityProvider.NAME,remoteId);
+    return getActivityUri(IdentityType.ORGANIZATION.string(), remoteId);
   }
 
   /**
@@ -205,9 +204,9 @@ public class LinkProvider {
    */
   public static String getActivityUri(final String providerId, final String remoteId) {
     final String prefix = getBaseUri(null, null) + "/";
-    if (providerId.equals(OrganizationIdentityProvider.NAME)) {
+    if (providerId.equals(IdentityType.ORGANIZATION.string())) {
       return String.format("%sactivities/%s",prefix,remoteId);
-    } else if (providerId.equals(SpaceIdentityProvider.NAME)) {
+    } else if (providerId.equals(IdentityType.SPACE.string())) {
       return String.format("/%s/g/:spaces:%s/%s",getPortalName(null),remoteId,remoteId);
     } else {
       LOG.warn("Failed to getActivityLink with providerId: " + providerId);
@@ -320,7 +319,7 @@ public class LinkProvider {
     if (avatarAttachment != null) {
       avatarUrl = buildAvatarImageUri(avatarAttachment);
       profile.setAvatarUrl(avatarUrl);
-      getIdentityManager().saveProfile(profile);
+      getIdentityStorage().saveProfile(profile);
       return avatarUrl;
     }
     return null;
@@ -368,12 +367,12 @@ public class LinkProvider {
    *
    * @return identityManager
    */
-  private static IdentityManager getIdentityManager() {
-    if (LinkProvider.identityManager == null) {
-      LinkProvider.identityManager = (IdentityManager) PortalContainer.getInstance()
-      .getComponentInstanceOfType(IdentityManager.class);
+  private static IdentityStorage getIdentityStorage() {
+    if (LinkProvider.identityStorage == null) {
+      LinkProvider.identityStorage = (IdentityStorage) PortalContainer.getInstance()
+      .getComponentInstanceOfType(IdentityStorage.class);
     }
-    return LinkProvider.identityManager;
+    return LinkProvider.identityStorage;
   }
 
   /**
@@ -382,8 +381,8 @@ public class LinkProvider {
    * @return
    * @since 1.2.2
    */
-  private static SpaceService getSpaceService() {
-    return (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
+  private static SpaceStorage getSpaceService() {
+    return (SpaceStorage) PortalContainer.getInstance().getComponentInstanceOfType(SpaceStorage.class);
   }
   
   /**

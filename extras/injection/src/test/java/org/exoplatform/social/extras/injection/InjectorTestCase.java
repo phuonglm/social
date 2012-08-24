@@ -22,13 +22,13 @@ import org.exoplatform.component.test.ConfigurationUnit;
 import org.exoplatform.component.test.ConfiguredBy;
 import org.exoplatform.component.test.ContainerScope;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.social.core.StringUtils;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
 import org.exoplatform.social.core.manager.ActivityManager;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.manager.RelationshipManager;
-import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.social.core.storage.api.IdentityStorage;
@@ -98,7 +98,7 @@ public class InjectorTestCase extends AbstractKernelTest {
 
     //
     for(String space : spaces) {
-      spaceService.deleteSpace(spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(space)));
+      spaceService.deleteSpace(spaceService.getSpaceByPrettyName(StringUtils.cleanString(space)));
       Identity i = identityStorage.findIdentity(SpaceIdentityProvider.NAME, space.toLowerCase());
       identityStorage.deleteIdentity(i);
     }
@@ -346,13 +346,13 @@ public class InjectorTestCase extends AbstractKernelTest {
     spaceInjector.inject(params);
 
     //
-    Space space0 = spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(spacePrettyBaseName) + "0");
-    Space space1 = spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(spacePrettyBaseName) + "1");
-    Space space2 = spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(spacePrettyBaseName) + "2");
-    Space space3 = spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(spacePrettyBaseName) + "3");
-    Space space4 = spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(spacePrettyBaseName) + "4");
-    Space space5 = spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(spacePrettyBaseName) + "5");
-    Space space6 = spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(spacePrettyBaseName) + "6");
+    Space space0 = spaceService.getSpaceByPrettyName(StringUtils.cleanString(spacePrettyBaseName) + "0");
+    Space space1 = spaceService.getSpaceByPrettyName(StringUtils.cleanString(spacePrettyBaseName) + "1");
+    Space space2 = spaceService.getSpaceByPrettyName(StringUtils.cleanString(spacePrettyBaseName) + "2");
+    Space space3 = spaceService.getSpaceByPrettyName(StringUtils.cleanString(spacePrettyBaseName) + "3");
+    Space space4 = spaceService.getSpaceByPrettyName(StringUtils.cleanString(spacePrettyBaseName) + "4");
+    Space space5 = spaceService.getSpaceByPrettyName(StringUtils.cleanString(spacePrettyBaseName) + "5");
+    Space space6 = spaceService.getSpaceByPrettyName(StringUtils.cleanString(spacePrettyBaseName) + "6");
 
     //
     assertNotNull(space0);
@@ -372,13 +372,13 @@ public class InjectorTestCase extends AbstractKernelTest {
     spaceInjector.inject(params);
 
     //
-    space6 = spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(spacePrettyBaseName) + "6");
-    Space space7 = spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(spacePrettyBaseName) + "7");
-    Space space8 = spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(spacePrettyBaseName) + "8");
-    Space space9 = spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(spacePrettyBaseName) + "9");
-    Space space10 = spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(spacePrettyBaseName) + "10");
-    Space space11 = spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(spacePrettyBaseName) + "11");
-    Space space12 = spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(spacePrettyBaseName) + "12");
+    space6 = spaceService.getSpaceByPrettyName(StringUtils.cleanString(spacePrettyBaseName) + "6");
+    Space space7 = spaceService.getSpaceByPrettyName(StringUtils.cleanString(spacePrettyBaseName) + "7");
+    Space space8 = spaceService.getSpaceByPrettyName(StringUtils.cleanString(spacePrettyBaseName) + "8");
+    Space space9 = spaceService.getSpaceByPrettyName(StringUtils.cleanString(spacePrettyBaseName) + "9");
+    Space space10 = spaceService.getSpaceByPrettyName(StringUtils.cleanString(spacePrettyBaseName) + "10");
+    Space space11 = spaceService.getSpaceByPrettyName(StringUtils.cleanString(spacePrettyBaseName) + "11");
+    Space space12 = spaceService.getSpaceByPrettyName(StringUtils.cleanString(spacePrettyBaseName) + "12");
 
     //
     assertNotNull(space6);
@@ -549,7 +549,7 @@ public class InjectorTestCase extends AbstractKernelTest {
     }
 
     if (spacePrettyBaseName != null) {
-      assertEquals(null, spaceService.getSpaceByPrettyName(SpaceUtils.cleanString(spacePrettyBaseName) + "0"));
+      assertEquals(null, spaceService.getSpaceByPrettyName(StringUtils.cleanString(spacePrettyBaseName) + "0"));
       assertEquals(null, identityStorage.findIdentity(SpaceIdentityProvider.NAME, spacePrettyBaseName.toLowerCase() + "0"));
     }
 

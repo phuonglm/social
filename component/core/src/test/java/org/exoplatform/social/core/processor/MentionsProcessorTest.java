@@ -20,34 +20,36 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.social.common.IdentityType;
 import org.exoplatform.social.core.BaseActivityProcessorPlugin;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
 import org.exoplatform.social.core.activity.model.ExoSocialActivityImpl;
 import org.exoplatform.social.core.identity.model.Identity;
-import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
-import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.service.LinkProvider;
+import org.exoplatform.social.core.storage.api.IdentityStorage;
 import org.exoplatform.social.core.test.AbstractCoreTest;
 
 public class MentionsProcessorTest extends AbstractCoreTest {
 
-  private IdentityManager identityManager;
+  private IdentityStorage identityStorage;
   private Identity rootIdentity, johnIdentity;
 
 
   public void setUp() throws Exception {
     super.setUp();
-    identityManager = (IdentityManager) PortalContainer.getComponent(IdentityManager.class);
-    assertNotNull("identityManager must not be null", identityManager);
-    rootIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, "root");
-    johnIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, "john");
+    identityStorage = (IdentityStorage) PortalContainer.getComponent(IdentityStorage.class);
+    assertNotNull("identityStorage must not be null", identityStorage);
+    identityStorage.saveIdentity(new Identity(IdentityType.ORGANIZATION.string(), "root"));
+    identityStorage.saveIdentity(new Identity(IdentityType.ORGANIZATION.string(), "john"));
+    rootIdentity = identityStorage.findIdentity(IdentityType.ORGANIZATION.string(), "root");
+    johnIdentity = identityStorage.findIdentity(IdentityType.ORGANIZATION.string(), "john");
     assertNotNull("rootIdentity.getId() must not be null", rootIdentity.getId());
     assertNotNull("johnIdentity.getId() must not be null", johnIdentity.getId());
   }
 
   public void tearDown() throws Exception {
-    identityManager.deleteIdentity(rootIdentity);
-    identityManager.deleteIdentity(johnIdentity);
+    identityStorage.deleteIdentity(rootIdentity);
+    identityStorage.deleteIdentity(johnIdentity);
     super.tearDown();
   }
 
@@ -97,7 +99,7 @@ public class MentionsProcessorTest extends AbstractCoreTest {
     processor.processActivity(activity);
     
     templateParams = activity.getTemplateParams();
-    assertEquals(LinkProvider.getProfileLink("root", LinkProvider.DEFAULT_PORTAL_OWNER) + " and " + 
+    assertEquals(LinkProvider.getProfileLink("root", LinkProvider.DEFAULT_PORTAL_OWNER) + " and " +
                  LinkProvider.getProfileLink("john", LinkProvider.DEFAULT_PORTAL_OWNER),
                  templateParams.get("a"));
     assertEquals(LinkProvider.getProfileLink("john", LinkProvider.DEFAULT_PORTAL_OWNER),

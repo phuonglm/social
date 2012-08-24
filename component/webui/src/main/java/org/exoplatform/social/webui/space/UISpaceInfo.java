@@ -31,6 +31,7 @@ import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.social.core.StringUtils;
 import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
@@ -222,7 +223,7 @@ public class UISpaceInfo extends UIForm {
       
       boolean nameChanged = (!space.getDisplayName().equals(name));
       if (nameChanged) {
-        String cleanedString = SpaceUtils.cleanString(name);
+        String cleanedString = StringUtils.cleanString(name);
         space.setUrl(cleanedString);
         if (spaceService.getSpaceByUrl(cleanedString) != null) {
           uiApp.addMessage(new ApplicationMessage("UISpaceInfo.msg.current-name-exist", null, ApplicationMessage.INFO));
@@ -335,15 +336,15 @@ public class UISpaceInfo extends UIForm {
       if (parentNode == null) {
         parentNode = SpaceUtils.getParentNode().getParent();
       }
-      if (parentNode == null || parentNode.getChild(SpaceUtils.cleanString(space.getPrettyName())) == null) {
+      if (parentNode == null || parentNode.getChild(StringUtils.cleanString(space.getPrettyName())) == null) {
         return null;
       }
       
-      UserNode renamedNode = parentNode.getChild(SpaceUtils.cleanString(space.getPrettyName()));
+      UserNode renamedNode = parentNode.getChild(StringUtils.cleanString(space.getPrettyName()));
       
       renamedNode.setLabel(newNodeLabel);
 
-      String newNodeName = SpaceUtils.cleanString(newNodeLabel);
+      String newNodeName = StringUtils.cleanString(newNodeLabel);
       if (parentNode.getChild(newNodeName) != null) {
         newNodeName = newNodeName + "_" + System.currentTimeMillis();
       }

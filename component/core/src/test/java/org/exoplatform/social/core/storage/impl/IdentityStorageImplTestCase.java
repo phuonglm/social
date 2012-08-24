@@ -26,7 +26,6 @@ import java.util.Map;
 import org.exoplatform.social.core.chromattic.entity.IdentityEntity;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
-import org.exoplatform.social.core.identity.provider.FakeIdentityProvider;
 import org.exoplatform.social.core.model.AvatarAttachment;
 import org.exoplatform.social.core.profile.ProfileFilter;
 import org.exoplatform.social.core.relationship.model.Relationship;
@@ -1207,12 +1206,12 @@ public class IdentityStorageImplTestCase extends AbstractCoreTest {
 
   @MaxQueryNumber(75)
   public void testProfileAvatarURL() throws Exception{
-    Identity newIdentity = new Identity(FakeIdentityProvider.NAME, "externalIdentity");
+    Identity newIdentity = new Identity("foo", "externalIdentity");
     //
     storage._createIdentity(newIdentity);
     String generatedId = newIdentity.getId();
     assertNotNull(generatedId);
-    assertEquals(FakeIdentityProvider.NAME, newIdentity.getProviderId());
+    assertEquals("foo", newIdentity.getProviderId());
     assertEquals(false, newIdentity.isDeleted());
     assertNotNull(newIdentity.getProfile());
     assertNull(newIdentity.getProfile().getId());
@@ -1231,7 +1230,7 @@ public class IdentityStorageImplTestCase extends AbstractCoreTest {
     assertEquals("http://avatar.com/myavatar.jpg", profile.getAvatarUrl());
     assertEquals("http://avatar.com/myHome", profile.getUrl());
         
-    Identity identityRecheck = storage._findIdentity(FakeIdentityProvider.NAME, newIdentity.getRemoteId());
+    Identity identityRecheck = storage._findIdentity("foo", newIdentity.getRemoteId());
     Profile profileRecheck = identityRecheck.getProfile();
 
     assertEquals("eXo Social", profileRecheck.getProperty(Profile.FULL_NAME));

@@ -38,6 +38,7 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.social.common.RealtimeListAccess;
+import org.exoplatform.social.core.StringUtils;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
@@ -67,7 +68,7 @@ public class WidgetRestService implements ResourceContainer {
     try {
       SpaceService service = (SpaceService) pc.getComponentInstanceOfType(SpaceService.class);
 
-      Space space = service.getSpaceByPrettyName(SpaceUtils.cleanString(spaceName));
+      Space space = service.getSpaceByPrettyName(StringUtils.cleanString(spaceName));
       String username = ConversationState.getCurrent().getIdentity().getUserId();
 
       if (space == null) {
@@ -137,7 +138,7 @@ public class WidgetRestService implements ResourceContainer {
                     "no-repeat scroll 0 0 #FFFFFF; margin-bottom:5px;}</style>")
             .append("</head><body><h1>eXo Social</h1>");
 
-    String spacePrettyName = SpaceUtils.cleanString(spaceName);
+    String spacePrettyName = StringUtils.cleanString(spaceName);
 
     URI goToSpace = uriInfo.getBaseUriBuilder().path("/spaces/{containerName}/go_to_space")
                                .queryParam("spaceName", spaceName)

@@ -43,7 +43,6 @@ import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvide
 import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
 import org.exoplatform.social.core.manager.ActivityManager;
 import org.exoplatform.social.core.manager.IdentityManager;
-import org.exoplatform.social.service.rest.api.ActivityResources;
 import org.exoplatform.social.service.rest.api.models.ActivityRestOut;
 import org.exoplatform.social.service.rest.api.models.IdentityRestOut;
 import org.exoplatform.social.service.test.AbstractResourceTest;

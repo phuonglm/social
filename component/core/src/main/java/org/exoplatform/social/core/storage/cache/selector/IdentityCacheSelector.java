@@ -18,13 +18,10 @@
 package org.exoplatform.social.core.storage.cache.selector;
 
 import org.exoplatform.services.cache.ObjectCacheInfo;
-import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
-import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
+import org.exoplatform.social.common.IdentityType;
 import org.exoplatform.social.core.storage.cache.model.key.IdentityFilterKey;
 import org.exoplatform.social.core.storage.cache.model.key.ListIdentitiesKey;
 import org.exoplatform.social.core.storage.cache.model.key.ScopeCacheKey;
-
-import java.io.Serializable;
 
 /**
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
@@ -40,7 +37,7 @@ public class IdentityCacheSelector extends ScopeCacheSelector<ScopeCacheKey, Obj
       throw new NullPointerException();
     }
 
-    if (!provider.equals(OrganizationIdentityProvider.NAME) && !provider.equals(SpaceIdentityProvider.NAME)) {
+    if (!provider.equals(IdentityType.ORGANIZATION.string()) && !provider.equals(IdentityType.SPACE.string())) {
       throw new IllegalArgumentException();
     }
 
@@ -55,12 +52,12 @@ public class IdentityCacheSelector extends ScopeCacheSelector<ScopeCacheKey, Obj
     }
 
     if (key instanceof IdentityFilterKey) {
-      return ((IdentityFilterKey)key).getProviderId().equals(OrganizationIdentityProvider.NAME);
+      return ((IdentityFilterKey)key).getProviderId().equals(IdentityType.ORGANIZATION.string());
     }
 
     if (key instanceof ListIdentitiesKey) {
-      return ((ListIdentitiesKey)key).getKey().getProviderId().equals(OrganizationIdentityProvider.NAME) || 
-                                      ((ListIdentitiesKey)key).getKey().getProviderId().equals(SpaceIdentityProvider.NAME);
+      return ((ListIdentitiesKey)key).getKey().getProviderId().equals(IdentityType.ORGANIZATION.string()) ||
+                                      ((ListIdentitiesKey)key).getKey().getProviderId().equals(IdentityType.SPACE.string());
     }
 
     return false;

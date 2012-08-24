@@ -16,6 +16,8 @@
  */
 package org.exoplatform.social.core.space;
 
+import org.exoplatform.social.core.StringUtils;
+
 /**
  * @author <a href="http://hoatle.net">hoatle (hoatlevan at gmail dot com)</a>
  * @since 1.2.0-GA
@@ -55,7 +57,7 @@ public class SpaceFilter {
    */
   public SpaceFilter(String spaceNameSearchCondition) {
     this.firstCharacterOfSpaceName = CHAR_DEFAULT_VALUE;
-    this.spaceNameSearchCondition = SpaceUtils.removeSpecialCharacterInSpaceFilter(spaceNameSearchCondition);
+    this.spaceNameSearchCondition = StringUtils.removeSpecialCharacterInSpaceFilter(spaceNameSearchCondition);
   }
   
   /**
@@ -66,7 +68,7 @@ public class SpaceFilter {
    */
   public SpaceFilter(char firstCharacterOfSpaceName, String spaceNameSearchCondition) {
     this.firstCharacterOfSpaceName = firstCharacterOfSpaceName;
-    this.spaceNameSearchCondition = SpaceUtils.removeSpecialCharacterInSpaceFilter(spaceNameSearchCondition);
+    this.spaceNameSearchCondition = StringUtils.removeSpecialCharacterInSpaceFilter(spaceNameSearchCondition);
   }
   
   /**
@@ -102,6 +104,6 @@ public class SpaceFilter {
    * @param spaceNameSearchCondition
    */
   public void setSpaceNameSearchCondition(String spaceNameSearchCondition) {
-    this.spaceNameSearchCondition = SpaceUtils.removeSpecialCharacterInSpaceFilter(spaceNameSearchCondition);
+    this.spaceNameSearchCondition = StringUtils.removeSpecialCharacterInSpaceFilter(spaceNameSearchCondition);
   }
 }

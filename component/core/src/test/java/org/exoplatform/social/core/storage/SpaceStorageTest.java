@@ -21,14 +21,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.exoplatform.social.common.IdentityType;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
-import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
-import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
 import org.exoplatform.social.core.model.AvatarAttachment;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.social.core.space.SpaceFilter;
-import org.exoplatform.social.core.space.impl.DefaultSpaceApplicationHandler;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.storage.api.IdentityStorage;
 import org.exoplatform.social.core.storage.api.SpaceStorage;
@@ -36,12 +34,6 @@ import org.exoplatform.social.core.test.AbstractCoreTest;
 import org.exoplatform.social.core.test.MaxQueryNumber;
 import org.exoplatform.social.core.test.QueryNumberTest;
 
-/**
- * Unit Tests for {@link org.exoplatform.social.core.storage.api.SpaceStorage}
- *
- * @since Nov 3, 2010
- * @copyright eXo SAS
- */
 @QueryNumberTest
 public class SpaceStorageTest extends AbstractCoreTest {
 
@@ -110,9 +102,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     tearDownSpaceList = new ArrayList<Space>();
   }
 
-  /**
-   * Cleans up.
-   */
   @Override
   protected void tearDown() throws Exception {
     for (Space sp : tearDownSpaceList) {
@@ -126,12 +115,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     super.tearDown();
   }
 
-  /**
-   * Gets an instance of Space.
-   *
-   * @param number
-   * @return an instance of space
-   */
   private Space getSpaceInstance(int number) {
     Space space = new Space();
     space.setApp("app");
@@ -139,7 +122,7 @@ public class SpaceStorageTest extends AbstractCoreTest {
     space.setPrettyName(space.getDisplayName());
     space.setRegistration(Space.OPEN);
     space.setDescription("add new space " + number);
-    space.setType(DefaultSpaceApplicationHandler.NAME);
+    space.setType(IdentityType.SPACE.string());
     space.setVisibility(Space.PUBLIC);
     space.setPriority(Space.INTERMEDIATE_PRIORITY);
     space.setGroupId("/spaces/space" + number);
@@ -154,13 +137,7 @@ public class SpaceStorageTest extends AbstractCoreTest {
     space.setUrl(space.getPrettyName());
     return space;
   }
-  
-  /**
-   * Gets an instance of Space.
-   *
-   * @param number
-   * @return an instance of space
-   */
+
   private Space getSpaceInstance(int number, String visible, String registration, String manager, String...members) {
     Space space = new Space();
     space.setApp("app");
@@ -168,7 +145,7 @@ public class SpaceStorageTest extends AbstractCoreTest {
     space.setPrettyName(space.getDisplayName());
     space.setRegistration(registration);
     space.setDescription("add new space " + number);
-    space.setType(DefaultSpaceApplicationHandler.NAME);
+    space.setType(IdentityType.SPACE.string());
     space.setVisibility(visible);
     space.setPriority(Space.INTERMEDIATE_PRIORITY);
     space.setGroupId("/spaces/space" + number);
@@ -182,13 +159,7 @@ public class SpaceStorageTest extends AbstractCoreTest {
     space.setUrl(space.getPrettyName());
     return space;
   }
-  
-  /**
-   * Gets an instance of Space.
-   *
-   * @param number
-   * @return an instance of space
-   */
+
   private Space getSpaceInstanceInvitedMember(int number, String visible, String registration, String[] invitedMember, String manager, String...members) {
     Space space = new Space();
     space.setApp("app");
@@ -196,7 +167,7 @@ public class SpaceStorageTest extends AbstractCoreTest {
     space.setPrettyName(space.getDisplayName());
     space.setRegistration(registration);
     space.setDescription("add new space " + number);
-    space.setType(DefaultSpaceApplicationHandler.NAME);
+    space.setType(IdentityType.SPACE.string());
     space.setVisibility(visible);
     space.setPriority(Space.INTERMEDIATE_PRIORITY);
     space.setGroupId("/spaces/space" + number);
@@ -219,11 +190,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     }
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getAllSpaces()}
-   *
-   * @throws Exception
-   */
   @MaxQueryNumber(750)
   public void testGetAllSpaces() throws Exception {
     int totalSpaces = 10;
@@ -236,12 +202,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
             totalSpaces, spaceStorage.getAllSpaces().size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getSpaces(long, long)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetSpaces() throws Exception {
     int totalSpaces = 10;
@@ -265,12 +225,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("spaceListAccess.size() must be: " + totalSpaces, totalSpaces, spaceListAccess.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getAllSpacesCount()}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetAllSpacesCount() throws Exception {
     int totalSpaces = 10;
@@ -283,12 +237,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("spacesCount must be: ", totalSpaces, spacesCount);
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getSpacesByFilter(org.exoplatform.social.core.space.SpaceFilter, long, long)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetSpacesByFilter() throws Exception {
     int totalSpaces = 10;
@@ -326,12 +274,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("foundSpaces.size() must return: " + 0, 0, foundSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getAllSpacesByFilterCount(org.exoplatform.social.core.space.SpaceFilter)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetAllSpacesByFilterCount() throws Exception {
     int totalSpaces = 10;
@@ -362,12 +304,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("count must be: " + 0, 0, count);
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getAccessibleSpaces(String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetAccessibleSpaces() throws Exception {
     int countSpace = 10;
@@ -382,12 +318,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("accessibleSpaces.size() must return: " + countSpace, countSpace, accessibleSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getAccessibleSpacesByFilter(String, org.exoplatform.social.core.space.SpaceFilter, long, long)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(1400)
   public void testGetAccessibleSpacesByFilter() throws Exception {
     int countSpace = 20;
@@ -430,12 +360,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("accessibleSpacesByFilter.size() must return: ", 0, accessibleSpacesByFilter.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getAccessibleSpacesByFilterCount(String, org.exoplatform.social.core.space.SpaceFilter)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(1400)
   public void testGetAccessibleSpacesByFilterCount() throws Exception {
     int countSpace = 20;
@@ -470,12 +394,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("accessibleSpacesByFilterCount must be: ", 0, accessibleSpacesByFilterCount);
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getAccessibleSpacesCount(String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testgetAccessibleSpacesCount() throws Exception {
     int countSpace = 10;
@@ -495,12 +413,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("accessibleSpacesCount must be: 0", 0, accessibleSpacesCount);
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getAccessibleSpaces(String, long, long)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetAccessibleSpacesWithOffset() throws Exception {
     int countSpace = 10;
@@ -515,12 +427,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("accessibleSpaces.size() must return: " + 5, 5, accessibleSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getEditableSpaces(String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetEditableSpaces () throws Exception {
     int countSpace = 10;
@@ -543,12 +449,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("editableSpaces.size() must return: " + 0, 0, editableSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getEditableSpacesByFilter(String, org.exoplatform.social.core.space.SpaceFilter, long, long)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetEditableSpacesByFilter() throws Exception {
     int countSpace = 10;
@@ -607,12 +507,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("editableSpaces.size() must return: " + 0, 0, editableSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getEditableSpacesByFilterCount(String, org.exoplatform.social.core.space.SpaceFilter)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetEditableSpacesByFilterCount() throws Exception {
     int countSpace = 10;
@@ -659,12 +553,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("editableSpacesCount must be: " + 0, 0, editableSpacesCount);
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getEditableSpaces(String, long, long)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetEditableSpacesWithListAccess() throws Exception {
     int countSpace = 10;
@@ -687,12 +575,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("editableSpaces.size() must return: " + 0, 0, editableSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getInvitedSpaces(String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetInvitedSpaces() throws Exception {
     int countSpace = 10;
@@ -719,12 +601,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("invitedSpaces.size() must return: " + 0, 0, invitedSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getInvitedSpacesByFilter(String, org.exoplatform.social.core.space.SpaceFilter, long, long)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetInvitedSpacesByFilter() throws Exception {
     int countSpace = 10;
@@ -763,12 +639,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("invitedSpaces.size() must return: " + 0, 0, invitedSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getInvitedSpacesByFilterCount(String, org.exoplatform.social.core.space.SpaceFilter)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetInvitedSpacesByFilterCount() throws Exception {
     int countSpace = 10;
@@ -800,12 +670,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("invitedSpacesCount must be: " + 0, 0, invitedSpacesCount);
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getInvitedSpaces(String, long, long)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetInvitedSpacesWithOffset() throws Exception {
     int countSpace = 10;
@@ -832,12 +696,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("invitedSpaces.size() must return: " + 0, 0, invitedSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getInvitedSpacesCount(String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetInvitedSpacesCount() throws Exception {
     int countSpace = 10;
@@ -857,12 +715,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("invitedSpacesCount must be: 0", 0, invitedSpacesCount);
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getPendingSpaces(String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetPendingSpaces() throws Exception {
     int countSpace = 10;
@@ -893,12 +745,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("pendingSpaces.size() must return: " + 0, 0, pendingSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getPendingSpacesByFilter(String, org.exoplatform.social.core.space.SpaceFilter, long, long)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetPendingSpacesByFilter() throws Exception {
     int countSpace = 10;
@@ -953,12 +799,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("pendingSpaces.size() must return: " + 0, 0, pendingSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getPendingSpacesByFilterCount(String, org.exoplatform.social.core.space.SpaceFilter)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetPendingSpacesByFilterCount() throws Exception {
     int countSpace = 10;
@@ -1002,12 +842,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("pendingSpacesCount must be: " + 0, 0, pendingSpacesCount);
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getPendingSpaces(String, long, long)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetPendingSpacesWithOffset() throws Exception {
     int countSpace = 10;
@@ -1034,12 +868,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("pendingSpaces.size() must return: " + 0, 0, pendingSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getPendingSpacesCount(String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetPendingSpacesCount() throws Exception {
     int countSpace = 10;
@@ -1062,12 +890,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("pendingSpaceCount must be: 0", 0, pendingSpaceCount);
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getPublicSpaces(String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetPublicSpaces() throws Exception {
     int countSpace = 10;
@@ -1086,12 +908,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("publicSpaces.size() must return: " + 0, 0, publicSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getPublicSpacesByFilter(String, org.exoplatform.social.core.space.SpaceFilter, long, long)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetPublicSpacesByFilter() throws Exception {
     int countSpace = 10;
@@ -1138,12 +954,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("publicSpaces.size() must return: " + 10, 10, publicSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getPublicSpacesByFilterCount(String, org.exoplatform.social.core.space.SpaceFilter)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetPublicSpacesByFilterCount() throws Exception {
     int countSpace = 10;
@@ -1181,12 +991,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("publicSpacesByFilterCount must be: " + 10, 10, publicSpacesByFilterCount);
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getPublicSpaces(String, long, long)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetPublicSpacesWithOffset() throws Exception {
     int countSpace = 10;
@@ -1213,12 +1017,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("publicSpaces.size() must return: " + countSpace, countSpace, publicSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getPublicSpacesCount(String)}
-   *
-   * @since 1.20.-GA
-   * @throws Exception
-   */
   @MaxQueryNumber(700)
   public void testGetPublicSpacesCount() throws Exception {
     int countSpace = 10;
@@ -1241,12 +1039,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("publicSpacesCount must be: " + countSpace, countSpace, publicSpacesCount);
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getMemberSpaces(String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetMemberSpaces() throws Exception {
     int countSpace = 10;
@@ -1274,12 +1066,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("memberSpaces.size() must return: 0", 0, memberSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getMemberSpacesByFilter(String, org.exoplatform.social.core.space.SpaceFilter, long, long)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetMemberSpacesByFilter() throws Exception {
     int countSpace = 10;
@@ -1327,12 +1113,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("memberSpaces.size() must return: 0", 0, memberSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getMemberSpacesByFilterCount(String, org.exoplatform.social.core.space.SpaceFilter)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetMemberSpacesByFilterCount() throws Exception {
     int countSpace = 10;
@@ -1371,12 +1151,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("memberSpacesCount must be: 0", 0, memberSpacesCount);
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getMemberSpaces(String, long, long)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
   @MaxQueryNumber(700)
   public void testGetMemberSpacesWithListAccess() throws Exception {
     int countSpace = 10;
@@ -1403,11 +1177,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("memberSpaces.size() must return: 0", 0, memberSpaces.size());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getSpaceById(String)}
-   *
-   * @throws Exception
-   */
   @MaxQueryNumber(100)
   public void testGetSpaceById() throws Exception {
     int number = 1;
@@ -1429,11 +1198,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals("space.getPriority() must return: " + space.getPriority(), space.getPriority(), savedSpace.getPriority());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getSpaceByGroupId(String)}
-   *
-   * @throws Exception
-   */
   @MaxQueryNumber(100)
   public void testGetSpaceByGroupId() throws Exception {
     Space space = getSpaceInstance(1);
@@ -1448,11 +1212,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
 
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getSpaceByUrl(String)}
-   *
-   * @throws Exception
-   */
   @MaxQueryNumber(100)
   public void testGetSpaceByUrl() throws Exception {
     int number = 1;
@@ -1493,11 +1252,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
                  savedSpace.getUrl());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getSpaceByPrettyName(String)}
-   *
-   * @throws Exception
-   */
   @MaxQueryNumber(100)
   public void testGetSpaceByPrettyName() throws Exception {
     // number for method getSpaceInstance(int number)
@@ -1537,11 +1291,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
                  foundSpaceList.getPriority());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#deleteSpace(String)}
-   *
-   * @throws Exception
-   */
   @MaxQueryNumber(350)
   public void testDeleteSpace() throws Exception {
     int number = 1;
@@ -1550,11 +1299,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     spaceStorage.deleteSpace(space.getId());
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#saveSpace(org.exoplatform.social.core.space.model.Space, boolean)}
-   *
-   * @throws Exception
-   */
   @MaxQueryNumber(150)
   public void testSaveSpace() throws Exception {
     int number = 1;
@@ -1573,12 +1317,6 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertEquals(null, got.getAvatarUrl());
   }
 
-  /**
-   * Test {@link SpaceStorage#renameSpace(Space, String)}
-   *
-   * @throws Exception
-   * @since 1.2.8
-   */
   @MaxQueryNumber(400)
   public void testRenameSpace() throws Exception {
     int number = 1;
@@ -1598,7 +1336,7 @@ public class SpaceStorageTest extends AbstractCoreTest {
     Space got = spaceStorage.getSpaceById(space.getId());
     assertEquals(null, got.getAvatarUrl());
     
-    Identity spaceIdentity = new Identity(SpaceIdentityProvider.NAME, got.getPrettyName());
+    Identity spaceIdentity = new Identity(IdentityType.SPACE.string(), got.getPrettyName());
     identityStorage.saveIdentity(spaceIdentity);
     tearDownIdentityList.add(spaceIdentity);
     
@@ -1608,12 +1346,7 @@ public class SpaceStorageTest extends AbstractCoreTest {
     got = spaceStorage.getSpaceById(space.getId());
     assertEquals(newDisplayName, got.getDisplayName());
   }
-  
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#saveSpace(org.exoplatform.social.core.space.model.Space, boolean)}
-   *
-   * @throws Exception
-   */
+
   @MaxQueryNumber(150)
   public void testSaveSpaceAvatar() throws Exception {
     int number = 1;
@@ -1623,7 +1356,7 @@ public class SpaceStorageTest extends AbstractCoreTest {
     assertNotNull(avatarAttachment); 
     space.setAvatarAttachment(avatarAttachment);
     
-    Identity identity = new Identity(SpaceIdentityProvider.NAME, space.getPrettyName());
+    Identity identity = new Identity(IdentityType.SPACE.string(), space.getPrettyName());
     Profile profile = new Profile(identity);
     identity.setProfile(profile);
     profile.setProperty(Profile.AVATAR, avatarAttachment);
@@ -1646,18 +1379,13 @@ public class SpaceStorageTest extends AbstractCoreTest {
       avatarURL = avatarRandomURL;
     }
     assertEquals(LinkProvider.escapeJCRSpecialCharacters(
-            String.format(
-              "/rest/jcr/repository/portal-test/production/soc:providers/soc:space/soc:%s/soc:profile/soc:avatar",
-              space.getPrettyName())),
+        String.format(
+            "/rest/jcr/repository/portal-test/production/soc:providers/soc:space/soc:%s/soc:profile/soc:avatar",
+            space.getPrettyName())),
               avatarURL);
     
   }
 
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#saveSpace(org.exoplatform.social.core.space.model.Space, boolean)} with isNew is false
-   *
-   * @throws Exception
-   */
   @MaxQueryNumber(200)
   public void testUpdateSpace() throws Exception {
     int number = 1;
@@ -1669,7 +1397,7 @@ public class SpaceStorageTest extends AbstractCoreTest {
     tearDownSpaceList.add(space);
     spaceStorage.saveSpace(space, true);
     
-    Identity identity = new Identity(SpaceIdentityProvider.NAME, space.getPrettyName());
+    Identity identity = new Identity(IdentityType.SPACE.string(), space.getPrettyName());
     Profile profile = new Profile(identity);
     identity.setProfile(profile);
     profile.setProperty(Profile.AVATAR, avatarAttachment);
@@ -1686,13 +1414,7 @@ public class SpaceStorageTest extends AbstractCoreTest {
 
     assertNotNull("avatar URL should not be null",got.getAvatarUrl());
   }
-  
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getVisibleSpaces(String)}
-   *
-   * @throws Exception
-   * @since 1.2.5-GA
-   */
+
   @MaxQueryNumber(200)
   public void testGetVisibleSpaces() throws Exception {
     int countSpace = 10;
@@ -1760,13 +1482,7 @@ public class SpaceStorageTest extends AbstractCoreTest {
       assertEquals("visibleSpaces() must return: " + privateSpace3, privateSpace3, privateSpaces.size());
     }
   }
-  
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getVisibleSpaces(String)}
-   *
-   * @throws Exception
-   * @since 1.2.5-GA
-   */
+
   @MaxQueryNumber(200)
   public void testGetVisibleSpacesWithValidate() throws Exception {
     int countSpace = 10;
@@ -1834,13 +1550,7 @@ public class SpaceStorageTest extends AbstractCoreTest {
       assertEquals("visibleSpaces() must return: " + privateSpace3, privateSpace3, privateSpaces.size());
     }
   }
-  
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getVisibleSpaces(String)}
-   *
-   * @throws Exception
-   * @since 1.2.5-GA
-   */
+
   @MaxQueryNumber(200)
   public void testGetVisibleSpacesFilterByName() throws Exception {
     int countSpace = 10;
@@ -1908,13 +1618,7 @@ public class SpaceStorageTest extends AbstractCoreTest {
       assertEquals("visibleSpaces() must return: " + privateSpace3, privateSpace3, privateSpaces.size());
     }
   }
-  
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getVisibleSpaces(String)}
-   *
-   * @throws Exception
-   * @since 1.2.5-GA
-   */
+
   @MaxQueryNumber(200)
   public void testGetVisibleSpacesCloseRegistration() throws Exception {
     int countSpace = 10;
@@ -1951,13 +1655,7 @@ public class SpaceStorageTest extends AbstractCoreTest {
       assertEquals("registrationCloseSpaces must return: " + registrationCloseSpaceCount, registrationCloseSpaceCount, registrationCloseSpaces.size());
     }
   }
-  
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getVisibleSpaces(String)}
-   *
-   * @throws Exception
-   * @since 1.2.5-GA
-   */
+
   @MaxQueryNumber(200)
   public void testGetVisibleSpacesCloseRegistrationByFilter() throws Exception {
     int countSpace = 10;
@@ -2047,13 +1745,7 @@ public class SpaceStorageTest extends AbstractCoreTest {
       assertEquals("registrationCloseSpaces must return: " + registrationCloseSpaceCount2, registrationCloseSpaceCount2, registrationCloseSpaces1.size());
     }
   }
-  
-  /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getVisibleSpaces(String)}
-   *
-   * @throws Exception
-   * @since 1.2.5-GA
-   */
+
   @MaxQueryNumber(250)
   public void testGetVisibleSpacesInvitedMember() throws Exception {
     int countSpace = 10;

@@ -1,11 +1,10 @@
 package org.exoplatform.social.core.storage.cache;
 
+import org.exoplatform.social.common.IdentityType;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
 import org.exoplatform.social.core.activity.model.ExoSocialActivityImpl;
 import org.exoplatform.social.core.identity.model.Identity;
-import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
 import org.exoplatform.social.core.space.model.Space;
-import org.exoplatform.social.core.storage.impl.ActivityStorageImpl;
 import org.exoplatform.social.core.storage.impl.IdentityStorageImpl;
 import org.exoplatform.social.core.test.AbstractCoreTest;
 import org.exoplatform.social.core.test.MaxQueryNumber;
@@ -85,9 +84,9 @@ public class CachedSpaceStorageTestCase extends AbstractCoreTest {
     cachedSpaceStorage.saveSpace(space, true);
 
     //
-    Identity identitySpace = new Identity(SpaceIdentityProvider.NAME, space.getPrettyName());
+    Identity identitySpace = new Identity(IdentityType.SPACE.string(), space.getPrettyName());
     identityStorage.saveIdentity(identitySpace);
-    identitySpace = identityStorage.findIdentity(SpaceIdentityProvider.NAME, space.getPrettyName());
+    identitySpace = identityStorage.findIdentity(IdentityType.SPACE.string(), space.getPrettyName());
 
     //
     ExoSocialActivity activity = new ExoSocialActivityImpl();

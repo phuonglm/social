@@ -25,6 +25,8 @@ import org.chromattic.ext.ntdef.Resource;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.social.common.IdentityType;
+import org.exoplatform.social.core.StringUtils;
 import org.exoplatform.social.core.chromattic.entity.IdentityEntity;
 import org.exoplatform.social.core.chromattic.entity.ProfileEntity;
 import org.exoplatform.social.core.chromattic.entity.ProfileXpEntity;
@@ -36,8 +38,6 @@ import org.exoplatform.social.core.chromattic.entity.SpaceRef;
 import org.exoplatform.social.core.identity.SpaceMemberFilterListAccess.Type;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
-import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
-import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
 import org.exoplatform.social.core.model.AvatarAttachment;
 import org.exoplatform.social.core.profile.ProfileFilter;
 import org.exoplatform.social.core.relationship.model.Relationship;
@@ -200,7 +200,7 @@ public class IdentityStorageImpl extends AbstractStorage implements IdentityStor
     whereExpression.startGroup();
     whereExpression
         .like(JCRProperties.path, getProviderRoot().getProviders().get(
-                                OrganizationIdentityProvider.NAME).getPath() + StorageUtils.SLASH_STR + StorageUtils.PERCENT_STR)
+            IdentityType.ORGANIZATION.string()).getPath() + StorageUtils.SLASH_STR + StorageUtils.PERCENT_STR)
         .and()
         .not().equals(ProfileEntity.deleted, "true");;
 
@@ -228,7 +228,7 @@ public class IdentityStorageImpl extends AbstractStorage implements IdentityStor
       }
 
       for (int i = 0; i <  members.length; i++){
-        relations.add(_findIdentity(OrganizationIdentityProvider.NAME, members[i]));
+        relations.add(_findIdentity(IdentityType.ORGANIZATION.string(), members[i]));
       }
 
     } catch (NodeNotFoundException e){
@@ -570,7 +570,7 @@ public class IdentityStorageImpl extends AbstractStorage implements IdentityStor
     profileEntity.setParentId(profile.getIdentity().getId());
 
     // External profile
-    if (!OrganizationIdentityProvider.NAME.equals(providerId) && !SpaceIdentityProvider.NAME.equals(providerId)) {
+    if (!IdentityType.ORGANIZATION.string().equals(providerId) && !IdentityType.SPACE.string().equals(providerId)) {
       profileEntity.setExternalUrl(profile.getUrl());
       profileEntity.setExternalAvatarUrl(profile.getAvatarUrl());
     }
@@ -677,12 +677,12 @@ public class IdentityStorageImpl extends AbstractStorage implements IdentityStor
     }
 
 
-    if (OrganizationIdentityProvider.NAME.equals(providerId) || SpaceIdentityProvider.NAME.equals(providerId)) {
+    if (IdentityType.ORGANIZATION.string().equals(providerId) || IdentityType.SPACE.string().equals(providerId)) {
 
       //
-      if (OrganizationIdentityProvider.NAME.equals(providerId)) {
+      if (IdentityType.ORGANIZATION.string().equals(providerId)) {
         profile.setUrl(LinkProvider.getUserProfileUri(remoteId));
-      } else if (SpaceIdentityProvider.NAME.equals(providerId)) {
+      } else if (IdentityType.SPACE.string().equals(providerId)) {
         spaceStorage = getSpaceStorage();
         if (spaceStorage.getSpaceByPrettyName(remoteId) != null) {
           profile.setUrl(LinkProvider.getSpaceUri(remoteId));
@@ -697,7 +697,7 @@ public class IdentityStorageImpl extends AbstractStorage implements IdentityStor
           long lastModified = avatar.getLastModified().getTime();
           // workaround: as dot character (.) breaks generated url (Ref: SOC-2283)
           String avatarUrl = StorageUtils.encodeUrl(avatarPath) + "/?upd=" + lastModified;
-          profile.setAvatarUrl(LinkProvider.escapeJCRSpecialCharacters(avatarUrl));
+          profile.setAvatarUrl(StringUtils.escapeJCRSpecialCharacters(avatarUrl));
         } catch (Exception e) {
           LOG.warn("Failed to build file url from fileResource: " + e.getMessage());
         }

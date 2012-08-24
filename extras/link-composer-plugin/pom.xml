@@ -128,6 +128,12 @@
       <artifactId>social-component-core</artifactId>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.exoplatform.social</groupId>
+      <artifactId>social-component-api-1x</artifactId>
+      <scope>provided</scope>
+    </dependency>
     
     <dependency>
       <groupId>org.exoplatform.social</groupId>

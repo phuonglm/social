@@ -21,11 +21,11 @@ import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.cache.ExoCache;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.social.common.IdentityType;
+import org.exoplatform.social.core.StringUtils;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
 import org.exoplatform.social.core.identity.model.Identity;
-import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
 import org.exoplatform.social.core.space.SpaceFilter;
-import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.storage.SpaceStorageException;
 import org.exoplatform.social.core.storage.cache.model.data.IntegerData;
@@ -162,7 +162,7 @@ public class CachedSpaceStorage implements SpaceStorage {
   void clearIdentityCache() {
 
     try {
-      exoIdentitiesCache.select(new IdentityCacheSelector(SpaceIdentityProvider.NAME));
+      exoIdentitiesCache.select(new IdentityCacheSelector(IdentityType.SPACE.string()));
     }
     catch (Exception e) {
       LOG.error(e);
@@ -240,16 +240,16 @@ public class CachedSpaceStorage implements SpaceStorage {
    */
   public void renameSpace(Space space, String newDisplayName) throws SpaceStorageException {
     String oldDisplayName = space.getDisplayName();
-    String oldUrl = SpaceUtils.cleanString(oldDisplayName);
+    String oldUrl = StringUtils.cleanString(oldDisplayName);
     String oldPrettyName = space.getPrettyName();
     storage.renameSpace(space, newDisplayName);
 
     //remove identity and profile from cache
     cachedIdentityStorage = this.getCachedIdentityStorage();
-    Identity identitySpace = cachedIdentityStorage.findIdentity(SpaceIdentityProvider.NAME,
+    Identity identitySpace = cachedIdentityStorage.findIdentity(IdentityType.SPACE.string(),
                                                                 space.getPrettyName());
     if (identitySpace == null) {
-      identitySpace = cachedIdentityStorage.findIdentity(SpaceIdentityProvider.NAME, oldPrettyName);
+      identitySpace = cachedIdentityStorage.findIdentity(IdentityType.SPACE.string(), oldPrettyName);
     }
     cachedIdentityStorage.clearIdentityCached(identitySpace, oldPrettyName);
 

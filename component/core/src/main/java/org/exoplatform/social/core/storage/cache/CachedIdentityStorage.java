@@ -23,11 +23,10 @@ import java.util.List;
 import org.exoplatform.services.cache.ExoCache;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.social.common.IdentityType;
 import org.exoplatform.social.core.identity.SpaceMemberFilterListAccess.Type;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
-import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
-import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
 import org.exoplatform.social.core.profile.ProfileFilter;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.storage.IdentityStorageException;
@@ -74,8 +73,8 @@ public class CachedIdentityStorage implements IdentityStorage {
   void clearCache() {
 
     try {
-      exoIdentitiesCache.select(new IdentityCacheSelector(OrganizationIdentityProvider.NAME));
-      exoIdentitiesCountCache.select(new IdentityCacheSelector(OrganizationIdentityProvider.NAME));
+      exoIdentitiesCache.select(new IdentityCacheSelector(IdentityType.ORGANIZATION.string()));
+      exoIdentitiesCountCache.select(new IdentityCacheSelector(IdentityType.ORGANIZATION.string()));
     }
     catch (Exception e) {
       LOG.error(e);
@@ -458,7 +457,7 @@ public class CachedIdentityStorage implements IdentityStorage {
       throws IdentityStorageException {
 
     SpaceKey spaceKey = new SpaceKey(space.getId());
-    IdentityFilterKey identityKey = new IdentityFilterKey(SpaceIdentityProvider.NAME, profileFilter);
+    IdentityFilterKey identityKey = new IdentityFilterKey(IdentityType.SPACE.string(), profileFilter);
     ListSpaceMembersKey listKey = new ListSpaceMembersKey(spaceKey, identityKey, offset, limit);
 
     ListIdentitiesData keys = identitiesCache.get(

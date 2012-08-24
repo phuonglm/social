@@ -36,6 +36,7 @@ import org.chromattic.api.query.QueryBuilder;
 import org.chromattic.api.query.QueryResult;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.social.common.IdentityType;
 import org.exoplatform.social.core.ActivityProcessor;
 import org.exoplatform.social.core.activity.model.ActivityStream;
 import org.exoplatform.social.core.activity.model.ActivityStreamImpl;
@@ -49,7 +50,6 @@ import org.exoplatform.social.core.chromattic.entity.IdentityEntity;
 import org.exoplatform.social.core.chromattic.utils.ActivityIterator;
 import org.exoplatform.social.core.chromattic.utils.ActivityList;
 import org.exoplatform.social.core.identity.model.Identity;
-import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.storage.ActivityStorageException;
@@ -222,7 +222,7 @@ public class ActivityStorageImpl extends AbstractStorage implements ActivityStor
     stream.setType(identityEntity.getProviderId());
     
     //Identity identity = identityStorage.findIdentityById(identityEntity.getId());
-    if (identityEntity != null && SpaceIdentityProvider.NAME.equals(identityEntity.getProviderId())) {
+    if (identityEntity != null && IdentityType.SPACE.string().equals(identityEntity.getProviderId())) {
       Space space = spaceStorage.getSpaceByPrettyName(identityEntity.getRemoteId());
       //work-around for SOC-2366 when rename space's display name.
       if (space != null) {
@@ -244,7 +244,7 @@ public class ActivityStorageImpl extends AbstractStorage implements ActivityStor
     List<Identity> identitiesId = new ArrayList<Identity>();
     List<Space> spaces = spaceStorage.getAccessibleSpaces(ownerIdentity.getRemoteId());
     for (Space space : spaces) {
-      identitiesId.add(identityStorage.findIdentity(SpaceIdentityProvider.NAME, space.getPrettyName()));
+      identitiesId.add(identityStorage.findIdentity(IdentityType.SPACE.string(), space.getPrettyName()));
     }
 
     return identitiesId;

@@ -27,13 +27,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.exoplatform.container.xml.InitParams;
+import org.exoplatform.social.common.IdentityType;
 import org.exoplatform.social.core.BaseActivityProcessorPlugin;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
 import org.exoplatform.social.core.activity.model.ExoSocialActivityImpl;
-import org.exoplatform.social.core.application.RelationshipPublisher.TitleId;
 import org.exoplatform.social.core.identity.model.Identity;
-import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
-import org.exoplatform.social.core.space.impl.DefaultSpaceApplicationHandler;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.storage.ActivityStorageException;
 import org.exoplatform.social.core.storage.api.IdentityStorage;
@@ -359,8 +357,7 @@ public class ActivityStorageImplTestCase extends AbstractCoreTest {
   public void testUserPostActivityToSpace() throws ActivityStorageException {
     // Create new Space and its Identity
     Space space = getSpaceInstance();
-    SpaceIdentityProvider spaceIdentityProvider = (SpaceIdentityProvider) getContainer().getComponentInstanceOfType(SpaceIdentityProvider.class);
-    Identity spaceIdentity = spaceIdentityProvider.createIdentity(space);
+    Identity spaceIdentity = new Identity(IdentityType.SPACE.string(), space.getPrettyName());
     identityStorage.saveIdentity(spaceIdentity);
     
     // john posted activity on created Space
@@ -424,7 +421,7 @@ public class ActivityStorageImplTestCase extends AbstractCoreTest {
     }
   }
 
-  @MaxQueryNumber(400)
+  @MaxQueryNumber(500)
   public void testActivityOrder2() throws Exception {
     // fill 10 activities
     for (int i = 0; i < 10; ++i) {
@@ -756,7 +753,7 @@ public class ActivityStorageImplTestCase extends AbstractCoreTest {
     activity.setAppId("appId");
     activity.setBody("body");
     activity.setBodyId("bodyId");
-    activity.setTitleId(TitleId.CONNECTION_REQUESTED.toString());
+    activity.setTitleId("titleId");
     activity.setExternalId("externalId");
     //activity.setId("id");
     activity.setUrl("http://www.exoplatform.org");
@@ -787,7 +784,7 @@ public class ActivityStorageImplTestCase extends AbstractCoreTest {
       //bodyId
       assertNotNull(element.getBodyId());
       //titleId
-      assertEquals(TitleId.CONNECTION_REQUESTED.toString(), element.getTitleId());
+      assertEquals("titleId", element.getTitleId());
       //externalId
       assertNotNull(element.getExternalId());
       //id
@@ -857,7 +854,7 @@ public class ActivityStorageImplTestCase extends AbstractCoreTest {
     space.setPrettyName(space.getDisplayName());
     space.setRegistration(Space.OPEN);
     space.setDescription("add new space");
-    space.setType(DefaultSpaceApplicationHandler.NAME);
+    space.setType(IdentityType.SPACE.string());
     space.setVisibility(Space.PUBLIC);
     space.setPriority(Space.INTERMEDIATE_PRIORITY);
     space.setGroupId("/space/space");

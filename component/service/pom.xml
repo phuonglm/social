@@ -160,6 +160,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.exoplatform.social</groupId>
+      <artifactId>social-component-api-1x</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.exoplatform.portal</groupId>
       <artifactId>exo.portal.component.test.core</artifactId>
       <scope>test</scope>

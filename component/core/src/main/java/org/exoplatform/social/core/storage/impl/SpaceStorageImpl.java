@@ -31,6 +31,8 @@ import org.chromattic.api.query.QueryBuilder;
 import org.chromattic.api.query.QueryResult;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.social.common.IdentityType;
+import org.exoplatform.social.core.StringUtils;
 import org.exoplatform.social.core.chromattic.entity.IdentityEntity;
 import org.exoplatform.social.core.chromattic.entity.SpaceEntity;
 import org.exoplatform.social.core.chromattic.entity.SpaceListEntity;
@@ -38,11 +40,7 @@ import org.exoplatform.social.core.chromattic.entity.SpaceRef;
 import org.exoplatform.social.core.chromattic.entity.SpaceRootEntity;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
-import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
-import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
-import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.social.core.space.SpaceFilter;
-import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.storage.SpaceStorageException;
 import org.exoplatform.social.core.storage.api.SpaceStorage;
@@ -120,7 +118,7 @@ public class SpaceStorageImpl extends AbstractStorage implements SpaceStorage {
                       chromatticSession.getJCRSession().getWorkspace().getName(),
                       entity.getPrettyName(),
                       entity.getAvatarLastUpdated());
-        space.setAvatarUrl(LinkProvider.escapeJCRSpecialCharacters(url));
+        space.setAvatarUrl(StringUtils.escapeJCRSpecialCharacters(url));
       } catch (Exception e) {
         LOG.warn("Failed to build avatar url: " + e.getMessage());
       }
@@ -290,7 +288,7 @@ public class SpaceStorageImpl extends AbstractStorage implements SpaceStorage {
     if (listUserNames != null) {
       for (String userName : listUserNames) {
         try {
-          IdentityEntity identityEntity = identityStorage._findIdentityEntity(OrganizationIdentityProvider.NAME, userName);
+          IdentityEntity identityEntity = identityStorage._findIdentityEntity(IdentityType.ORGANIZATION.string(), userName);
           SpaceListEntity listRef = type.refsOf(identityEntity);
           SpaceRef ref = listRef.getRef(spaceEntity.getName());
           ref.setName(space.getPrettyName());
@@ -306,7 +304,7 @@ public class SpaceStorageImpl extends AbstractStorage implements SpaceStorage {
     if (context.getAdded() != null) {
       for (String userName : context.getAdded()) {
         try {
-          IdentityEntity identityEntity = identityStorage._findIdentityEntity(OrganizationIdentityProvider.NAME, userName);
+          IdentityEntity identityEntity = identityStorage._findIdentityEntity(IdentityType.ORGANIZATION.string(), userName);
           SpaceListEntity listRef = type.refsOf(identityEntity);
           SpaceRef ref = listRef.getRef(spaceEntity.getName());
           if (!ref.getName().equals(spaceEntity.getName())) {
@@ -321,7 +319,7 @@ public class SpaceStorageImpl extends AbstractStorage implements SpaceStorage {
 
       for (String userName : context.getRemoved()) {
         try {
-          IdentityEntity identityEntity = identityStorage._findIdentityEntity(OrganizationIdentityProvider.NAME, userName);
+          IdentityEntity identityEntity = identityStorage._findIdentityEntity(IdentityType.ORGANIZATION.string(), userName);
           SpaceListEntity listRef = type.refsOf(identityEntity);
           SpaceRef ref = listRef.getRef(spaceEntity.getName());
           getSession().remove(ref);
@@ -698,7 +696,7 @@ public class SpaceStorageImpl extends AbstractStorage implements SpaceStorage {
       
       space.setDisplayName(newDisplayName);
       space.setPrettyName(space.getDisplayName());
-      space.setUrl(SpaceUtils.cleanString(newDisplayName));
+      space.setUrl(StringUtils.cleanString(newDisplayName));
       
       entity = _saveSpace(space);
         
@@ -714,7 +712,7 @@ public class SpaceStorageImpl extends AbstractStorage implements SpaceStorage {
       getSession().save();
 
       //change profile of space
-      Identity identitySpace = identityStorage.findIdentity(SpaceIdentityProvider.NAME, oldPrettyName);
+      Identity identitySpace = identityStorage.findIdentity(IdentityType.SPACE.string(), oldPrettyName);
       
       if (identitySpace != null) {
         Profile profileSpace = identitySpace.getProfile();
@@ -778,7 +776,7 @@ public class SpaceStorageImpl extends AbstractStorage implements SpaceStorage {
    */
   public int getMemberSpacesCount(String userId) throws SpaceStorageException {
     try {
-       return identityStorage._findIdentityEntity(OrganizationIdentityProvider.NAME, userId).getSpaces().getRefs().size();
+       return identityStorage._findIdentityEntity(IdentityType.ORGANIZATION.string(), userId).getSpaces().getRefs().size();
     }
     catch (NodeNotFoundException e){
        return 0;
@@ -862,7 +860,7 @@ public class SpaceStorageImpl extends AbstractStorage implements SpaceStorage {
    */
   public int getPendingSpacesCount(String userId) throws SpaceStorageException {
     try {
-      IdentityEntity identityEntity = identityStorage._findIdentityEntity(OrganizationIdentityProvider.NAME, userId);
+      IdentityEntity identityEntity = identityStorage._findIdentityEntity(IdentityType.ORGANIZATION.string(), userId);
       Collection<SpaceRef> spaceEntities = identityEntity.getPendingSpaces().getRefs().values();
       return spaceEntities.size();
     }
@@ -948,7 +946,7 @@ public class SpaceStorageImpl extends AbstractStorage implements SpaceStorage {
   public int getInvitedSpacesCount(String userId) throws SpaceStorageException {
 
     try {
-      IdentityEntity identityEntity = identityStorage._findIdentityEntity(OrganizationIdentityProvider.NAME, userId);
+      IdentityEntity identityEntity = identityStorage._findIdentityEntity(IdentityType.ORGANIZATION.string(), userId);
       Collection<SpaceRef> spaceEntities = identityEntity.getInvitedSpaces().getRefs().values();
       return spaceEntities.size();
     }
@@ -1059,7 +1057,7 @@ public class SpaceStorageImpl extends AbstractStorage implements SpaceStorage {
   public List<Space> getPublicSpacesByFilter(String userId, SpaceFilter spaceFilter, long offset, long limit) {
 
     try {
-      identityStorage._findIdentityEntity(OrganizationIdentityProvider.NAME, userId);
+      identityStorage._findIdentityEntity(IdentityType.ORGANIZATION.string(), userId);
     }
     catch (NodeNotFoundException e) {
       userId = null;
@@ -1297,7 +1295,7 @@ public class SpaceStorageImpl extends AbstractStorage implements SpaceStorage {
    */
   public int getEditableSpacesCount(String userId) throws SpaceStorageException {
     try {
-      IdentityEntity identityEntity = identityStorage._findIdentityEntity(OrganizationIdentityProvider.NAME, userId);
+      IdentityEntity identityEntity = identityStorage._findIdentityEntity(IdentityType.ORGANIZATION.string(), userId);
       return identityEntity.getManagerSpaces().getRefs().size();
     }
     catch (NodeNotFoundException e) {

@@ -35,7 +35,6 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.GroupHandler;
 import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.social.core.space.SpaceUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -78,7 +77,8 @@ public class TemplateTool {
 
         // update template
         Query query = new Query<Page>("group", group.getId(), null, null, Page.class);
-        DataStorage dataStorage = SpaceUtils.getDataStorage();
+        PortalContainer portalContainer = PortalContainer.getInstance();
+        DataStorage dataStorage = (DataStorage) portalContainer.getComponentInstanceOfType(DataStorage.class);
         List<Page> pages = dataStorage.find(query).getAll();
         for (Page page : pages) {
           if (page.getChildren().size() > 0) {
