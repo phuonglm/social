@@ -85,6 +85,9 @@
                 <value>
                   <string>social-resources</string>
                 </value>
+                <value>
+                  <string>cloud-portlets</string>
+                </value>
               </collection>
             </field>
           </object>

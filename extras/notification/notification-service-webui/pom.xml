@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (C) 2011 eXo Platform SAS.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <artifactId>exo.social.extras</artifactId>
+    <groupId>org.exoplatform.social</groupId>
+    <version>1.2.11-SNAPSHOT</version>
+  </parent>
+
+  <groupId>exo.social.notification.webui</groupId>
+  <artifactId>notification-webui</artifactId>
+  <packaging>war</packaging>
+  <name>eXo Social Notification Service WebUI overide</name>
+  <description>eXo Social Notification Service WebUI overide</description>
+  
+  <dependencies>
+	<dependency>
+		<groupId>org.exoplatform.social</groupId>
+		<artifactId>exo.social.webapp.portlet</artifactId>
+		<scope>runtime</scope>
+		<type>war</type>
+	</dependency>
+  </dependencies>
+  
+  <build>
+    <finalName>social-portlet</finalName>
+  </build>
+
+</project>

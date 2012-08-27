@@ -43,5 +43,6 @@
     <module>link-composer-plugin</module>
     <module>migration</module>
     <module>updater</module>
+    <module>notification</module>
   </modules>
 </project>
