@@ -32,6 +32,7 @@ function getProduct(version) {
   product.addDependencies(portal.starter);
   product.addDependencies(social.component.common);
   product.addDependencies(social.component.core);
+  product.addDependencies(social.component.api1x);
   product.addDependencies(social.component.service);
   product.addDependencies(social.component.opensocial);
   product.addDependencies(social.component.webui);
