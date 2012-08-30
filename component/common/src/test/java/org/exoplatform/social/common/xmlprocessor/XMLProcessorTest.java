@@ -24,12 +24,7 @@ import java.util.Set;
 
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.social.common.AbstractCommonTest;
-import org.exoplatform.social.common.xmlprocessor.filters.DOMContentEscapeFilterPlugin;
-import org.exoplatform.social.common.xmlprocessor.filters.DOMLineBreakerFilterPlugin;
-import org.exoplatform.social.common.xmlprocessor.filters.DOMXMLTagFilterPlugin;
-import org.exoplatform.social.common.xmlprocessor.filters.LineBreakerFilterPlugin;
-import org.exoplatform.social.common.xmlprocessor.filters.XMLBalancerFilterPlugin;
-import org.exoplatform.social.common.xmlprocessor.filters.XMLTagFilterPlugin;
+import org.exoplatform.social.common.xmlprocessor.filters.*;
 import org.exoplatform.social.common.xmlprocessor.model.XMLTagFilterPolicy;
 import org.exoplatform.social.common.xmlprocessor.model.XMLTagFilterPolicy.AllowedTag;
 
@@ -102,9 +97,11 @@ public class XMLProcessorTest extends AbstractCommonTest {
    * {@link org.exoplatform.social.common.xmlprocessor.filters.LineBreakerFilterPlugin}, {@link org.exoplatform.social.common.xmlprocessor.filters.XMLBalancerFilterPlugin}.
    */
   public void testXMLBalancer() {
+    XMLTagFilterPolicy tagFilterPolicy = new XMLTagFilterPolicy();
+    tagFilterPolicy.addAllowedTags("div", "p", "b", "br", "a");
     XMLProcessor xmlProcessor = new XMLProcessorImpl();
     LineBreakerFilterPlugin breakLineFilter = new LineBreakerFilterPlugin();
-    XMLBalancerFilterPlugin xmlBalancer = new XMLBalancerFilterPlugin();
+    XMLBalancerFilterPlugin xmlBalancer = new XMLBalancerFilterPlugin(tagFilterPolicy);
 
     xmlProcessor.addFilter(breakLineFilter);
     xmlProcessor.addFilter(xmlBalancer);
@@ -119,18 +116,18 @@ public class XMLProcessorTest extends AbstractCommonTest {
             xmlProcessor.process("hello 1<> hello2"));
     assertEquals("<a>hello 1</a>", xmlProcessor.process("<a>hello 1"));
     assertEquals("hello 1&lt;/a&gt;", xmlProcessor.process("hello 1</a>"));
-    assertEquals("<a>Hello 2<a><b /></a></a>", xmlProcessor.process("<a<b>Hello 2<a><b>"));
+    assertEquals("<a>Hello 2<a><b></b></a></a>", xmlProcessor.process("<a<b>Hello 2<a><b>"));
 
   }
 
   /**
    * Tests {@link XMLProcessor#process(Object)} with:
-   * {@link org.exoplatform.social.common.xmlprocessor.filters.XMLTagFilterPlugin} for allowed tags.
+   * {@link org.exoplatform.social.common.xmlprocessor.filters.XMLBalancerFilterPlugin} for allowed tags.
    */
   public void testXMLFilter() {
     XMLTagFilterPolicy tagFilterPolicy = new XMLTagFilterPolicy();
     tagFilterPolicy.addAllowedTags("div", "p", "b", "br", "a");
-    XMLTagFilterPlugin xmlFilter = new XMLTagFilterPlugin(tagFilterPolicy);
+    XMLBalancerFilterPlugin xmlFilter = new XMLBalancerFilterPlugin(tagFilterPolicy);
     xmlProcessor.addFilter(xmlFilter);
 
     assertEquals(null, xmlProcessor.process(null));
@@ -146,12 +143,12 @@ public class XMLProcessorTest extends AbstractCommonTest {
 
   /**
    * Tests {@link XMLProcessor#process(Object)} with:
-   * {@link org.exoplatform.social.common.xmlprocessor.filters.XMLTagFilterPlugin} for allowed tags and its allowed attributes.
+   * {@link org.exoplatform.social.common.xmlprocessor.filters.XMLBalancerFilterPlugin} for allowed tags and its allowed attributes.
    */
   public void testXMLFilterWithTagAndAttributes() {
     XMLTagFilterPolicy tagFilterPolicy = new XMLTagFilterPolicy();
     tagFilterPolicy.addAllowedTags("div", "p", "b", "br", "a");
-    XMLTagFilterPlugin xmlFilter = new XMLTagFilterPlugin(tagFilterPolicy);
+    XMLBalancerFilterPlugin xmlFilter = new XMLBalancerFilterPlugin(tagFilterPolicy);
     xmlProcessor.addFilter(xmlFilter);
 
     assertEquals(null, xmlProcessor.process(null));
@@ -167,7 +164,7 @@ public class XMLProcessorTest extends AbstractCommonTest {
 
   /**
    * Tests {@link XMLProcessor#process(Object)} with:
-   * {@link org.exoplatform.social.common.xmlprocessor.filters.XMLTagFilterPlugin} for allowed tags and its allowed attributes,
+   * {@link org.exoplatform.social.common.xmlprocessor.filters.XMLBalancerFilterPlugin} for allowed tags and its allowed attributes,
    * {@link org.exoplatform.social.common.xmlprocessor.filters.DOMContentEscapeFilterPlugin}, {@link org.exoplatform.social.common.xmlprocessor.filters.DOMLineBreakerFilterPlugin}.
    */
   public void testXMLDOMFilterAndEscapeWithTagAndAttributes() {
@@ -179,7 +176,7 @@ public class XMLProcessorTest extends AbstractCommonTest {
     tagFilterPolicy.addAllowedTag(aTag);
 
 
-    Filter domXmlTagFilter = new DOMXMLTagFilterPlugin(tagFilterPolicy);
+    Filter domXmlTagFilter = new XMLBalancerFilterPlugin(tagFilterPolicy);
     Filter domContentEscapeFilter = new DOMContentEscapeFilterPlugin();
     Filter domLineBreakerFilter = new DOMLineBreakerFilterPlugin();
 
@@ -193,8 +190,8 @@ public class XMLProcessorTest extends AbstractCommonTest {
     assertEquals("hello 1&lt;/a&gt;", xmlProcessor.process(DOMParser.createDOMTree(Tokenizer.tokenize("hello 1</a>"))).toString());
     assertEquals("&lt;a&lt;b&gt;Hello 2&lt;a&gt;&lt;b&gt;", xmlProcessor.process(DOMParser.createDOMTree(Tokenizer.tokenize("<a<b>Hello 2<a><b>"))).toString());
     assertEquals("<a>Hello 2</a>", xmlProcessor.process(DOMParser.createDOMTree(Tokenizer.tokenize("<a>Hello 2</a>"))).toString());
-    assertEquals("<a>Hello 2<b /></a>", xmlProcessor.process(DOMParser.createDOMTree(Tokenizer.tokenize("<a>Hello 2<b /></a>"))).toString());
-    assertEquals("<a href=\"abc\">Hello 2<b /></a>", xmlProcessor.process(DOMParser.createDOMTree(Tokenizer.tokenize("<a href='abc' id='def'>Hello 2<b /></a>"))).toString());
+    assertEquals("<a>Hello 2<b></b></a>", xmlProcessor.process(DOMParser.createDOMTree(Tokenizer.tokenize("<a>Hello 2<b></b></a>"))).toString());
+    assertEquals("<a href=\"abc\">Hello 2<b></b></a>", xmlProcessor.process(DOMParser.createDOMTree(Tokenizer.tokenize("<a href='abc' id='def'>Hello 2<b></b></a>"))).toString());
   }
 
 

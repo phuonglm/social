@@ -25,7 +25,7 @@ import org.exoplatform.social.common.xmlprocessor.model.XMLTagFilterPolicy;
 import junit.framework.TestCase;
 
 /**
- * Unit test for {@link XMLTagFilterPlugin}.
+ * Unit test for {@link XMLBalancerFilterPlugin}.
  */
 public class XMLTagFilterPluginTest extends TestCase {
 
@@ -35,7 +35,7 @@ public class XMLTagFilterPluginTest extends TestCase {
     Set<String> aAttributes = new HashSet<String>();
     aAttributes.add("href");
     tagFilterPolicy.addAllowedTag("a", aAttributes);
-    Filter xmlFilter = new XMLTagFilterPlugin(tagFilterPolicy);
+    Filter xmlFilter = new XMLBalancerFilterPlugin(tagFilterPolicy);
 
     assertEquals("hello 1",
             xmlFilter.doFilter("hello 1"));
@@ -43,16 +43,16 @@ public class XMLTagFilterPluginTest extends TestCase {
     assertEquals("&lt;c&gt;<a href=\"http://\">hello2</a>&lt;/c&gt;",
             xmlFilter.doFilter("<c><a HREF=\"http://\">hello2</a></c>"));
 
-    assertEquals("3 < 5 >",
+    assertEquals("3 &lt; 5 &gt;",
             xmlFilter.doFilter("3 < 5 >"));
 
-    assertEquals("<b><i> hello 3</b> hello 4</i>",
+    assertEquals("<b><i> hello 3</i></b> hello 4&lt;/i&gt;",
             xmlFilter.doFilter("<b><i> hello 3</b> hello 4</i>"));
 
-    assertEquals("<b> hello 5 <br /><i><i>&lt;h&gt;ee <b /><a><i>hello 10</i</a><i /> e&lt;/h&gt;</i></i></b>",
+    assertEquals("<b> hello 5 <br /><i><i>&lt;h&gt;ee <b></b><a><i>hello 10</i></a><i></i> e&lt;/h&gt;</i></i></b>",
             xmlFilter.doFilter("<b ID=\"blablo\"> hello 5 <br   /><i><i><h>ee <b/><a><i>hello 10</i</a><i/> e</h></i></i></b>"));
 
-    assertEquals("<b> hello 6 <br /><b>",
+    assertEquals("<b> hello 6 <br /><b></b></b>",
             xmlFilter.doFilter("<B> hello 6 <br/><b>"));
   }
 }
