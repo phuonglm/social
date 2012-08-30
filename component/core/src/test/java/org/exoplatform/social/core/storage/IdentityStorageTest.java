@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.exoplatform.social.common.IdentityType;
-import org.exoplatform.social.core.identity.SpaceMemberFilterListAccess.Type;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
 import org.exoplatform.social.core.model.AvatarAttachment;
@@ -13,6 +12,7 @@ import org.exoplatform.social.core.profile.ProfileFilter;
 import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.storage.api.IdentityStorage;
+import org.exoplatform.social.core.storage.api.MembershipType;
 import org.exoplatform.social.core.storage.api.SpaceStorage;
 import org.exoplatform.social.core.storage.impl.IdentityStorageImpl;
 import org.exoplatform.social.core.storage.impl.SpaceStorageImpl;
@@ -520,15 +520,15 @@ public class IdentityStorageTest extends AbstractCoreTest {
     
     ProfileFilter profileFilter = new ProfileFilter();
     
-    List<Identity> identities = identityStorage.getSpaceMemberIdentitiesByProfileFilter(space, profileFilter, Type.MEMBER, 0, 2);
+    List<Identity> identities = identityStorage.getSpaceMemberIdentitiesByProfileFilter(space, profileFilter, MembershipType.MEMBER, 0, 2);
     assertEquals(2, identities.size());
     
     profileFilter.setName("0");
-    identities = identityStorage.getSpaceMemberIdentitiesByProfileFilter(space, profileFilter, Type.MEMBER, 0, 2);
+    identities = identityStorage.getSpaceMemberIdentitiesByProfileFilter(space, profileFilter, MembershipType.MEMBER, 0, 2);
     assertEquals(0, identities.size());
     
     profileFilter.setName("3");
-    identities = identityStorage.getSpaceMemberIdentitiesByProfileFilter(space, profileFilter, Type.MEMBER, 0, 2);
+    identities = identityStorage.getSpaceMemberIdentitiesByProfileFilter(space, profileFilter, MembershipType.MEMBER, 0, 2);
     assertEquals(1, identities.size());
   }
 

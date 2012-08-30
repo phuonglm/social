@@ -24,13 +24,13 @@ import org.exoplatform.services.cache.ExoCache;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.social.common.IdentityType;
-import org.exoplatform.social.core.identity.SpaceMemberFilterListAccess.Type;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
 import org.exoplatform.social.core.profile.ProfileFilter;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.storage.IdentityStorageException;
 import org.exoplatform.social.core.storage.api.IdentityStorage;
+import org.exoplatform.social.core.storage.api.MembershipType;
 import org.exoplatform.social.core.storage.cache.loader.ServiceContext;
 import org.exoplatform.social.core.storage.cache.model.data.IdentityData;
 import org.exoplatform.social.core.storage.cache.model.data.IntegerData;
@@ -453,7 +453,7 @@ public class CachedIdentityStorage implements IdentityStorage {
   }
 
   public List<Identity> getSpaceMemberIdentitiesByProfileFilter(final Space space,
-      final ProfileFilter profileFilter, final Type type, final long offset, final long limit)
+      final ProfileFilter profileFilter, final MembershipType type, final long offset, final long limit)
       throws IdentityStorageException {
 
     SpaceKey spaceKey = new SpaceKey(space.getId());

@@ -19,7 +19,6 @@ package org.exoplatform.social.core.storage.api;
 
 import java.util.List;
 
-import org.exoplatform.social.core.identity.SpaceMemberFilterListAccess.Type;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
 import org.exoplatform.social.core.profile.ProfileFilter;
@@ -204,7 +203,7 @@ public interface IdentityStorage {
    */
   public List<Identity> getSpaceMemberIdentitiesByProfileFilter(final Space space, 
                                                                 final ProfileFilter profileFilter,
-                                                                Type type,
+                                                                MembershipType type,
                                                                 long offset, long limit)
                                                                 throws IdentityStorageException;
 

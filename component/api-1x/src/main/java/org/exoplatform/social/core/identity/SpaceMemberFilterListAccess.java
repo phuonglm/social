@@ -24,6 +24,7 @@ import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.profile.ProfileFilter;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.storage.api.IdentityStorage;
+import org.exoplatform.social.core.storage.api.MembershipType;
 
 /**
  * ListAccess is used in loading connection with the input providerId, existing Identity and ProfileFilter, .
@@ -42,11 +43,11 @@ public class SpaceMemberFilterListAccess implements ListAccess<Identity> {
    * Identity use for load.
    */
   Space space;
-  
-  /** 
+
+  /**
    * The type of connection list access.
    */
-  Type type = Type.MEMBER;
+  MembershipType type = MembershipType.MANAGER;
   
   /**
    * providerId for profile filter.
@@ -90,7 +91,7 @@ public class SpaceMemberFilterListAccess implements ListAccess<Identity> {
    */
   public SpaceMemberFilterListAccess(IdentityStorage identityStorage, Space space,ProfileFilter filter, Type type) {
     this(identityStorage, space, filter);
-    this.type = type;
+    setType(type);
   }
   
   /**
@@ -117,7 +118,14 @@ public class SpaceMemberFilterListAccess implements ListAccess<Identity> {
    * @since 1.2.3
    */
   public Type getType() {
-    return type;
+    switch (type) {
+      case MANAGER:
+        return Type.MANAGER;
+      case MEMBER:
+        return Type.MEMBER;
+      default :
+        throw new NullPointerException();
+    }
   }
 
   /**
@@ -127,7 +135,14 @@ public class SpaceMemberFilterListAccess implements ListAccess<Identity> {
    * @since 1.2.3
    */
   public void setType(Type type) {
-    this.type = type;
+    switch (type) {
+      case MANAGER:
+        this.type = MembershipType.MANAGER;
+        break;
+      case MEMBER:
+        this.type = MembershipType.MEMBER;
+        break;
+    }
   }
 }
 

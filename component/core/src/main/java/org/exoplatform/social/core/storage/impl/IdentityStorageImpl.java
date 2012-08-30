@@ -35,7 +35,6 @@ import org.exoplatform.social.core.chromattic.entity.RelationshipEntity;
 import org.exoplatform.social.core.chromattic.entity.RelationshipListEntity;
 import org.exoplatform.social.core.chromattic.entity.SpaceEntity;
 import org.exoplatform.social.core.chromattic.entity.SpaceRef;
-import org.exoplatform.social.core.identity.SpaceMemberFilterListAccess.Type;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.core.identity.model.Profile;
 import org.exoplatform.social.core.model.AvatarAttachment;
@@ -45,6 +44,7 @@ import org.exoplatform.social.core.service.LinkProvider;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.storage.IdentityStorageException;
 import org.exoplatform.social.core.storage.api.IdentityStorage;
+import org.exoplatform.social.core.storage.api.MembershipType;
 import org.exoplatform.social.core.storage.api.RelationshipStorage;
 import org.exoplatform.social.core.storage.api.SpaceStorage;
 import org.exoplatform.social.core.storage.exception.NodeAlreadyExistsException;
@@ -183,7 +183,7 @@ public class IdentityStorageImpl extends AbstractStorage implements IdentityStor
   }
 
   private QueryResult<ProfileEntity> getSpaceMemberIdentitiesByProfileFilterQueryBuilder(Space space,
-      final ProfileFilter profileFilter, Type type,  long offset, long limit, boolean count)
+      final ProfileFilter profileFilter, MembershipType type,  long offset, long limit, boolean count)
       throws IdentityStorageException {
 
     if (offset < 0) {
@@ -1084,7 +1084,7 @@ public class IdentityStorageImpl extends AbstractStorage implements IdentityStor
   public List<Identity> getSpaceMemberIdentitiesByProfileFilter(
       Space space,
       ProfileFilter profileFilter,
-      Type type,
+      MembershipType type,
       long offset, long limit) throws IdentityStorageException {
 
 
@@ -1109,7 +1109,7 @@ public class IdentityStorageImpl extends AbstractStorage implements IdentityStor
   public int getSpaceMemberIdentitiesByProfileFilterCount(
       Space space,
       ProfileFilter profileFilter,
-      Type type,
+      MembershipType type,
       long offset, long limit) throws IdentityStorageException {
     
     return getSpaceMemberIdentitiesByProfileFilterQueryBuilder(space, profileFilter, type, offset, limit, true).size();
