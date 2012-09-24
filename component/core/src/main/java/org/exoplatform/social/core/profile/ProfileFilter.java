@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.space.model.Space;
 
 /**
  * This class using for filter profile of identity
@@ -47,6 +48,16 @@ public class ProfileFilter {
 
   /** the list of identity to be excluded from profile filter **/
   private List<Identity> excludedIdentityList;
+
+  /** the identity which the result must have connection **/
+  private Identity connectedWith;
+
+  /** the Space which the result be a member **/
+  private Space memberOf;
+
+  /** the Space which the result be a manager **/
+  private Space managerOf;
+
 
   /** Filter by first character of name. */
   private char firstCharacterOfName;
