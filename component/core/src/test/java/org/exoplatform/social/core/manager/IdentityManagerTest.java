@@ -257,8 +257,8 @@ public class IdentityManagerTest extends AbstractCoreTest {
       // Gets users in group and then invites user to join into space.
       OrganizationService org = (OrganizationService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
       try {
-        PageList<User> groupMembersAccess = org.getUserHandler().findUsersByGroup(invitedGroupId);
-        List<User> users = groupMembersAccess.getAll();
+        ListAccess<User> groupMembersAccess = org.getUserHandler().findUsersByGroupId(invitedGroupId);
+        User[] users = groupMembersAccess.load(0, groupMembersAccess.getSize());
 
         for (User user : users) {
           String userId = user.getUserName();
@@ -278,11 +278,8 @@ public class IdentityManagerTest extends AbstractCoreTest {
     space.setManagers(managers);
     space.setGroupId(groupId);
     space.setUrl(space.getPrettyName());
-    try {
-      spaceService.saveSpace(space, true);
-    } catch (SpaceException e) {
-      LOG.warn("Error while saving space", e);
-    }
+    spaceService.createSpace(space, creator);
+
     return space;
   }
   /**

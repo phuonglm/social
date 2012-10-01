@@ -423,7 +423,7 @@ public class RelationshipManagerImpl implements RelationshipManager {
    * {@inheritDoc}
    */
   public List<Relationship> getRelationshipsByIdentityId(String id) throws RelationshipStorageException {
-    return getAll(getIdentityManager().getIdentity(id));
+    return getAll(getIdentityManager().getIdentity(id, true));
   }
 
   private IdentityManager getIdentityManager() {

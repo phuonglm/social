@@ -38,6 +38,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.collections.map.HashedMap;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.commons.utils.Safe;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
@@ -147,10 +148,12 @@ public class SpacesRestService implements ResourceContainer {
   private SpaceList showMySpaceList(String userId) {
     SpaceList spaceList = new SpaceList();
     _spaceService = getSpaceService();
-    List<Space> mySpaces = null;
+    ListAccess<Space> mySpacesListAccess = null;
+    Space[] mySpaces = null;
     List<SpaceRest> mySpacesRest = new ArrayList<SpaceRest>();
     try {
-      mySpaces = _spaceService.getSpaces(userId);
+      mySpacesListAccess = _spaceService.getMemberSpaces(userId);
+      mySpaces = mySpacesListAccess.load(0, mySpacesListAccess.getSize());
       
       for (Space space : mySpaces) {
         SpaceRest spaceRest = new SpaceRest(space);
@@ -181,15 +184,17 @@ public class SpacesRestService implements ResourceContainer {
   private SpaceList showPendingSpaceList(String userId) {
     SpaceList spaceList = new SpaceList();
     _spaceService = getSpaceService();
-    List<Space> pendingSpaces;
+    ListAccess<Space> pendingSpacesListAccess;
+    Space[] pendingSpaces = null;
     List<SpaceRest> pendingSpacesRest = new ArrayList<SpaceRest>();
     try {
-      pendingSpaces = _spaceService.getPendingSpaces(userId);
+      pendingSpacesListAccess = _spaceService.getPendingSpacesWithListAccess(userId);
+      pendingSpaces = pendingSpacesListAccess.load(0, pendingSpacesListAccess.getSize());
       for (Space space : pendingSpaces) {
         SpaceRest spaceRest = new SpaceRest(space);
         pendingSpacesRest.add(spaceRest);
       }
-    } catch (SpaceException e) {
+    } catch (Exception e) {
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
     }
     spaceList.setSpaces(pendingSpacesRest);
@@ -231,7 +236,7 @@ public class SpacesRestService implements ResourceContainer {
    * shows mySpaceList by json/xml format
    *
    * @param uriInfo provided as {@link Context}
-   * @param userId
+   * @param portalName
    * @param format
    * @return response
    * @throws Exception
@@ -265,7 +270,7 @@ public class SpacesRestService implements ResourceContainer {
    * shows pendingSpaceList by json/xml format
    *
    * @param uriInfo
-   * @param userId
+   * @param portalName
    * @param format
    * @return response
    * @throws Exception
@@ -403,7 +408,7 @@ public class SpacesRestService implements ResourceContainer {
     /**
      * Sets space name list
      *
-     * @param space name list
+     * @param names space name list
      */
     public void setNames(List<String> names) {
       this._names = names;
@@ -421,7 +426,7 @@ public class SpacesRestService implements ResourceContainer {
     /**
      * Add name to space name list
      *
-     * @param space name
+     * @param name spaces name
      */
     public void addName(String name) {
       if (_names == null) {

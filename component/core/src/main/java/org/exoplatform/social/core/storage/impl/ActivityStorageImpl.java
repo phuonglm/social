@@ -1088,7 +1088,7 @@ public class ActivityStorageImpl extends AbstractStorage implements ActivityStor
     List<Identity> spaceList = getSpacesId(ownerIdentity);
 
     //
-    return getActivitiesOfIdentities(spaceList, TimestampType.OLDER.from(baseActivity.getPostedTime()), 0, limit);
+      return getActivitiesOfIdentities(spaceList, TimestampType.OLDER.from(baseActivity.getPostedTime()), 0, limit);
 
   }
 

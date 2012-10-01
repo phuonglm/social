@@ -468,72 +468,6 @@ public interface SpaceService {
    */
   SpaceApplicationConfigPlugin getSpaceApplicationConfigPlugin();
 
-  /**
-   * Gets all spaces in Social.
-   *
-   * @return list of spaces in Social
-   * @throws SpaceException with code SpaceException.Code.ERROR_DATASTORE
-   * @deprecated Use {@link #getAllSpacesWithListAccess()} instead.
-   *             Will be removed by 1.3.x
-   */
-  @Deprecated
-  List<Space> getAllSpaces() throws SpaceException;
-
-  /**
-   * Gets a space by its space name.
-   *
-   * @param spaceName space name
-   * @return the stored space
-   * @throws SpaceException
-   * @deprecated Use {@link SpaceService#getSpaceByPrettyName(String)} instead.
-   *             Will be removed at 1.3.x
-   */
-  public Space getSpaceByName(String spaceName) throws SpaceException;
-
-  /**
-   * Gets all spaces has the name starting with the input character.
-   *
-   * @return all spaces which have first character of name matched the input string.
-   * @throws SpaceException with code SpaceException.Code.ERROR_DATASTORE
-   * @deprecated Use {@link #getAllSpacesByFilter(org.exoplatform.social.core.space.SpaceFilter)} instead.
-   *             Will be removed by 1.3.x
-   */
-  @Deprecated
-  List<Space> getSpacesByFirstCharacterOfName(String firstCharacterOfName) throws SpaceException;
-
-  /**
-   * Gets all spaces which has name or description that match input condition.
-   *
-   * @param condition the input condition
-   * @return a list of spaces
-   * @throws Exception
-   * @deprecated Use {@link #getAllSpacesByFilter(org.exoplatform.social.core.space.SpaceFilter)} instead.
-   *             Will be removed by 1.3.x
-   */
-  List<Space> getSpacesBySearchCondition(String condition) throws Exception;
-
-  /**
-   * Gets spaces of a user in which that user is a member.
-   *
-   * @param userId Id of user
-   * @return all spaces of a user in which the user is a member
-   * @throws SpaceException with code SpaceException.Code.ERROR_DATASTORE
-   * @deprecated Use {@link #getMemberSpaces(String)} instead.
-   *             Will be removed by 1.3.x
-   */
-  @Deprecated
-  List<Space> getSpaces(String userId) throws SpaceException;
-
-  /**
-   * Gets spaces of a user which that user has the access permission.
-   *
-   * @param userId
-   * @return list of spaces
-   * @throws SpaceException
-   * @deprecated Use {@link #getAccessibleSpacesWithListAccess(String)} instead.
-   *             Will be remvoed by 1.3.x
-   */
-  List<Space> getAccessibleSpaces(String userId) throws SpaceException;
 
   /**
    * Gets spaces of a user which that user can see the visible spaces.
@@ -554,55 +488,8 @@ public interface SpaceService {
    * @since 1.2.5-GA
    */
   public SpaceListAccess getVisibleSpacesWithListAccess(String userId, SpaceFilter spaceFilter);
-  
-  /**
-   * Gets spaces of a user which that user has the edit permission.
-   *
-   * @param userId
-   * @return list of space
-   * @throws SpaceException
-   * @deprecated Use {@link #getSettingableSpaces(String)} instead.
-   *             Will be removed by 1.3.x
-   */
-  @Deprecated
-  List<Space> getEditableSpaces(String userId) throws SpaceException;
-
-  /**
-   * Gets a user's invited spaces and that user can accept or deny the request.
-   *
-   * @param userId
-   * @return spaces list of all user's invited spaces
-   * @throws SpaceException
-   * @deprecated Use {@link #getInvitedSpacesWithListAccess(String)} instead.
-   *             Will be removed by 1.3.x
-   */
-  @Deprecated
-  List<Space> getInvitedSpaces(String userId) throws SpaceException;
 
 
-  /**
-   * Gets a user's public spaces and that user can request to join.
-   *
-   * @param userId Id of user
-   * @return spaces list in which the user can request to join
-   * @throws SpaceException
-   * @deprecated Use {@link #getPublicSpacesWithListAccess(String)} instead.
-   *             Will be removed by 1.3.x
-   */
-  @Deprecated
-  List<Space> getPublicSpaces(String userId) throws SpaceException;
-
-  /**
-   * Gets a user's pending spaces and that the user can revoke that request.
-   *
-   * @param userId
-   * @return spaces list in which the user can revoke that request
-   * @throws SpaceException
-   * @deprecated Use {@link #getPendingSpacesWithListAccess(String)} instead.
-   *             Will be removed by 1.3.x
-   */
-  @Deprecated
-  List<Space> getPendingSpaces(String userId) throws SpaceException;
 
   /**
    * Creates a new space and invites all users from invitedGroupId to join this newly created space.
@@ -615,16 +502,6 @@ public interface SpaceService {
    */
   Space createSpace(Space space, String creator, String invitedGroupId) throws SpaceException;
 
-  /**
-   * Saves a new space or updates a space.
-   *
-   * @param space space is saved
-   * @param isNew true if creating a new space; otherwise, update an existing space.
-   * @throws SpaceException with code: SpaceException.Code.ERROR_DATASTORE
-   * @deprecated Use {@link #updateSpace(org.exoplatform.social.core.space.model.Space)} instead.
-   *             Will be removed by 1.3.x
-   */
-  void saveSpace(Space space, boolean isNew) throws SpaceException;
 
   /**
    * Renames a space.
@@ -635,17 +512,7 @@ public interface SpaceService {
    * @since 1.2.8
    */
   void renameSpace(Space space, String newDisplayName) throws SpaceException;
-  
-  /**
-   * Deletes a space by its id.
-   *
-   * @param spaceId
-   * @throws SpaceException
-   * @deprecated Use {@link #deleteSpace(org.exoplatform.social.core.space.model.Space)} instead.
-   *             Will be removed by 1.3.x
-   */
-  @Deprecated
-  void deleteSpace(String spaceId) throws SpaceException;
+
 
   /**
    * Does nothing, just for compatible.
@@ -993,17 +860,6 @@ public interface SpaceService {
   @Deprecated
   void requestJoin(Space space, String userId) throws SpaceException;
 
-  /**
-   * Requests a user to join a space, adds that user to the pending list of the space.
-   *
-   * @param spaceId
-   * @param userId
-   * @throws SpaceException
-   * @deprecated Use {@link #addPendingUser(org.exoplatform.social.core.space.model.Space, String)} instead.
-   *             Will be removed by 1.3.x
-   */
-  @Deprecated
-  void requestJoin(String spaceId, String userId) throws SpaceException;
 
   /**
    * Revokes a join request after users request to join a group and is in the pending status.

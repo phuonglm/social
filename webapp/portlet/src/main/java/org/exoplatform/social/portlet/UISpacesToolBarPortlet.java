@@ -17,12 +17,7 @@
 package org.exoplatform.social.portlet;
 
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletPreferences;
@@ -30,6 +25,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceURL;
 
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.portal.mop.Visibility;
 import org.exoplatform.portal.mop.navigation.GenericScope;
@@ -105,7 +101,8 @@ public class UISpacesToolBarPortlet extends UIPortletApplication {
 
   public List<UserNavigation> getSpaceNavigations() throws Exception {
     String remoteUser = getUserId();
-    List<Space> spaces = getSpaceService().getAccessibleSpaces(remoteUser);
+    ListAccess<Space> spacesListAccess = getSpaceService().getAccessibleSpacesWithListAccess(remoteUser);
+    List<Space> spaces = Arrays.asList(spacesListAccess.load(0, spacesListAccess.getSize()));
 
     UserPortal userPortal = SpaceUtils.getUserPortal();
     List<UserNavigation> allNavigations = userPortal.getNavigations();
@@ -347,7 +344,6 @@ public class UISpacesToolBarPortlet extends UIPortletApplication {
    * @author quangpld
    */
   private class SpaceNameComparator implements Comparator<UserNavigation> {
-
     @Override
     public int compare(UserNavigation u1, UserNavigation u2) {
       return u1.getKey().getName().compareToIgnoreCase(u2.getKey().getName());

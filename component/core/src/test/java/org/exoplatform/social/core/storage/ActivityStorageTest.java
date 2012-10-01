@@ -1798,7 +1798,7 @@ public class ActivityStorageTest extends AbstractCoreTest {
     space.setPendingUsers(pendingUsers);
     space.setManagers(managers);
     space.setMembers(members);
-    spaceService.saveSpace(space, true);
+    spaceService.createSpace(space, "demo");
     return space;
   }
 }

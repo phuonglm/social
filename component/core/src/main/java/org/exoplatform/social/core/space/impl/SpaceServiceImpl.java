@@ -172,12 +172,7 @@ public class SpaceServiceImpl implements SpaceService {
     return spaceStorage.getSpaceByDisplayName(spaceDisplayName);
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  public Space getSpaceByName(String spaceName) {
-    return getSpaceByPrettyName(spaceName);
-  }
+
 
   /**
    * {@inheritDoc}
@@ -186,27 +181,6 @@ public class SpaceServiceImpl implements SpaceService {
     return spaceStorage.getSpaceByPrettyName(spacePrettyName);
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  public List<Space> getSpacesByFirstCharacterOfName(String firstCharacterOfName) throws SpaceException {
-    try {
-      return Arrays.asList(this.getAllSpacesByFilter(new SpaceFilter(firstCharacterOfName.charAt(0))).load(OFFSET, LIMIT));
-    } catch (Exception e) {
-      throw new SpaceException(SpaceException.Code.ERROR_DATASTORE, e);
-    }
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public List<Space> getSpacesBySearchCondition(String searchCondition) throws SpaceException {
-    try {
-      return Arrays.asList(this.getAllSpacesByFilter(new SpaceFilter(searchCondition)).load(OFFSET, LIMIT));
-    } catch (Exception e) {
-      throw new SpaceException(SpaceException.Code.ERROR_DATASTORE, e);
-    }
-  }
 
   /**
    * {@inheritDoc}
@@ -229,28 +203,7 @@ public class SpaceServiceImpl implements SpaceService {
     return spaceStorage.getSpaceByUrl(url);
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  public List<Space> getSpaces(String userId) throws SpaceException {
-    try {
-      return Arrays.asList(this.getMemberSpaces(userId).load(OFFSET, LIMIT));
-    } catch (Exception e) {
-      throw new SpaceException(SpaceException.Code.ERROR_DATASTORE, e);
-    }
-  }
 
-  /**
-   * {@inheritDoc}
-   */
-  public List<Space> getAccessibleSpaces(String userId) throws SpaceException {
-    try {
-      return Arrays.asList(this.getAccessibleSpacesWithListAccess(userId).load(OFFSET, LIMIT));
-    } catch (Exception e) {
-      throw new SpaceException(SpaceException.Code.ERROR_DATASTORE, e);
-    }
-  }
-  
   /**
    * {@inheritDoc}
    */
@@ -286,39 +239,8 @@ public class SpaceServiceImpl implements SpaceService {
       return new SpaceListAccess(this.spaceStorage, userId, spaceFilter,SpaceListAccess.Type.VISIBLE);
     }
   }
-  
-  /**
-   * {@inheritDoc}
-   */
-  public List<Space> getEditableSpaces(String userId)  throws SpaceException {
-    try {
-      return Arrays.asList(this.getSettingableSpaces(userId).load(OFFSET, LIMIT));
-    } catch (Exception e) {
-      throw new SpaceException(SpaceException.Code.ERROR_DATASTORE, e);
-    }
-  }
 
-  /**
-   * {@inheritDoc}
-   */
-  public List<Space> getInvitedSpaces(String userId) throws SpaceException {
-    try {
-      return Arrays.asList(this.getInvitedSpacesWithListAccess(userId).load(OFFSET, LIMIT));
-    } catch (Exception e) {
-      throw new SpaceException(SpaceException.Code.ERROR_DATASTORE, e);
-    }
-  }
 
-  /**
-   * {@inheritDoc}
-   */
-  public List<Space> getPublicSpaces(String userId) throws SpaceException {
-    try {
-      return Arrays.asList(this.getPublicSpacesWithListAccess(userId).load(OFFSET, LIMIT));
-    } catch (Exception e) {
-      throw new SpaceException(SpaceException.Code.ERROR_DATASTORE, e);
-    }
-  }
 
   /**
    * {@inheritDoc}
@@ -331,16 +253,7 @@ public class SpaceServiceImpl implements SpaceService {
     }
   }
   
-  /**
-   * {@inheritDoc}
-   */
-  public List<Space> getPendingSpaces(String userId) throws SpaceException {
-    try {
-      return Arrays.asList(this.getPendingSpacesWithListAccess(userId).load(OFFSET, LIMIT));
-    } catch (Exception e) {
-      throw new SpaceException(SpaceException.Code.ERROR_DATASTORE, e);
-    }
-  }
+
 
   /**
    * {@inheritDoc}
@@ -429,10 +342,8 @@ public class SpaceServiceImpl implements SpaceService {
     return space;
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  public void saveSpace(Space space, boolean isNew) {
+
+  private void saveSpace(Space space, boolean isNew) {
     spaceStorage.saveSpace(space, isNew);
   }
 
@@ -476,12 +387,6 @@ public class SpaceServiceImpl implements SpaceService {
     spaceLifeCycle.spaceRemoved(space, null);
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  public void deleteSpace(String spaceId) {
-    deleteSpace(getSpaceById(spaceId));
-  }
 
   /**
    * {@inheritDoc}

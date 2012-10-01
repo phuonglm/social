@@ -383,7 +383,6 @@ public class IdentityManagerImpl implements IdentityManager {
    */
   public void saveProfile(Profile profile) {
     this.getIdentityStorage().saveProfile(profile);
-    this.getIdentityProvider(profile.getIdentity().getProviderId()).onSaveProfile(profile);
   }
 
   /**
@@ -492,8 +491,7 @@ public class IdentityManagerImpl implements IdentityManager {
    */
   public void addOrModifyProfileProperties(Profile profile) throws Exception {
     this.getIdentityStorage().addOrModifyProfileProperties(profile);
-    this.getIdentityProvider(profile.getIdentity().getProviderId()).onSaveProfile(profile);
-  }
+    }
 
   /**
    * {@inheritDoc}
