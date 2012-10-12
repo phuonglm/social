@@ -96,7 +96,9 @@ public class PeopleRestService implements ResourceContainer{
   
   /** Number of default limit activities. */
   private static final int DEFAULT_LIMIT = 20;
-  
+
+  private static final String[] SUPPORTED_FORMAT = new String[]{"json", "xml"};
+
   private String portalName_;
   private IdentityManager identityManager;
   private ActivityManager activityManager;
@@ -123,7 +125,7 @@ public class PeopleRestService implements ResourceContainer{
                     @QueryParam("typeOfRelation") String typeOfRelation,
                     @QueryParam("spaceURL") String spaceURL,
                     @PathParam("format") String format) throws Exception {
-    MediaType mediaType = Util.getMediaType(format);
+    MediaType mediaType = Util.getMediaType(format, SUPPORTED_FORMAT);
     List<Identity> excludedIdentityList = new ArrayList<Identity>();
     excludedIdentityList.add(Util.getViewerIdentity(currentUser));
     UserNameList nameList = new UserNameList();
@@ -410,7 +412,7 @@ public class PeopleRestService implements ResourceContainer{
    * @param currentUserName Name of current user.
    * @param userId Id of user is specified.
    * @param format
-   * @param update
+   * @param updatedType
    * @return Information of people appropriate focus user.
    * @throws Exception
    */
@@ -423,7 +425,7 @@ public class PeopleRestService implements ResourceContainer{
                                 @PathParam("format") String format,
                                 @QueryParam("updatedType") String updatedType) throws Exception {
     PeopleInfo peopleInfo = new PeopleInfo();
-    MediaType mediaType = Util.getMediaType(format);
+    MediaType mediaType = Util.getMediaType(format, SUPPORTED_FORMAT);
     portalName_ = portalName;
     Identity identity = getIdentityManager().getOrCreateIdentity(OrganizationIdentityProvider.NAME,
                                                                    userId, false);
@@ -434,15 +436,15 @@ public class PeopleRestService implements ResourceContainer{
     if (updatedType != null) {
       Relationship rel = getRelationshipManager().get(currentIdentity, identity);
       if (ACCEPT_ACTION.equals(updatedType)) { // Accept or Deny
-        getRelationshipManager().confirm(rel);
+        getRelationshipManager().confirm(rel.getReceiver(), rel.getSender());
       } else if (DENY_ACTION.equals(updatedType)) {
-        getRelationshipManager().deny(rel);
+        getRelationshipManager().deny(currentIdentity, identity);
       } else if (REVOKE_ACTION.equals(updatedType)) {
-        getRelationshipManager().deny(rel);
+        getRelationshipManager().deny(currentIdentity, identity);
       } else if (INVITE_ACTION.equals(updatedType)) {
-        getRelationshipManager().invite(currentIdentity, identity);
+        getRelationshipManager().inviteToConnect(currentIdentity, identity);
       } else if (REMOVE_ACTION.equals(updatedType)) {
-        getRelationshipManager().remove(rel);
+        getRelationshipManager().delete(rel);
       }
     }
     
@@ -481,8 +483,8 @@ public class PeopleRestService implements ResourceContainer{
       if (SPACE_MEMBER.equals(typeOfRelation) && spaceSrv.isMember(space, userName)) {
         nameList.addName(fullName);
         continue;
-      } else if (USER_TO_INVITE.equals(typeOfRelation) && !spaceSrv.isInvited(space, userName)
-                 && !spaceSrv.isPending(space, userName) && !spaceSrv.isMember(space, userName)) {
+      } else if (USER_TO_INVITE.equals(typeOfRelation) && !spaceSrv.isInvitedUser(space, userName)
+                 && !spaceSrv.isPendingUser(space, userName) && !spaceSrv.isMember(space, userName)) {
         nameList.addName(userName);
       }
     }
@@ -580,7 +582,7 @@ public class PeopleRestService implements ResourceContainer{
     private List<String> _names;
     /**
      * Sets user name list
-     * @param user name list
+     * @param names username list
      */
     public void setNames(List<String> names) {
       this._names = names; 
@@ -596,7 +598,7 @@ public class PeopleRestService implements ResourceContainer{
     
     /**
      * Add name to user name list
-     * @param user name
+     * @param name username
      */
     public void addName(String name) {
       if (_names == null) {

@@ -75,7 +75,8 @@ public class ActivityInjector extends AbstractSocialInjector {
         lorem = new LoremIpsum4J();
         activity.setBody(lorem.getWords(10));
         activity.setTitle(lorem.getParagraphs());
-        activityManager.saveActivity(identity, "DEFAULT_ACTIVITY", activity.getTitle());
+        activity.setType("DEFAULT_ACTIVITY");
+        activityManager.saveActivityNoReturn(identity, activity);
 
         //
         getLog().info("Activity for " + fromUser + " generated");

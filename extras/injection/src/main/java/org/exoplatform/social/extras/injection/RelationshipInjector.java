@@ -81,7 +81,8 @@ public class RelationshipInjector extends AbstractSocialInjector {
 
           //
           Relationship r = new Relationship(identity1, identity2, Relationship.Type.CONFIRMED);
-          relationshipManager.saveRelationship(r);
+          relationshipManager.inviteToConnect(identity1, identity2);
+          relationshipManager.confirm(identity2, identity1);
           
           //
           getLog().info("Relationship between " + fromUser + " and " + toUser + " generated");

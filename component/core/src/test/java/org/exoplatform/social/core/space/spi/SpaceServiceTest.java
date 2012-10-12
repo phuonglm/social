@@ -23,12 +23,12 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.commons.utils.PageList;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.social.common.RealtimeListAccess;
 import org.exoplatform.social.common.lifecycle.LifeCycleCompletionService;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
 import org.exoplatform.social.core.identity.model.Identity;
@@ -164,62 +164,6 @@ public class SpaceServiceTest extends AbstractCoreTest {
     super.tearDown();
   }
 
-  /**
-   * Test {@link SpaceService#getAllSpaces()}
-   *
-   * @throws Exception
-   */
-  public void testGetAllSpaces() throws Exception {
-    tearDownSpaceList.add(populateData());
-    tearDownSpaceList.add(createMoreSpace("Space2"));
-    assertEquals(2, spaceService.getAllSpaces().size());
-  }
-
-  /**
-   * Test {@link SpaceService#getAllSpacesWithListAccess()}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testGetAllSpacesWithListAccess() throws Exception {
-    int count = 20;
-    for (int i = 0; i < count; i ++) {
-      tearDownSpaceList.add(this.getSpaceInstance(i));
-    }
-    ListAccess<Space> allSpaces = spaceService.getAllSpacesWithListAccess();
-    assertNotNull("allSpaces must not be null", allSpaces);
-    assertEquals("allSpaces.getSize() must return: " + count, count, allSpaces.getSize());
-    assertEquals("allSpaces.load(0, 1).length must return: 1", 1, allSpaces.load(0, 1).length);
-    assertEquals("allSpaces.load(0, count).length must return: " + count, count, allSpaces.load(0, count).length);
-  }
-
-  /**
-   * Test {@link SpaceService#getSpaces(String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testGetSpacesByUserId() throws Exception {
-    int count = 20;
-    for (int i = 0; i < count; i ++) {
-      tearDownSpaceList.add(this.getSpaceInstance(i));
-    }
-    List<Space> memberSpaces = spaceService.getSpaces("raul");
-    assertNotNull("memberSpaces must not be null", memberSpaces);
-    assertEquals("memberSpaces.size() must return: " + count, count, memberSpaces.size());
-
-    memberSpaces = spaceService.getSpaces("ghost");
-    assertNotNull("memberSpaces must not be null", memberSpaces);
-    assertEquals("memberSpaces.size() must return: " + count, count, memberSpaces.size());
-
-    memberSpaces = spaceService.getSpaces("dragon");
-    assertNotNull("memberSpaces must not be null", memberSpaces);
-    assertEquals("memberSpaces.size() must return: " + count, count, memberSpaces.size());
-
-    memberSpaces = spaceService.getSpaces("nobody");
-    assertNotNull("memberSpaces must not be null", memberSpaces);
-    assertEquals("memberSpaces.size() must return: " + 0, 0, memberSpaces.size());
-  }
 
   /**
    * Test {@link SpaceService#getSpaceByDisplayName(String)}
@@ -236,24 +180,6 @@ public class SpaceServiceTest extends AbstractCoreTest {
     assertEquals(space.getDisplayName(), gotSpace1.getDisplayName());
   }
 
-  public void testGetSpaceByName() throws Exception {
-    int count = 20;
-    for (int i = 0; i < count; i ++) {
-      tearDownSpaceList.add(this.getSpaceInstance(i));
-    }
-    Space foundSpace = spaceService.getSpaceByName("my_space_10");
-    assertNotNull("foundSpace must not be null", foundSpace);
-    assertEquals("foundSpace.getDisplayName() must return: my space 10", "my space 10", foundSpace.getDisplayName());
-    assertEquals("foundSpace.getPrettyName() must return: my_space_10", "my_space_10", foundSpace.getPrettyName());
-
-    foundSpace = spaceService.getSpaceByName("my_space_0");
-    assertNotNull("foundSpace must not be null", foundSpace);
-    assertEquals("foundSpace.getDisplayName() must return: my space 0", "my space 0", foundSpace.getDisplayName());
-    assertEquals("foundSpace.getPrettyName() must return: my_space_0", "my_space_0", foundSpace.getPrettyName());
-
-    foundSpace = spaceService.getSpaceByName("my_space_20");
-    assertNull("foundSpace must be null", foundSpace);
-  }
 
   /**
    * Test {@link SpaceService#getSpaceByPrettyName(String)}
@@ -280,16 +206,7 @@ public class SpaceServiceTest extends AbstractCoreTest {
     assertNull("foundSpace must be null", foundSpace);
   }
 
-  /**
-   * Test {@link SpaceService#getSpacesByFirstCharacterOfName(String)}
-   *
-   * @throws Exception
-   */
-  public void testGetSpacesByFirstCharacterOfName() throws Exception {
-    tearDownSpaceList.add(populateData());
-    tearDownSpaceList.add(createMoreSpace("Space2"));
-    assertEquals(2, spaceService.getSpacesByFirstCharacterOfName("S").size());
-  }
+
 
   /**
    * Test {@link SpaceService#getAllSpacesByFilter(SpaceFilter)}
@@ -325,17 +242,6 @@ public class SpaceServiceTest extends AbstractCoreTest {
     assertEquals("foundSpaceListAccess.getSize() must return: " + 0, 0, foundSpaceListAccess.getSize());
   }
 
-  /**
-   * Test {@link SpaceService#getSpacesBySearchCondition(String)}
-   *
-   * @throws Exception
-   */
-  public void testGetSpacesBySearchCondition() throws Exception {
-    tearDownSpaceList.add(populateData());
-    tearDownSpaceList.add(createMoreSpace("Space2"));
-    assertEquals(2, spaceService.getSpacesBySearchCondition("Space").size());
-    assertEquals(1, spaceService.getSpacesBySearchCondition("1").size());
-  }
 
   /**
    * Test {@link SpaceService#getAllSpacesByFilter(SpaceFilter)}
@@ -467,15 +373,6 @@ public class SpaceServiceTest extends AbstractCoreTest {
     assertEquals(space.getDisplayName(), spaceService.getSpaceByUrl("space1").getDisplayName());
   }
 
-  /**
-   * Test {@link SpaceService#getEditableSpaces(String)}
-   *
-   * @throws Exception
-   */
-  public void testGetEditableSpaces() throws Exception {
-    tearDownSpaceList.add(populateData());
-    assertEquals(1, spaceService.getEditableSpaces("root").size());
-  }
 
   /**
    * Test {@link SpaceService#getSettingableSpaces(String))}
@@ -573,18 +470,6 @@ public class SpaceServiceTest extends AbstractCoreTest {
     assertEquals("editableSpaceListAccess.getSize() must return: " + 0, 0, editableSpaceListAccess.getSize());
   }
 
-  /**
-   * Test {@link SpaceService#getInvitedSpaces(String)}
-   *
-   * @throws Exception
-   */
-  public void testGetInvitedSpaces() throws Exception {
-    tearDownSpaceList.add(populateData());
-    assertEquals(0, spaceService.getInvitedSpaces("root").size());
-    Space space = spaceService.getSpaceByDisplayName("Space1");
-    spaceService.inviteMember(space, "root");
-    assertEquals(1, spaceService.getInvitedSpaces("root").size());
-  }
 
   /**
    * Test {@link SpaceService#getInvitedSpacesWithListAccess(String)}
@@ -723,15 +608,6 @@ public class SpaceServiceTest extends AbstractCoreTest {
     assertEquals("invitedSpaces.getSize() must return: " + 0, 0, invitedSpaces.getSize());
   }
 
-  /**
-   * Test {@link SpaceService#getPublicSpaces(String)}
-   *
-   * @throws Exception
-   */
-  public void testGetPublicSpaces() throws Exception {
-    tearDownSpaceList.add(populateData());
-    assertEquals(0, spaceService.getPublicSpaces("root").size());
-  }
 
   /**
    * Test {@link SpaceService#getPublicSpacesWithListAccess(String)}
@@ -894,37 +770,6 @@ public class SpaceServiceTest extends AbstractCoreTest {
                   johnPublicSpacesArray[0].getPrettyName());
   }
 
-  /**
-   * Test {@link SpaceService#getAccessibleSpaces(String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testGetAccessibleSpaces() throws Exception {
-    int count = 20;
-    for (int i = 0; i < count; i ++) {
-      tearDownSpaceList.add(this.getSpaceInstance(i));
-    }
-    List<Space> accessibleSpaces = spaceService.getAccessibleSpaces("demo");
-    assertNotNull("accessibleSpaces must not be null", accessibleSpaces);
-    assertEquals("accessibleSpaces.size() must return: " + count, count, accessibleSpaces.size());
-
-    accessibleSpaces = spaceService.getAccessibleSpaces("tom");
-    assertNotNull("accessibleSpaces must not be null", accessibleSpaces);
-    assertEquals("accessibleSpaces.size() must return: " + count, count, accessibleSpaces.size());
-
-    accessibleSpaces = spaceService.getAccessibleSpaces("root");
-    assertNotNull("accessibleSpaces must not be null", accessibleSpaces);
-    assertEquals("accessibleSpaces.size() must return: " + count, count, accessibleSpaces.size());
-
-    accessibleSpaces = spaceService.getAccessibleSpaces("dragon");
-    assertNotNull("accessibleSpaces must not be null", accessibleSpaces);
-    assertEquals("accessibleSpaces.size() must return: " + count, count, accessibleSpaces.size());
-
-    accessibleSpaces = spaceService.getAccessibleSpaces("hellgate");
-    assertNotNull("accessibleSpaces must not be null", accessibleSpaces);
-    assertEquals("accessibleSpaces.size() must return: " + 0, 0, accessibleSpaces.size());
-  }
 
   /**
    * Test {@link SpaceService#getAccessibleSpacesWithListAccess(String)}
@@ -1102,34 +947,6 @@ public class SpaceServiceTest extends AbstractCoreTest {
     assertEquals("accessibleSpaces.getSize() must return: " + 0, 0, accessibleSpaces.getSize());
   }
 
-  /**
-   * Test {@link SpaceService#getSpaces(String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testGetSpaces() throws Exception {
-    int count = 20;
-    for (int i = 0; i < count; i ++) {
-      tearDownSpaceList.add(this.getSpaceInstance(i));
-    }
-
-    List<Space> memberSpaceListAccess = spaceService.getSpaces("raul");
-    assertNotNull("memberSpaceListAccess must not be null", memberSpaceListAccess);
-    assertEquals("memberSpaceListAccess.size() must return: " + count, count, memberSpaceListAccess.size());
-
-    memberSpaceListAccess = spaceService.getSpaces("ghost");
-    assertNotNull("memberSpaceListAccess must not be null", memberSpaceListAccess);
-    assertEquals("memberSpaceListAccess.size() must return: " + count, count, memberSpaceListAccess.size());
-
-    memberSpaceListAccess = spaceService.getSpaces("dragon");
-    assertNotNull("memberSpaceListAccess must not be null", memberSpaceListAccess);
-    assertEquals("memberSpaceListAccess.size() must return: " + count, count, memberSpaceListAccess.size());
-
-    memberSpaceListAccess = spaceService.getSpaces("root");
-    assertNotNull("memberSpaceListAccess must not be null", memberSpaceListAccess);
-    assertEquals("memberSpaceListAccess.size() must return: " + 0, 0, memberSpaceListAccess.size());
-  }
 
   /**
    * Test {@link SpaceService#getMemberSpaces(String)}
@@ -1218,18 +1035,6 @@ public class SpaceServiceTest extends AbstractCoreTest {
     memberSpaceListAccess = spaceService.getMemberSpacesByFilter("root", new SpaceFilter("my space"));
     assertNotNull("memberSpaceListAccess must not be null", memberSpaceListAccess);
     assertEquals("memberSpaceListAccess.size() must return: " + 0, 0, memberSpaceListAccess.getSize());
-  }
-
-  /**
-   * Test {@link SpaceService#getPendingSpaces(String)}
-   *
-   * @throws Exception
-   */
-  public void testGetPendingSpaces() throws Exception {
-    tearDownSpaceList.add(populateData());
-    Space space = spaceService.getSpaceByDisplayName("Space1");
-    spaceService.requestJoin(space, "root");
-    assertEquals(true, spaceService.isPending(space, "root"));
   }
 
   /**
@@ -1386,25 +1191,6 @@ public class SpaceServiceTest extends AbstractCoreTest {
     assertEquals("spaceListAccess.getSize() must return: 2", 2, spaceListAccess.getSize());
   }
 
-  /**
-   * Test {@link SpaceService#saveSpace(Space, boolean)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testSaveSpace() throws Exception {
-    Space space = this.getSpaceInstance(0);
-    tearDownSpaceList.add(space);
-    String spaceDisplayName = space.getDisplayName();
-    String spaceDescription = space.getDescription();
-    String groupId = space.getGroupId();
-    Space savedSpace = spaceService.getSpaceByDisplayName(spaceDisplayName);
-    assertNotNull("savedSpace must not be null", savedSpace);
-    assertEquals("savedSpace.getDisplayName() must return: " + spaceDisplayName, spaceDisplayName, savedSpace.getDisplayName());
-    assertEquals("savedSpace.getDescription() must return: " + spaceDescription, spaceDescription, savedSpace.getDescription());
-    assertEquals("savedSpace.getGroupId() must return: " + groupId, groupId, savedSpace.getGroupId());
-    assertEquals(null, savedSpace.getAvatarUrl());
-  }
 
   /**
    * Test {@link SpaceService#renameSpace(Space, String)}
@@ -1430,48 +1216,7 @@ public class SpaceServiceTest extends AbstractCoreTest {
     Identity savedIdentity = identityStorage.findIdentity(SpaceIdentityProvider.NAME, space.getPrettyName());
     assertNotNull(savedIdentity);
   }
-  
-  /**
-   * Test {@link SpaceService#saveSpace(Space, boolean)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testUpdateSpaceAvatar() throws Exception {
 
-    Space space = this.getSpaceInstance(0);
-    Identity spaceIdentity = new Identity(SpaceIdentityProvider.NAME, space.getPrettyName());
-    identityStorage.saveIdentity(spaceIdentity);
-
-    tearDownSpaceList.add(space);
-    tearDownUserList.add(spaceIdentity);
-
-    InputStream inputStream = getClass().getResourceAsStream("/eXo-Social.png");
-    AvatarAttachment avatarAttachment =
-        new AvatarAttachment(null, "avatar", "png", inputStream, null, System.currentTimeMillis());
-    space.setAvatarAttachment(avatarAttachment);
-
-    spaceService.updateSpaceAvatar(space);
-    spaceService.updateSpace(space);
-
-    Space savedSpace = spaceService.getSpaceById(space.getId());
-    assertFalse(savedSpace.getAvatarUrl() == null);
-    String avatarRandomURL = savedSpace.getAvatarUrl();
-    int indexOfRandomVar = avatarRandomURL.indexOf("/?upd=");
-
-    String avatarURL = null;
-    if(indexOfRandomVar != -1){
-      avatarURL = avatarRandomURL.substring(0,indexOfRandomVar);
-    } else {
-      avatarURL = avatarRandomURL;
-  }
-    assertEquals(LinkProvider.escapeJCRSpecialCharacters(
-            String.format(
-              "/rest/jcr/repository/portal-test/production/soc:providers/soc:space/soc:%s/soc:profile/soc:avatar",
-              space.getPrettyName())
-            ),avatarURL);
-
-  }
 
   /**
    * Test {@link SpaceService#deleteSpace(Space)}
@@ -1705,7 +1450,7 @@ public class SpaceServiceTest extends AbstractCoreTest {
       IdentityManager identityManager = (IdentityManager) getContainer().getComponentInstanceOfType(IdentityManager.class);
       ActivityManager activityManager = (ActivityManager) getContainer().getComponentInstanceOfType(ActivityManager.class);
       Thread.sleep(3000);
-      List<ExoSocialActivity> broadCastActivities = activityManager.getActivities(identityManager.getOrCreateIdentity(SpaceIdentityProvider.NAME, savedSpace.getPrettyName(), false), 0, 10);
+      ExoSocialActivity[] broadCastActivities = activityManager.getActivitiesWithListAccess(identityManager.getOrCreateIdentity(SpaceIdentityProvider.NAME, savedSpace.getPrettyName(), false)).load(0, 10);
       for (ExoSocialActivity activity : broadCastActivities) {
         activityManager.deleteActivity(activity);
       }
@@ -1796,35 +1541,6 @@ public class SpaceServiceTest extends AbstractCoreTest {
     //TODO
   }
 
-  /**
-   * Test {@link SpaceService#initApp(Space)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testInitApp() throws Exception {
-    //TODO Complete this
-  }
-
-  /**
-   * Test {@link SpaceService#initApps(Space)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testInitApps() throws Exception {
-    //TODO Complete this
-  }
-
-  /**
-   * Test {@link SpaceService#deInitApps(Space)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testDeInitApps() throws Exception {
-    //TODO Complete this
-  }
 
   /**
    * Creates new space with out init apps.
@@ -1849,8 +1565,8 @@ public class SpaceServiceTest extends AbstractCoreTest {
       // Gets users in group and then invites user to join into space.
       OrganizationService org = (OrganizationService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
       try {
-        PageList<User> groupMembersAccess = org.getUserHandler().findUsersByGroup(invitedGroupId);
-        List<User> users = groupMembersAccess.getAll();
+        ListAccess<User> groupMembersAccess = org.getUserHandler().findUsersByGroupId(invitedGroupId);
+        User[] users = groupMembersAccess.load(0, groupMembersAccess.getSize());
 
         for (User user : users) {
           String userId = user.getUserName();
@@ -1922,7 +1638,8 @@ public class SpaceServiceTest extends AbstractCoreTest {
       IdentityManager identityManager = (IdentityManager) getContainer().getComponentInstanceOfType(IdentityManager.class);
       ActivityManager activityManager = (ActivityManager) getContainer().getComponentInstanceOfType(ActivityManager.class);
       Thread.sleep(3000);
-      List<ExoSocialActivity> broadCastActivities = activityManager.getActivities(identityManager.getOrCreateIdentity(SpaceIdentityProvider.NAME, savedSpace.getPrettyName(), false), 0, 10);
+      RealtimeListAccess<ExoSocialActivity> broadCastActivitiesListAccess = activityManager.getActivitiesWithListAccess(identityManager.getOrCreateIdentity(SpaceIdentityProvider.NAME, savedSpace.getPrettyName(), false));
+      ExoSocialActivity[] broadCastActivities = broadCastActivitiesListAccess.load(0, 10);
       for (ExoSocialActivity activity : broadCastActivities) {
         activityManager.deleteActivity(activity);
       }
@@ -2027,7 +1744,9 @@ public class SpaceServiceTest extends AbstractCoreTest {
       IdentityManager identityManager = (IdentityManager) getContainer().getComponentInstanceOfType(IdentityManager.class);
       ActivityManager activityManager = (ActivityManager) getContainer().getComponentInstanceOfType(ActivityManager.class);
       Thread.sleep(3000);
-      List<ExoSocialActivity> broadCastActivities = activityManager.getActivities(identityManager.getOrCreateIdentity(SpaceIdentityProvider.NAME, savedSpace.getPrettyName(), false), 0, 10);
+      ExoSocialActivity[] broadCastActivities = activityManager.getActivitiesWithListAccess(
+                                                              identityManager.getOrCreateIdentity(SpaceIdentityProvider.NAME, savedSpace.getPrettyName(),
+                                                              false)).load(0, 10);
       for (ExoSocialActivity activity : broadCastActivities) {
         activityManager.deleteActivity(activity);
       }
@@ -2036,122 +1755,6 @@ public class SpaceServiceTest extends AbstractCoreTest {
     }
   }
 
-  /**
-   * Test {@link SpaceService#getMembers(Space)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testGetMembers() throws Exception {
-    Space space = this.getSpaceInstance(0);
-    tearDownSpaceList.add(space);
-    Space savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertNotNull("savedSpace must not be null", savedSpace);
-    assertEquals("spaceService.getMembers(savedSpace).size() must return: " + savedSpace.getMembers().length, savedSpace.getMembers().length, spaceService.getMembers(savedSpace).size());
-  }
-
-  /**
-   * Test {@link SpaceService#setLeader(Space, String, boolean)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testSetLeader() throws Exception {
-    int number = 0;
-    Space space = new Space();
-    space.setDisplayName("my space " + number);
-    space.setPrettyName(space.getDisplayName());
-    space.setRegistration(Space.OPEN);
-    space.setDescription("add new space " + number);
-    space.setType(DefaultSpaceApplicationHandler.NAME);
-    space.setVisibility(Space.PUBLIC);
-    space.setRegistration(Space.VALIDATION);
-    space.setPriority(Space.INTERMEDIATE_PRIORITY);
-    space.setGroupId("/space/space" + number);
-    space.setUrl(space.getPrettyName());
-    String[] spaceManagers = new String[] {"demo", "tom"};
-    String[] members = new String[] {"raul", "ghost", "dragon"};
-    String[] invitedUsers = new String[] {"register1", "mary"};
-    String[] pendingUsers = new String[] {"jame", "paul", "hacker"};
-    space.setInvitedUsers(invitedUsers);
-    space.setPendingUsers(pendingUsers);
-    space.setManagers(spaceManagers);
-    space.setMembers(members);
-
-    space = this.createSpaceNonInitApps(space, "demo", null);
-    tearDownSpaceList.add(space);
-
-    //Space space = this.getSpaceInstance(0);
-    Space savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertNotNull("savedSpace must not be null", savedSpace);
-    int managers = savedSpace.getManagers().length;
-    spaceService.setLeader(savedSpace, "demo", true);
-    savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertEquals("savedSpace.getManagers().length must return: " + managers, managers, savedSpace.getManagers().length);
-
-    spaceService.setLeader(savedSpace, "john", true);
-    savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertEquals("savedSpace.getManagers().length must return: " + managers + 1, managers + 1, savedSpace.getManagers().length);
-
-    spaceService.setLeader(savedSpace, "demo", false);
-    savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertEquals("savedSpace.getManagers().length must return: " + managers, managers, savedSpace.getManagers().length);
-
-    // Wait 3 secs to have activity stored
-    try {
-      IdentityManager identityManager = (IdentityManager) getContainer().getComponentInstanceOfType(IdentityManager.class);
-      ActivityManager activityManager = (ActivityManager) getContainer().getComponentInstanceOfType(ActivityManager.class);
-      Thread.sleep(3000);
-      List<ExoSocialActivity> broadCastActivities = activityManager.getActivities(identityManager.getOrCreateIdentity(SpaceIdentityProvider.NAME, savedSpace.getPrettyName(), false), 0, 10);
-      for (ExoSocialActivity activity : broadCastActivities) {
-        activityManager.deleteActivity(activity);
-      }
-    } catch (InterruptedException e) {
-      LOG.error(e.getMessage(), e);
-    }
-  }
-
-  /**
-   * Test {@link SpaceService#isLeader(Space, String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testIsLeader() throws Exception {
-    Space space = this.getSpaceInstance(0);
-    tearDownSpaceList.add(space);
-    Space savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertNotNull("savedSpace must not be null", savedSpace);
-    assertTrue("spaceService.isLeader(savedSpace, \"demo\") must return true", spaceService.isLeader(savedSpace, "demo"));
-    assertTrue("spaceService.isLeader(savedSpace, \"tom\") must return true", spaceService.isLeader(savedSpace, "tom"));
-    assertFalse("spaceService.isLeader(savedSpace, \"mary\") must return false", spaceService.isLeader(savedSpace, "mary"));
-    assertFalse("spaceService.isLeader(savedSpace, \"john\") must return false", spaceService.isLeader(savedSpace, "john"));
-  }
-
-  /**
-   * Test {@link SpaceService#isOnlyLeader(Space, String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testIsOnlyLeader() throws Exception {
-    Space space = this.getSpaceInstance(0);
-    tearDownSpaceList.add(space);
-    Space savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertNotNull("savedSpace must not be null", savedSpace);
-    assertFalse("spaceService.isOnlyLeader(savedSpace, \"tom\") must return false", spaceService.isOnlyLeader(savedSpace, "tom"));
-    assertFalse("spaceService.isOnlyLeader(savedSpace, \"demo\") must return false", spaceService.isOnlyLeader(savedSpace, "demo"));
-
-    savedSpace.setManagers(new String[] {"demo"});
-    spaceService.updateSpace(savedSpace);
-    assertTrue("spaceService.isOnlyLeader(savedSpace, \"demo\") must return true", spaceService.isOnlyLeader(savedSpace, "demo"));
-    assertFalse("spaceService.isOnlyLeader(savedSpace, \"tom\") must return false", spaceService.isOnlyLeader(savedSpace, "tom"));
-
-    savedSpace.setManagers(new String[] {"tom"});
-    spaceService.updateSpace(savedSpace);
-    assertFalse("spaceService.isOnlyLeader(savedSpace, \"demo\") must return false", spaceService.isOnlyLeader(savedSpace, "demo"));
-    assertTrue("spaceService.isOnlyLeader(savedSpace, \"tom\") must return true", spaceService.isOnlyLeader(savedSpace, "tom"));
-  }
 
   /**
    * Test {@link SpaceService#isMember(Space, String)}
@@ -2193,64 +1796,6 @@ public class SpaceServiceTest extends AbstractCoreTest {
     assertFalse("spaceService.hasAccessPermission(savedSpace, \"john\") must return false", spaceService.hasAccessPermission(savedSpace, "john"));
   }
 
-  /**
-   * Test {@link SpaceService#hasEditPermission(Space, String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testHasEditPermission() throws Exception {
-    Space space = this.getSpaceInstance(0);
-    tearDownSpaceList.add(space);
-    Space savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertNotNull("savedSpace must not be null", savedSpace);
-
-    assertTrue("spaceService.hasEditPermission(savedSpace, \"root\") must return true", spaceService.hasEditPermission(savedSpace, "root"));
-    assertTrue("spaceService.hasEditPermission(savedSpace, \"demo\") must return true", spaceService.hasEditPermission(savedSpace, "demo"));
-    assertTrue("spaceService.hasEditPermission(savedSpace, \"tom\") must return true", spaceService.hasEditPermission(savedSpace, "tom"));
-    assertFalse("spaceService.hasEditPermission(savedSpace, \"mary\") must return false", spaceService.hasEditPermission(savedSpace, "mary"));
-    assertFalse("spaceService.hasEditPermission(savedSpace, \"john\") must return false", spaceService.hasEditPermission(savedSpace, "john"));
-    assertFalse("spaceService.hasEditPermission(savedSpace, \"raul\") must return false", spaceService.hasEditPermission(savedSpace, "raul"));
-    assertFalse("spaceService.hasEditPermission(savedSpace, \"ghost\") must return false", spaceService.hasEditPermission(savedSpace, "ghost"));
-    assertFalse("spaceService.hasEditPermission(savedSpace, \"dragon\") must return false", spaceService.hasEditPermission(savedSpace, "dragon"));
-  }
-
-  /**
-   * Test {@link SpaceService#isInvited(Space, String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testIsInvited() throws Exception {
-    Space space = this.getSpaceInstance(0);
-    tearDownSpaceList.add(space);
-    Space savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertNotNull("savedSpace must not be null", savedSpace);
-
-    assertTrue("spaceService.isInvited(savedSpace, \"register1\") must return true", spaceService.isInvited(savedSpace, "register1"));
-    assertTrue("spaceService.isInvited(savedSpace, \"mary\") must return true", spaceService.isInvited(savedSpace, "mary"));
-    assertFalse("spaceService.isInvited(savedSpace, \"demo\") must return false", spaceService.isInvited(savedSpace, "demo"));
-    assertFalse("spaceService.isInvited(savedSpace, \"john\") must return false", spaceService.isInvited(savedSpace, "john"));
-  }
-
-  /**
-   * Test {@link SpaceService#isPending(Space, String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testIsPending() throws Exception {
-    Space space = this.getSpaceInstance(0);
-    tearDownSpaceList.add(space);
-    Space savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertNotNull("savedSpace must not be null", savedSpace);
-
-    assertTrue("spaceService.isPending(savedSpace, \"jame\") must return true", spaceService.isPending(savedSpace, "jame"));
-    assertTrue("spaceService.isPending(savedSpace, \"paul\") must return true", spaceService.isPending(savedSpace, "paul"));
-    assertTrue("spaceService.isPending(savedSpace, \"hacker\") must return true", spaceService.isPending(savedSpace, "hacker"));
-    assertFalse("spaceService.isPending(savedSpace, \"mary\") must return false", spaceService.isPending(savedSpace, "mary"));
-    assertFalse("spaceService.isPending(savedSpace, \"john\") must return false", spaceService.isPending(savedSpace, "john"));
-  }
 
   /**
    * Test {@link SpaceService#installApplication(Space, String)}
@@ -2292,291 +1837,6 @@ public class SpaceServiceTest extends AbstractCoreTest {
     //TODO Complete this
   }
 
-  /**
-   * Test {@link SpaceService#requestJoin(Space, String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testRequestJoin() throws Exception {
-    Space space = this.getSpaceInstance(0);
-    tearDownSpaceList.add(space);
-    int pendingUsersCount = space.getPendingUsers().length;
-    assertFalse("ArrayUtils.contains(space.getPendingUsers(), newPendingUser.getRemoteId()) must be false",
-                ArrayUtils.contains(space.getPendingUsers(), newPendingUser.getRemoteId()));
-    spaceService.requestJoin(space, newPendingUser.getRemoteId());
-    space = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertEquals("space.getPendingUsers().length must return: " + pendingUsersCount + 1,
-                 pendingUsersCount + 1, space.getPendingUsers().length);
-    assertTrue("ArrayUtils.contains(space.getPendingUsers(), newPendingUser.getRemoteId()) must be true",
-                ArrayUtils.contains(space.getPendingUsers(), newPendingUser.getRemoteId()));
-  }
-
-  /**
-   * Test {@link SpaceService#revokeRequestJoin(Space, String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testRevokeRequestJoin() throws Exception {
-    Space space = this.getSpaceInstance(0);
-    tearDownSpaceList.add(space);
-    int pendingUsersCount = space.getPendingUsers().length;
-    assertFalse("ArrayUtils.contains(space.getPendingUsers(), newPendingUser) must be false",
-                ArrayUtils.contains(space.getPendingUsers(), newPendingUser.getRemoteId()));
-    spaceService.requestJoin(space, newPendingUser.getRemoteId());
-    space = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertEquals("space.getPendingUsers().length must return: " + pendingUsersCount + 1,
-                 pendingUsersCount + 1, space.getPendingUsers().length);
-    assertTrue("ArrayUtils.contains(space.getPendingUsers(), newPendingUser.getRemoteId()) must be true",
-               ArrayUtils.contains(space.getPendingUsers(), newPendingUser.getRemoteId()));
-
-    spaceService.revokeRequestJoin(space, newPendingUser.getRemoteId());
-    space = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertEquals("space.getPendingUsers().length must return: " + pendingUsersCount, pendingUsersCount, space.getPendingUsers().length);
-    assertFalse("ArrayUtils.contains(space.getPendingUsers(), newPendingUser.getRemoteId()) must be true",
-                ArrayUtils.contains(space.getPendingUsers(), newPendingUser.getRemoteId()));
-  }
-
-  /**
-   * Test {@link SpaceService#inviteMember(Space, String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testInviteMember() throws Exception {
-    Space space = this.getSpaceInstance(0);
-    tearDownSpaceList.add(space);
-    Space savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertNotNull("savedSpace must not be null", savedSpace);
-    int invitedUsersCount = savedSpace.getInvitedUsers().length;
-    assertFalse("ArrayUtils.contains(savedSpace.getInvitedUsers(), newInvitedUser.getRemoteId()) must return false",
-                ArrayUtils.contains(savedSpace.getInvitedUsers(), newInvitedUser.getRemoteId()));
-    spaceService.inviteMember(savedSpace, newInvitedUser.getRemoteId());
-    savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertEquals("savedSpace.getInvitedUsers().length must return: " + invitedUsersCount + 1,
-                 invitedUsersCount + 1, savedSpace.getInvitedUsers().length);
-    assertTrue("ArrayUtils.contains(savedSpace.getInvitedUsers(), newInvitedUser.getRemoteId()) must return true",
-                ArrayUtils.contains(savedSpace.getInvitedUsers(), newInvitedUser.getRemoteId()));
-  }
-
-  /**
-   * Test {@link SpaceService#revokeInvitation(Space, String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testRevokeInvitation() throws Exception {
-    Space space = this.getSpaceInstance(0);
-    tearDownSpaceList.add(space);
-    Space savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertNotNull("savedSpace must not be null", savedSpace);
-    int invitedUsersCount = savedSpace.getInvitedUsers().length;
-    assertFalse("ArrayUtils.contains(savedSpace.getInvitedUsers(), newInvitedUser.getRemoteId()) must return false",
-                ArrayUtils.contains(savedSpace.getInvitedUsers(), newInvitedUser.getRemoteId()));
-    spaceService.addInvitedUser(savedSpace, newInvitedUser.getRemoteId());
-    savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertEquals("savedSpace.getInvitedUsers().length must return: " + invitedUsersCount + 1,
-                 invitedUsersCount + 1, savedSpace.getInvitedUsers().length);
-    assertTrue("ArrayUtils.contains(savedSpace.getInvitedUsers(), newInvitedUser.getRemoteId()) must return true",
-                ArrayUtils.contains(savedSpace.getInvitedUsers(), newInvitedUser.getRemoteId()));
-    spaceService.revokeInvitation(savedSpace, newInvitedUser.getRemoteId());
-    savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertEquals("savedSpace.getInvitedUsers().length must return: " + invitedUsersCount,
-                 invitedUsersCount, savedSpace.getInvitedUsers().length);
-    assertFalse("ArrayUtils.contains(savedSpace.getInvitedUsers(), newInvitedUser.getRemoteId()) must return false",
-                ArrayUtils.contains(savedSpace.getInvitedUsers(), newInvitedUser.getRemoteId()));
-  }
-
-  /**
-   * Test {@link SpaceService#acceptInvitation(Space, String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testAcceptInvitation() throws Exception {
-    int number = 0;
-    Space space = new Space();
-    space.setDisplayName("my space " + number);
-    space.setPrettyName(space.getDisplayName());
-    space.setRegistration(Space.OPEN);
-    space.setDescription("add new space " + number);
-    space.setType(DefaultSpaceApplicationHandler.NAME);
-    space.setVisibility(Space.PUBLIC);
-    space.setRegistration(Space.VALIDATION);
-    space.setPriority(Space.INTERMEDIATE_PRIORITY);
-    space.setGroupId("/space/space" + number);
-    space.setUrl(space.getPrettyName());
-    String[] spaceManagers = new String[] {"demo"};
-    String[] members = new String[] {};
-    String[] invitedUsers = new String[] {"register1", "mary"};
-    String[] pendingUsers = new String[] {"jame", "paul", "hacker"};
-    space.setInvitedUsers(invitedUsers);
-    space.setPendingUsers(pendingUsers);
-    space.setManagers(spaceManagers);
-    space.setMembers(members);
-
-    space = this.createSpaceNonInitApps(space, "demo", null);
-    tearDownSpaceList.add(space);
-
-    Space savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertNotNull("savedSpace must not be null", savedSpace);
-
-    spaceService.acceptInvitation(savedSpace, "root");
-    spaceService.acceptInvitation(savedSpace, "mary");
-    spaceService.acceptInvitation(savedSpace, "john");
-    savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertEquals("savedSpace.getMembers().length must return 4", 4, savedSpace.getMembers().length);
-    // Wait 3 secs to have activity stored
-    try {
-      IdentityManager identityManager = (IdentityManager) getContainer().getComponentInstanceOfType(IdentityManager.class);
-      ActivityManager activityManager = (ActivityManager) getContainer().getComponentInstanceOfType(ActivityManager.class);
-      Thread.sleep(3000);
-      List<ExoSocialActivity> broadCastActivities = activityManager.getActivities(identityManager.getOrCreateIdentity(SpaceIdentityProvider.NAME, savedSpace.getPrettyName(), false), 0, 10);
-      for (ExoSocialActivity activity : broadCastActivities) {
-        activityManager.deleteActivity(activity);
-      }
-    } catch (InterruptedException e) {
-      LOG.error(e.getMessage(), e);
-    }
-  }
-
-  /**
-   * Test {@link SpaceService#denyInvitation(Space, String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testDenyInvitation() throws Exception {
-    Space space = this.getSpaceInstance(0);
-    tearDownSpaceList.add(space);
-    Space savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertNotNull("savedSpace must not be null", savedSpace);
-
-    spaceService.denyInvitation(savedSpace, "new member 1");
-    spaceService.denyInvitation(savedSpace, "new member 2");
-    spaceService.denyInvitation(savedSpace, "new member 3");
-    assertEquals("savedSpace.getMembers().length must return 2", 2, savedSpace.getInvitedUsers().length);
-
-    spaceService.denyInvitation(savedSpace, "raul");
-    spaceService.denyInvitation(savedSpace, "ghost");
-    spaceService.denyInvitation(savedSpace, "dragon");
-    assertEquals("savedSpace.getMembers().length must return 2", 2, savedSpace.getInvitedUsers().length);
-
-    spaceService.denyInvitation(savedSpace, "register1");
-    spaceService.denyInvitation(savedSpace, "mary");
-    assertEquals("savedSpace.getMembers().length must return 0", 0, savedSpace.getInvitedUsers().length);
-  }
-
-  /**
-   * Test {@link SpaceService#validateRequest(Space, String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testValidateRequest() throws Exception {
-    int number = 0;
-    Space space = new Space();
-    space.setDisplayName("my space " + number);
-    space.setPrettyName(space.getDisplayName());
-    space.setRegistration(Space.OPEN);
-    space.setDescription("add new space " + number);
-    space.setType(DefaultSpaceApplicationHandler.NAME);
-    space.setVisibility(Space.PUBLIC);
-    space.setRegistration(Space.VALIDATION);
-    space.setPriority(Space.INTERMEDIATE_PRIORITY);
-    space.setGroupId("/space/space" + number);
-    space.setUrl(space.getPrettyName());
-    String[] spaceManagers = new String[] {"demo"};
-    String[] members = new String[] {};
-    String[] invitedUsers = new String[] {"register1", "mary"};
-    String[] pendingUsers = new String[] {"jame", "paul", "hacker"};
-    space.setInvitedUsers(invitedUsers);
-    space.setPendingUsers(pendingUsers);
-    space.setManagers(spaceManagers);
-    space.setMembers(members);
-
-    space = this.createSpaceNonInitApps(space, "demo", null);
-    tearDownSpaceList.add(space);
-
-    Space savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertNotNull("savedSpace must not be null", savedSpace);
-
-    spaceService.validateRequest(savedSpace, "root");
-    spaceService.validateRequest(savedSpace, "mary");
-    spaceService.validateRequest(savedSpace, "john");
-    savedSpace = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertEquals("savedSpace.getMembers().length must return 4", 4, savedSpace.getMembers().length);
-    // Wait 3 secs to have activity stored
-    try {
-      IdentityManager identityManager = (IdentityManager) getContainer().getComponentInstanceOfType(IdentityManager.class);
-      ActivityManager activityManager = (ActivityManager) getContainer().getComponentInstanceOfType(ActivityManager.class);
-      Thread.sleep(3000);
-      List<ExoSocialActivity> broadCastActivities = activityManager.getActivities(identityManager.getOrCreateIdentity(SpaceIdentityProvider.NAME, savedSpace.getPrettyName(), false), 0, 10);
-      for (ExoSocialActivity activity : broadCastActivities) {
-        activityManager.deleteActivity(activity);
-      }
-    } catch (InterruptedException e) {
-      LOG.error(e.getMessage(), e);
-    }
-  }
-
-  /**
-   * Test {@link SpaceService#declineRequest(Space, String)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testDeclineRequest() throws Exception {
-    Space space = this.getSpaceInstance(0);
-    tearDownSpaceList.add(space);
-    int pendingUsersCount = space.getPendingUsers().length;
-    assertFalse("ArrayUtils.contains(space.getPendingUsers(), newPendingUser) must be false",
-                ArrayUtils.contains(space.getPendingUsers(), newPendingUser.getRemoteId()));
-    spaceService.addPendingUser(space, newInvitedUser.getRemoteId());
-    space = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertEquals("space.getPendingUsers().length must return: " + pendingUsersCount + 1,
-                 pendingUsersCount + 1, space.getPendingUsers().length);
-    assertTrue("ArrayUtils.contains(space.getPendingUsers(), newInvitedUser.getRemoteId()) must be true",
-                ArrayUtils.contains(space.getPendingUsers(), newInvitedUser.getRemoteId()));
-
-    spaceService.declineRequest(space, newInvitedUser.getRemoteId());
-    space = spaceService.getSpaceByDisplayName(space.getDisplayName());
-    assertEquals("space.getPendingUsers().length must return: " + pendingUsersCount,
-                 pendingUsersCount, space.getPendingUsers().length);
-    assertFalse("ArrayUtils.contains(space.getPendingUsers(), newInvitedUser.getRemoteId()) must be true",
-                ArrayUtils.contains(space.getPendingUsers(), newInvitedUser.getRemoteId()));
-  }
-
-  /**
-   * Test {@link SpaceService#registerSpaceLifeCycleListener(SpaceLifeCycleListener)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testRegisterSpaceLifeCybleListener() throws Exception {
-    //TODO Complete this
-  }
-
-  /**
-   * Test {@link SpaceService#unregisterSpaceLifeCycleListener(SpaceLifeCycleListener)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testUnRegisterSpaceLifeCycleListener() throws Exception {
-    //TODO Complete this
-  }
-
-  /**
-   * Test {@link SpaceService#setPortletsPrefsRequired(org.exoplatform.social.core.application.PortletPreferenceRequiredPlugin)}
-   *
-   * @throws Exception
-   * @since 1.2.0-GA
-   */
-  public void testSetPortletsPrefsRequired() throws Exception {
-    //TODO Complete this
-  }
 
   /**
    * Test {@link SpaceService#getPortletsPrefsRequired()}
@@ -2609,7 +1869,7 @@ public class SpaceServiceTest extends AbstractCoreTest {
   }
   
   /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getVisibleSpaces(String)}
+   * Test {@link org.exoplatform.social.core.storage.api.SpaceStorage#getVisibleSpaces(String)}
    *
    * @throws Exception
    * @since 1.2.5-GA
@@ -2645,7 +1905,7 @@ public class SpaceServiceTest extends AbstractCoreTest {
   
   
   /**
-   * Test {@link org.exoplatform.social.core.storage.SpaceStorage#getVisibleSpaces(String)}
+   * Test {@link org.exoplatform.social.core.storage.api.SpaceStorage#getVisibleSpaces(String, org.exoplatform.social.core.space.SpaceFilter)}
    *
    * @throws Exception
    * @since 1.2.5-GA
@@ -2867,7 +2127,7 @@ public class SpaceServiceTest extends AbstractCoreTest {
     space2.setVisibility("public");
     space2.setPriority("2");
 
-    spaceService.saveSpace(space2, true);
+    spaceService.createSpace(space2, "root");
 
     return space2;
   }

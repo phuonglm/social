@@ -107,26 +107,6 @@ public final class Util {
                    .status(status)
                    .build();
   }
-  
-  /**
-   * Gets mediaType from string format.
-   * Currently supports json and xml only.
-   *
-   * @param format
-   * @return mediaType of matched or throw BAD_REQUEST exception
-   * @throws WebApplicationException
-   * @deprecated User {@link #getMediaType(String, String[])} instead.
-   *             Will be removed by 1.3.x
-   */
-  @Deprecated
-  public static MediaType getMediaType(String format) throws WebApplicationException {
-    if (format.equals("json")) {
-      return MediaType.APPLICATION_JSON_TYPE;
-    } else if(format.equals("xml")) {
-      return MediaType.APPLICATION_XML_TYPE;
-    }
-    throw new WebApplicationException(Response.Status.BAD_REQUEST);
-  }
 
 
   /**

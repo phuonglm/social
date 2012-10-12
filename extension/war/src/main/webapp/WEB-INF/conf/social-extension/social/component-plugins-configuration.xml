@@ -54,7 +54,7 @@
     <target-component>org.exoplatform.social.core.manager.IdentityManager</target-component>
     <component-plugin>
       <name>ProfileUpdatesPublisher</name>
-      <set-method>addProfileListener</set-method>
+      <set-method>registerProfileListener</set-method>
       <type>org.exoplatform.social.core.application.ProfileUpdatesPublisher</type>
     </component-plugin>
   </external-component-plugins>

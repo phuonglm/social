@@ -84,6 +84,8 @@ public class ActivitiesRestService implements ResourceContainer {
   private ActivityManager _activityManager;
   private IdentityManager _identityManager;
   private String portalName_;
+
+  private static final String[] SUPPORTED_FORMAT = new String[]{"json", "xml"};
   /**
    * constructor
    */
@@ -129,7 +131,7 @@ public class ActivitiesRestService implements ResourceContainer {
                                   @PathParam("portalName") String portalName,
                                   @PathParam("activityId") String activityId,
                                   @PathParam("format") String format) throws Exception {
-    MediaType mediaType = Util.getMediaType(format);
+    MediaType mediaType = Util.getMediaType(format, SUPPORTED_FORMAT);
     portalName_ = portalName;
     ExoSocialActivity activity = destroyActivity(activityId);
     return Util.getResponse(activity, uriInfo, mediaType, Response.Status.OK);
@@ -247,7 +249,7 @@ public class ActivitiesRestService implements ResourceContainer {
                             @PathParam("portalName") String portalName,
                             @PathParam("activityId") String activityId,
                             @PathParam("format") String format) throws Exception {
-    MediaType mediaType = Util.getMediaType(format);
+    MediaType mediaType = Util.getMediaType(format, SUPPORTED_FORMAT);
     portalName_ = portalName;
     LikeList likeList = null;
     likeList = showLikes(activityId);
@@ -271,7 +273,7 @@ public class ActivitiesRestService implements ResourceContainer {
                              @PathParam("activityId") String activityId,
                              @PathParam("format") String format,
                              Like like) throws Exception {
-    MediaType mediaType = Util.getMediaType(format);
+    MediaType mediaType = Util.getMediaType(format, SUPPORTED_FORMAT);
     portalName_ = portalName;
     LikeList likeList = updateLike(activityId, like);
     return Util.getResponse(likeList, uriInfo, mediaType, Response.Status.OK);
@@ -293,7 +295,7 @@ public class ActivitiesRestService implements ResourceContainer {
                               @PathParam("activityId") String activityId,
                               @PathParam("identityId") String identityId,
                               @PathParam("format") String format) throws Exception{
-    MediaType mediaType = Util.getMediaType(format);
+    MediaType mediaType = Util.getMediaType(format, SUPPORTED_FORMAT);
     portalName_ = portalName;
     LikeList likeList =  null;
     likeList = destroyLike(activityId, identityId);
@@ -372,7 +374,7 @@ public class ActivitiesRestService implements ResourceContainer {
     }
     Identity identity = null;
     try {
-      identity = getIdentityManager(portalName).getOrCreateIdentity(OrganizationIdentityProvider.NAME, userId);
+      identity = getIdentityManager(portalName).getOrCreateIdentity(OrganizationIdentityProvider.NAME, userId, true);
     } catch (Exception e1) {
       LOG.warn(e1.getMessage(), e1);
     }
@@ -456,7 +458,7 @@ public class ActivitiesRestService implements ResourceContainer {
                                @PathParam("portalName") String portalName,
                                @PathParam("activityId") String activityId,
                                @PathParam("format") String format) throws Exception {
-    MediaType mediaType = Util.getMediaType(format);
+    MediaType mediaType = Util.getMediaType(format, SUPPORTED_FORMAT);
     portalName_ = portalName;
     CommentList commentList = null;
     commentList = showComments(activityId);
@@ -644,7 +646,7 @@ public class ActivitiesRestService implements ResourceContainer {
                                 @PathParam("activityId") String activityId,
                                 @PathParam("format") String format,
                                 ExoSocialActivityImpl comment) throws Exception {
-    MediaType mediaType = Util.getMediaType(format);
+    MediaType mediaType = Util.getMediaType(format, SUPPORTED_FORMAT);
     portalName_ = portalName;
     CommentList commentList = null;
     commentList = updateComment(activityId, comment, uriInfo, portalName);
@@ -718,7 +720,7 @@ public class ActivitiesRestService implements ResourceContainer {
                                  @PathParam("activityId") String activityId,
                                  @PathParam("commentId") String commentId,
                                  @PathParam("format") String format) throws Exception {
-    MediaType mediaType = Util.getMediaType(format);
+    MediaType mediaType = Util.getMediaType(format, SUPPORTED_FORMAT);
     portalName_ = portalName;
     CommentList commentList = null;
     commentList = destroyComment(activityId, commentId);

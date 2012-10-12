@@ -66,30 +66,6 @@ public class OrganizationIdentityProvider extends IdentityProvider<User> {
     return NAME;
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * Return only 500 maximum users for this duplicated method.
-   *
-   * @return list of string containing user names.
-   */
-  public List<String> getAllUserId() {
-    try {
-
-      ListAccess<User> allUsers = organizationService.getUserHandler().findAllUsers();
-      //Get 500 as maxium
-      final int MAX_USERS = 500;
-      User[] users = allUsers.load(0, allUsers.getSize() >= MAX_USERS ? MAX_USERS : allUsers.getSize());
-      List<String> userIds = new ArrayList<String>();
-
-      for (User user : users) {
-        userIds.add(user.getUserName());
-      }
-      return userIds;
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load all users");
-    }
-  }
 
   /**
    * {@inheritDoc}
